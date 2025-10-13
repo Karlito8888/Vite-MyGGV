@@ -1,0 +1,65 @@
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  
+  padding: 0;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(15deg);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .theme-toggle {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+/* Ensure toggle is above other content */
+@media (hover: none) and (pointer: coarse) {
+  .theme-toggle:hover {
+    transform: none;
+  }
+  
+  .theme-toggle:active {
+    transform: scale(0.9);
+  }
+}

@@ -1,0 +1,48 @@
+import { useAuth } from '../utils/AuthContext'
+import '../styles/Home.css'
+
+function Home() {
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+  }
+
+  return (
+    <div className="home-page">
+      <div className="container">
+        <div className="home-content">
+          <h1>Welcome Home!</h1>
+          <p className="home-subtitle">
+            Hello {user?.email}! You're successfully logged in to your PWA app.
+          </p>
+          
+          <div className="home-features">
+            <div className="feature-card">
+              <h3>🚀 Fast & Reliable</h3>
+              <p>Built with Vite for lightning-fast development and optimized builds.</p>
+            </div>
+            
+            <div className="feature-card">
+              <h3>📱 Mobile First</h3>
+              <p>Designed specifically for mobile devices with responsive layouts.</p>
+            </div>
+            
+            <div className="feature-card">
+              <h3>🔒 Secure</h3>
+              <p>Protected routes and secure authentication system.</p>
+            </div>
+          </div>
+          
+          <div className="home-actions">
+            <button className="btn btn-primary" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Home
