@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Business Inside Categories Service
@@ -63,10 +64,18 @@ export async function getBusinessInsideCategoryById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createBusinessInsideCategory(categoryData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('business_inside_categories')
-      .insert(categoryData)
+      .insert({
+        ...categoryData,
+        created_by: userId
+      })
       .select()
       .single()
   )

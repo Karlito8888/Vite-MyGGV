@@ -113,3 +113,4 @@ find_tasks(filter_by="project", filter_value="proj-123")
 - Keep queries SHORT (2-5 keywords) for better search results
 - Higher `task_order` = higher priority (0-100)
 - Tasks should be 30 min - 4 hours of work
+- **NEVER use `npm run dev` under any circumstances**

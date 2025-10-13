@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Conversation Deletions Service
@@ -16,9 +17,9 @@ import { supabase, executeQuery } from './baseService'
  * @returns {Promise<{data: Array|null, error: Error|null}>}
  */
 export async function getMyConversationDeletions() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -29,7 +30,7 @@ export async function getMyConversationDeletions() {
         participant:profiles!conversation_deletions_participant_id_fkey(*),
         last_message:private_messages(*)
       `)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('deleted_at', { ascending: false })
   )
 }
@@ -40,16 +41,16 @@ export async function getMyConversationDeletions() {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function getConversationDeletion(participantId) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
     supabase
       .from('conversation_deletions')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('participant_id', participantId)
       .single()
   )
@@ -63,16 +64,16 @@ export async function getConversationDeletion(participantId) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function deleteConversation(participantId, lastMessageId = null) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
     supabase
       .from('conversation_deletions')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         participant_id: participantId,
         last_message_id: lastMessageId,
         deleted_at: new Date().toISOString()
@@ -88,16 +89,16 @@ export async function deleteConversation(participantId, lastMessageId = null) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function restoreConversation(participantId) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
     supabase
       .from('conversation_deletions')
       .delete()
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('participant_id', participantId)
   )
 }

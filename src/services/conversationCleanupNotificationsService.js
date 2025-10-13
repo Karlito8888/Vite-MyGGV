@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Conversation Cleanup Notifications Service
@@ -16,16 +17,16 @@ import { supabase, executeQuery } from './baseService'
  * @returns {Promise<{data: Array|null, error: Error|null}>}
  */
 export async function getMyCleanupNotifications() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
     supabase
       .from('conversation_cleanup_notifications')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('notification_sent_at', { ascending: false })
   )
 }
@@ -35,16 +36,16 @@ export async function getMyCleanupNotifications() {
  * @returns {Promise<{data: Array|null, error: Error|null}>}
  */
 export async function getUnacknowledgedNotifications() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
     supabase
       .from('conversation_cleanup_notifications')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .eq('is_acknowledged', false)
       .order('notification_sent_at', { ascending: false })
   )

@@ -1,4 +1,5 @@
 import { supabase } from '../utils/supabase'
+import { getCurrentUserWithClaims } from '../utils/authHelpers'
 
 /**
  * Base service utilities for common CRUD patterns
@@ -22,28 +23,26 @@ export async function executeQuery(queryPromise) {
     const { data, error } = await queryPromise
     
     if (error) {
+      // eslint-disable-next-line no-console
       console.error('Supabase query error:', error)
       return { data: null, error }
     }
     
     return { data, error: null }
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('Unexpected error:', err)
     return { data: null, error: err }
   }
 }
 
 /**
- * Get the current authenticated user
+ * Get the current authenticated user using getClaims() for better security
  * @returns {Promise<{user: Object|null, error: Error|null}>}
  */
 export async function getCurrentUser() {
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    return { user, error }
-  } catch (err) {
-    return { user: null, error: err }
-  }
+  const { user, error } = await getCurrentUserWithClaims(true)
+  return { user, error }
 }
 
 /**

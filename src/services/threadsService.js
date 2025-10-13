@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Threads Service
@@ -94,9 +95,9 @@ export async function getUserThreads(userId) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createThread(threadData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -104,7 +105,7 @@ export async function createThread(threadData) {
       .from('threads')
       .insert({
         ...threadData,
-        created_by: user.id
+        created_by: userId
       })
       .select()
       .single()

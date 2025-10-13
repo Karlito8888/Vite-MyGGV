@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Service Categories Service
@@ -62,10 +63,18 @@ export async function getServiceCategoryById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createServiceCategory(categoryData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('service_categories')
-      .insert(categoryData)
+      .insert({
+        ...categoryData,
+        created_by: userId
+      })
       .select()
       .single()
   )

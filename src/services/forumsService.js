@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Forums Service
@@ -73,9 +74,9 @@ export async function getForumWithThreadCount(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createForum(forumData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -83,7 +84,7 @@ export async function createForum(forumData) {
       .from('forums')
       .insert({
         ...forumData,
-        created_by: user.id
+        created_by: userId
       })
       .select()
       .single()

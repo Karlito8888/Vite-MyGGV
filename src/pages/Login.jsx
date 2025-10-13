@@ -5,11 +5,8 @@ import { useAuth } from '../utils/AuthContext'
 import '../styles/Login.css'
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
   
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -21,36 +18,7 @@ function Login() {
     }
   }, [user, navigate])
 
-  const handleEmailAuth = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
 
-    try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-          },
-        })
-        if (error) throw error
-        alert('Check your email for the confirmation link!')
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (error) throw error
-        navigate('/onboarding')
-      }
-    } catch (err) {
-      setError(err.message || 'Authentication failed')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleSocialLogin = async (provider) => {
     setError('')
@@ -74,7 +42,9 @@ function Login() {
     <div className="login-page">
       <div className="container">
         <div className="login-card">
-          <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
+          <h2>Sign In</h2>
+          
+          {error && <div className="error-message">{error}</div>}
           
           <div className="social-login">
             <button 
@@ -102,71 +72,6 @@ function Login() {
               </svg>
               <span>{loading ? 'Connecting...' : 'Continue with Facebook'}</span>
             </button>
-          </div>
-
-          <div className="divider">
-            <span>OR</span>
-          </div>
-
-          <form onSubmit={handleEmailAuth}>
-            {error && <div className="error-message">{error}</div>}
-            
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                className="form-input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                className="form-input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                disabled={loading}
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              disabled={loading}
-              style={{ width: '100%' }}
-            >
-              {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
-            </button>
-          </form>
-
-          <div className="auth-switch">
-            <p>
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              <button 
-                type="button" 
-                className="btn-link"
-                onClick={() => {
-                  setIsSignUp(!isSignUp)
-                  setError('')
-                }}
-                disabled={loading}
-              >
-                {isSignUp ? 'Sign In' : 'Sign Up'}
-              </button>
-            </p>
           </div>
         </div>
       </div>

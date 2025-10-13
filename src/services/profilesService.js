@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Profiles Service
@@ -61,11 +62,11 @@ export async function getProfileByUsername(username) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function getCurrentUserProfile() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
-  return getProfileById(user.id)
+  return getProfileById(userId)
 }
 
 /**

@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Private Messages Service
@@ -77,9 +78,9 @@ export async function getUnreadMessageCount(userId) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function sendPrivateMessage(messageData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -87,7 +88,7 @@ export async function sendPrivateMessage(messageData) {
       .from('private_messages')
       .insert({
         ...messageData,
-        sender_id: user.id
+        sender_id: userId
       })
       .select()
       .single()
@@ -116,9 +117,9 @@ export async function markMessageAsRead(messageId) {
  * @returns {Promise<{data: Array|null, error: Error|null}>}
  */
 export async function markConversationAsRead(senderId) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -126,7 +127,7 @@ export async function markConversationAsRead(senderId) {
       .from('private_messages')
       .update({ read_at: new Date().toISOString() })
       .eq('sender_id', senderId)
-      .eq('receiver_id', user.id)
+      .eq('receiver_id', userId)
       .is('read_at', null)
       .select()
   )

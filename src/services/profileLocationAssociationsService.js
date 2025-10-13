@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Profile Location Associations Service
@@ -91,10 +92,18 @@ export async function getLocationOwner(locationId) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createProfileLocationAssociation(associationData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('profile_location_associations')
-      .insert(associationData)
+      .insert({
+        ...associationData,
+        profile_id: userId
+      })
       .select()
       .single()
   )

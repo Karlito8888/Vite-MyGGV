@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Messages Header Service (Pinned/Featured Messages)
@@ -72,9 +73,9 @@ export async function getHeaderMessageById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createHeaderMessage(messageData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -82,7 +83,7 @@ export async function createHeaderMessage(messageData) {
       .from('messages_header')
       .insert({
         ...messageData,
-        user_id: user.id
+        user_id: userId
       })
       .select()
       .single()

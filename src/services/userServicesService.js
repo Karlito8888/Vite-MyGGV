@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * User Services Service
@@ -153,10 +154,18 @@ export async function getUserServiceById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createUserService(serviceData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('user_services')
-      .insert(serviceData)
+      .insert({
+        ...serviceData,
+        profile_id: userId
+      })
       .select()
       .single()
   )

@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * User Business Inside Service
@@ -136,10 +137,18 @@ export async function getBusinessInsideById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createBusinessInside(businessData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('user_business_inside')
-      .insert(businessData)
+      .insert({
+        ...businessData,
+        profile_id: userId
+      })
       .select()
       .single()
   )

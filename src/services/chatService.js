@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Chat Service (Public Channel Messages)
@@ -59,9 +60,9 @@ export async function getMessageById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function sendMessage(messageData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -69,7 +70,7 @@ export async function sendMessage(messageData) {
       .from('chat')
       .insert({
         ...messageData,
-        user_id: user.id
+        user_id: userId
       })
       .select()
       .single()

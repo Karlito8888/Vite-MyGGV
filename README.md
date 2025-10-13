@@ -69,7 +69,7 @@ src/
 
 ## Authentication Flow
 
-1. **Login** → User enters credentials
+1. **Login** → User authenticates with social providers (Google, Facebook)
 2. **Onboarding** → First-time user experience
 3. **Home** → Protected main application area
 

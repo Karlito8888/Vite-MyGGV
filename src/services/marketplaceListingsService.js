@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Marketplace Listings Service
@@ -146,10 +147,18 @@ export async function getListingById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createListing(listingData) {
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
+  }
+
   return executeQuery(
     supabase
       .from('marketplace_listings')
-      .insert(listingData)
+      .insert({
+        ...listingData,
+        profile_id: userId
+      })
       .select()
       .single()
   )

@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * User Statistics Service
@@ -30,11 +31,11 @@ export async function getUserStatistics(userId) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function getCurrentUserStatistics() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
-  return getUserStatistics(user.id)
+  return getUserStatistics(userId)
 }
 
 /**

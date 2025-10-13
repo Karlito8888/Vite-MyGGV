@@ -1,128 +1,103 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { supabase } from './supabase'
+import { createContext, useState, useEffect } from "react";
+import { supabase } from "./supabase";
+import { getCurrentUserWithClaims } from "./authHelpers";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
-export { AuthContext }
+export { AuthContext };
 
-export function useAuth() {
-  return useContext(AuthContext)
-}
+
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on app load
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
-    }
-
-    getSession()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const login = async (email, password) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+    // Check for existing session on app load using getClaims() for better security
+    const getClaimsSession = async () => {
+      const { user, error, method } = await getCurrentUserWithClaims(true);
 
       if (error) {
-        return { success: false, error: error.message }
+        // eslint-disable-next-line no-console
+        console.error(`Authentication failed using ${method}:`, error.message);
+        setUser(null);
+      } else {
+        setUser(user);
+        if (method === "getUser") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Using fallback authentication method - consider updating Supabase client"
+          );
+        }
       }
 
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: 'Login failed' }
-    }
-  }
+      setLoading(false);
+    };
+
+    getClaimsSession();
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // When auth state changes, verify with getClaims() for security
+      if (session?.user) {
+        const { user, error, method } = await getCurrentUserWithClaims(true);
+
+        if (error || !user) {
+          // eslint-disable-next-line no-console
+          console.error(
+            `Auth verification failed using ${method}:`,
+            error?.message || "No user found"
+          );
+          setUser(null);
+        } else {
+          setUser(user);
+          if (method === "getUser") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              "Using fallback authentication method during auth state change"
+            );
+          }
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const loginWithSocial = async (provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/`
-        }
-      })
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
 
       if (error) {
-        return { success: false, error: error.message }
+        return { success: false, error: error.message };
       }
 
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: `${provider} login failed` }
+      return { success: true };
+    } catch {
+      return { success: false, error: `${provider} login failed` };
     }
-  }
-
-  const signUp = async (email, password) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
-      })
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true, message: 'Check your email for the confirmation link!' }
-    } catch (error) {
-      return { success: false, error: 'Sign up failed' }
-    }
-  }
-
-  const resetPassword = async (email) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
-      })
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true, message: 'Check your email for the password reset link!' }
-    } catch (error) {
-      return { success: false, error: 'Password reset failed' }
-    }
-  }
+  };
 
   const logout = async () => {
-    await supabase.auth.signOut()
-  }
+    await supabase.auth.signOut();
+  };
 
   const value = {
     user,
-    login,
     loginWithSocial,
-    signUp,
-    resetPassword,
     logout,
-    loading
-  }
+    loading,
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

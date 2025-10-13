@@ -1,18 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import '../styles/ThemeToggle.css'
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState('light')
-
-  useEffect(() => {
+  const [theme, setTheme] = useState(() => {
     // Get initial theme from localStorage or default to light
-    try {
-      const savedTheme = localStorage.getItem('theme') || 'light'
-      setTheme(savedTheme)
-    } catch (e) {
-      setTheme('light')
-    }
-  }, [])
+    return localStorage.getItem('theme') || 'light'
+  })
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
@@ -31,12 +24,7 @@ function ThemeToggle() {
     }
     
     // Save to localStorage
-    try {
-      localStorage.setItem('theme', newTheme)
-    } catch (e) {
-      // Silently fail if localStorage is unavailable
-      console.warn('Unable to save theme preference')
-    }
+    localStorage.setItem('theme', newTheme)
   }
 
   return (

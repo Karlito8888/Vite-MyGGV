@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Location Association Requests Service
@@ -15,9 +16,9 @@ import { supabase, executeQuery } from './baseService'
  * @returns {Promise<{data: Array|null, error: Error|null}>}
  */
 export async function listMyPendingRequests() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -28,7 +29,7 @@ export async function listMyPendingRequests() {
         requester:profiles!location_association_requests_requester_id_fkey(*),
         location:locations(*)
       `)
-      .eq('approver_id', user.id)
+      .eq('approver_id', userId)
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
   )
@@ -82,9 +83,9 @@ export async function getLocationAssociationRequest(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createLocationAssociationRequest(requestData) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return { data: null, error: new Error('Not authenticated') }
+  const { userId, error } = await getAuthenticatedUserId()
+  if (error) {
+    return { data: null, error }
   }
 
   return executeQuery(
@@ -92,7 +93,7 @@ export async function createLocationAssociationRequest(requestData) {
       .from('location_association_requests')
       .insert({
         ...requestData,
-        requester_id: user.id,
+        requester_id: userId,
         status: 'pending'
       })
       .select()
