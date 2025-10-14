@@ -15,8 +15,8 @@ VitePWA({
         '/AppImages/ios/180.png'
       ],
       manifest: {
-        name: 'Philippine PWA App',
-        short_name: 'PWA App',
+        name: 'MyGGV',
+        short_name: 'MyGGV',
         description: 'Non-professional PWA for Philippine audience',
         theme_color: '#ffffff',
         background_color: '#ffffff',

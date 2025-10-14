@@ -12,7 +12,7 @@
 .home-content h1 {
   color: var(--color-text-primary);
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .home-subtitle {
@@ -56,8 +56,24 @@
   flex-wrap: wrap;
 }
 
-@media (min-width: 768px) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .home-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .home-content h1 {
+    font-size: 2.25rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
   .home-features {
     grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .home-content h1 {
+    font-size: 2.5rem;
   }
 }

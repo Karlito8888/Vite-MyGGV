@@ -12,7 +12,7 @@ function Onboarding() {
     <div className="onboarding-page">
       <div className="container">
         <div className="onboarding-content">
-          <h1>Welcome to Your PWA App!</h1>
+          <h2>Welcome to Your PWA App!</h2>
           <p className="onboarding-subtitle">
             Let's get you set up with a quick tour
           </p>

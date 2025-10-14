@@ -114,3 +114,33 @@ find_tasks(filter_by="project", filter_value="proj-123")
 - Higher `task_order` = higher priority (0-100)
 - Tasks should be 30 min - 4 hours of work
 - **NEVER use `npm run dev` under any circumstances**
+
+# Project-Specific Rules
+
+## Tech Stack & Architecture
+- **Vite.js + React with JSX (NO TypeScript)**
+- **Supabase** (database, auth, RLS policies)
+- **Standard CSS only** (NO Tailwind CSS)
+- **Vite PWA plugin** for PWA functionality
+- **Zustand** only if necessary for state management
+
+## Code Conventions
+- Keep it simple - no over-engineering
+- Mobile-first responsive design
+- Minimal dependencies
+- Simple CRUD using Supabase SDK
+- Respect Supabase RLS policies
+
+## Architecture Patterns
+- Protected route system: Login → Onboarding → Home (protected)
+- Fixed layout: Header, Main (Outlet), Footer
+- Only Main content changes with navigation
+- Non-professional project for Philippine audience
+
+## Critical Constraints
+- **NO TypeScript under any circumstances**
+- **NO Tailwind CSS**
+- No complex tech stack
+- No over-engineering
+- Must use Vite.js optimization tools intelligently
+- **NO tests required** for this non-professional project

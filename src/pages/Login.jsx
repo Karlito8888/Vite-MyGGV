@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
-import { useAuth } from '../utils/AuthContext'
+import { useAuth } from '../utils/useAuth'
 import '../styles/Login.css'
 
 function Login() {
@@ -39,7 +39,7 @@ function Login() {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page df">
       <div className="container">
         <div className="login-card">
           <h2>Sign In</h2>

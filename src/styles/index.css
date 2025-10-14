@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Madimi+One&display=swap');
+
 /* Theme Variables */
 :root.light {
   --color-primary: #50aa61;
@@ -44,9 +46,24 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 14px;
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root,
+.app-layout {
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  height: 100svh;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -56,70 +73,79 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 60px 1fr 60px;
+  grid-template-areas:
+    "head"
+    "main"
+    "foot";
+}
+
+.main-content {
+  grid-area: main;
+  height: 100%;
 }
 
 /* Mobile-first responsive design */
 .container {
   width: 100%;
+  height: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Mobile-specific optimizations */
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
-  
-  .btn {
-    padding: 1rem;
-    font-size: 1rem;
-    min-height: 48px; /* Touch target size */
-  }
-  
-  .form-input {
-    padding: 1rem;
-    font-size: 16px; /* Prevents zoom on iOS */
-    min-height: 48px;
-  }
+/* Header and Footer containers - Mobile First */
+.header .container,
+.footer .container {
+  max-width: none;
+  width: 100%;
+  padding: 0 0.5rem;
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
-  html {
-    font-size: 15px;
-  }
+/* Ensure header and footer take full width - Mobile First base styles */
+.header,
+.footer {
+  width: 100%;
 }
 
-@media (min-width: 768px) {
-  .container {
-    padding: 0 2rem;
-  }
-  
-  html {
-    font-size: 16px;
+/* Small tablets and larger phones (481px+) */
+@media (min-width: 481px) {
+  .header .container,
+  .footer .container {
+    padding: 0 0.75rem;
   }
 }
 
-/* Touch-friendly interactions */
-@media (hover: none) and (pointer: coarse) {
-  .btn:hover {
-    transform: scale(1.02);
-  }
-  
-  .btn:active {
-    transform: scale(0.98);
+/* Tablets and larger (769px+) */
+@media (min-width: 769px) {
+  .header .container,
+  .footer .container {
+    padding: 0 1rem;
   }
 }
 
-/* Button styles */
+.df {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wh100 {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mobile-specific optimizations - Base styles for 320px+ */
+
 .btn {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem;
   font-size: 1rem;
   font-weight: 500;
   text-align: center;
@@ -128,6 +154,7 @@ body {
   border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 48px; /* Touch target size */
 }
 
 .btn-primary {
@@ -148,7 +175,6 @@ body {
   background-color: var(--color-button-secondary-hover);
 }
 
-/* Form styles */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -161,13 +187,14 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   border: 1px solid var(--color-input-border);
   border-radius: 0.375rem;
-  font-size: 1rem;
+  font-size: 16px; /* Prevents zoom on iOS */
   background-color: var(--color-background);
   color: var(--color-text-primary);
   transition: border-color 0.2s ease, background-color 0.2s ease;
+  min-height: 48px;
 }
 
 .form-input:focus {
@@ -176,19 +203,72 @@ body {
   box-shadow: 0 0 0 3px rgba(80, 170, 97, 0.1);
 }
 
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover {
+    transform: scale(1.02);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  html {
+    font-size: 15px;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .container {
+    padding: 0 2rem;
+  }
+
+  html {
+    font-size: 16px;
+  }
+}
+
 /* Utility classes */
 .text-center {
   text-align: center;
 }
 
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 0.75rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
+.mt-1 {
+  margin-top: 0.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-3 {
+  margin-top: 0.75rem;
+}
+.mt-4 {
+  margin-top: 1rem;
+}
+.mt-6 {
+  margin-top: 1.5rem;
+}
 
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 0.75rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}

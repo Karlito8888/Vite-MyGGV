@@ -1,7 +1,8 @@
+/* Mobile-first base styles */
 .profile-container {
   max-width: 800px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .profile-container h1 {
@@ -29,16 +30,16 @@
 
 .profile-field {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   margin-bottom: 1rem;
-  gap: 1rem;
+  gap: 0.25rem;
 }
 
 .profile-field label {
   font-weight: 600;
   color: var(--color-text-secondary);
-  min-width: 180px;
-  flex-shrink: 0;
+  min-width: auto;
 }
 
 .profile-field span,
@@ -118,18 +119,30 @@
   font-weight: 500;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
   .profile-container {
-    padding: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .profile-field {
+    gap: 0.5rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .profile-container {
+    padding: 2rem;
   }
 
   .profile-field {
-    flex-direction: column;
-    gap: 0.25rem;
+    flex-direction: row;
+    gap: 1rem;
   }
 
   .profile-field label {
-    min-width: auto;
+    min-width: 180px;
+    flex-shrink: 0;
   }
 }

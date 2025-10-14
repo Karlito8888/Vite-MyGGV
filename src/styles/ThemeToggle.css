@@ -1,12 +1,8 @@
 .theme-toggle {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: calc(60px + 0.75rem);
+  right: 0.75rem;
   z-index: 1000;
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
   
   width: 48px;
   height: 48px;
@@ -45,11 +41,19 @@
   transform: rotate(15deg);
 }
 
-/* Mobile optimizations */
-@media (max-width: 768px) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
   .theme-toggle {
-    top: 0.75rem;
-    right: 0.75rem;
+    top: 0.875rem;
+    right: 0.875rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .theme-toggle {
+    top: 1rem;
+    right: 1rem;
   }
 }
 

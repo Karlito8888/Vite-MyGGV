@@ -22,16 +22,17 @@
       "temperature": 0.2,
       "permission": {
         "edit": "allow",
-        "bash": "allow",
-        "webfetch": "allow"
+        "webfetch": "allow",
+        "bash": {
+          "git push": "ask",
+          "git status": "allow",
+          "git diff": "allow",
+          "npm run build": "allow",
+          "npm run dev": "deny",
+          "ls": "allow",
+          "pwd": "allow"
+        }
       }
-    }
-  },
-  "permission": {
-    "edit": "allow",
-    "webfetch": "allow",
-    "bash": {
-      "npm run dev": "deny"
     }
   },
   "mcp": {

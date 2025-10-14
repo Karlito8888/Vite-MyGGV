@@ -29,7 +29,7 @@ function ThemeToggle() {
 
   return (
     <button
-      className="theme-toggle"
+      className="theme-toggle df"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}

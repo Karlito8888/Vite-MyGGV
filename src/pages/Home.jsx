@@ -1,4 +1,4 @@
-import { useAuth } from '../utils/AuthContext'
+import { useAuth } from '../utils/useAuth'
 import '../styles/Home.css'
 
 function Home() {
@@ -12,7 +12,7 @@ function Home() {
     <div className="home-page">
       <div className="container">
         <div className="home-content">
-          <h1>Welcome Home!</h1>
+          <h2>Welcome Home!</h2>
           <p className="home-subtitle">
             Hello {user?.email}! You're successfully logged in to your PWA app.
           </p>

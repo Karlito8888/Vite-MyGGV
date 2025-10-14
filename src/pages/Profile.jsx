@@ -67,7 +67,7 @@ function Profile() {
   return (
     <div className="container">
       <div className="profile-container">
-        <h1>My Profile</h1>
+        <h2>My Profile</h2>
         
         <div className="profile-section">
           <h2>Personal Information</h2>
