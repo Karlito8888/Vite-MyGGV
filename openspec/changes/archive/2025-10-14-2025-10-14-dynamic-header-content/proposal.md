@@ -5,6 +5,20 @@ Modify the header component to display different content based on user authentic
 - **No user**: Show current logo and h1 (MyGGV branding)
 - **Authenticated user**: Display messages from `messages_header` table in an infinite loop carousel
 
+## Why
+The current static header doesn't leverage the existing `messages_header` table content that contains user-generated messages. By showing these messages to authenticated users in a carousel format, we can:
+- Increase user engagement with community content
+- Make better use of existing data infrastructure
+- Provide a more dynamic and personalized experience
+- Encourage users to participate in message creation
+
+## What Changes
+- **Header.jsx**: Add conditional rendering based on auth state
+- **Header.css**: Add carousel animation styles and responsive design
+- **Authentication integration**: Use `useAuth` hook to detect user state
+- **Data fetching**: Integrate `messagesHeaderService.listActiveHeaderMessages()`
+- **New component**: Create `MessageCarousel` component for infinite loop display
+
 ## Problem Statement
 Currently, the header always displays static branding content regardless of user authentication state. The application has a `messages_header` table with user-generated messages that should be showcased to authenticated users in an engaging carousel format.
 

@@ -1,13 +1,20 @@
-import { useState, useEffect, useContext } from 'react'
-import { AuthContext } from '../utils/AuthContext'
+import { useState, useEffect } from 'react'
+import { useAuth } from '../utils/useAuth'
+import { usePresence } from '../utils/PresenceContext'
 import { getCurrentUserProfile } from '../services/profilesService'
+import Avatar from '../components/Avatar'
 import '../styles/Profile.css'
 
 function Profile() {
-  const { user } = useContext(AuthContext)
+  const { user } = useAuth()
+  const { isOnline } = usePresence()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+
+
+
 
   useEffect(() => {
     async function loadProfile() {
@@ -182,14 +189,22 @@ function Profile() {
           )}
         </div>
 
-        {profile.avatar_url && (
-          <div className="profile-section">
-            <h2>Avatar</h2>
-            <div className="profile-avatar">
-              <img src={profile.avatar_url} alt="Profile avatar" />
-            </div>
+        <div className="profile-section">
+          <h2>Avatar</h2>
+          <div className="profile-avatar">
+            <Avatar 
+              src={profile.avatar_url}
+              alt="Profile avatar"
+              size="large"
+              fallback={profile.full_name || profile.username || 'User'}
+              isOnline={isOnline}
+            />
+            
+
+            
+
           </div>
-        )}
+        </div>
 
         <div className="profile-section">
           <h2>Coins</h2>

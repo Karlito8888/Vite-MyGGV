@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import { getCurrentUserWithClaims } from "./authHelpers";
+import { PresenceProvider } from "./PresenceContext";
 
 const AuthContext = createContext();
 
@@ -99,5 +100,11 @@ export function AuthProvider({ children }) {
     loading,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <PresenceProvider>
+        {children}
+      </PresenceProvider>
+    </AuthContext.Provider>
+  );
 }
