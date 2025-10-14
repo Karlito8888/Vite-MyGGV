@@ -17,9 +17,13 @@
   opacity: 0.8;
   
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle.scrolled {
+  top: 0.1rem;
 }
 
 .theme-toggle:hover {
@@ -48,6 +52,10 @@
     top: 0.875rem;
     right: 0.875rem;
   }
+  
+  .theme-toggle.scrolled {
+    top: 0.875rem;
+  }
 }
 
 /* Desktop enhancements (769px+) */
@@ -55,6 +63,10 @@
   .theme-toggle {
     top: 1rem;
     right: 1rem;
+  }
+  
+  .theme-toggle.scrolled {
+    top: 1rem;
   }
 }
 
