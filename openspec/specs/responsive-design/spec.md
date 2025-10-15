@@ -4,33 +4,31 @@
 Establish mobile-first responsive design standards across all CSS files to ensure optimal user experience on mobile devices, particularly for the Philippine audience where mobile usage is predominant.
 ## Requirements
 ### Requirement: Mobile-First Base Styles
-All CSS base styles MUST target mobile devices first without requiring media queries for mobile display.
-#### Scenario:
-- WHEN viewing any page on a mobile device (320px+)
-- THEN all base styles SHALL be optimized for mobile
-- AND no media queries SHALL be required for mobile display
+All CSS base styles MUST target mobile devices first without requiring media queries for mobile display, using fixed styles across all viewports.
 
-### Requirement: Progressive Enhancement Media Queries
-All responsive enhancements MUST use min-width media queries for progressive enhancement.
-#### Scenario:
-- WHEN viewing on larger screens (481px+)
-- THEN styles SHALL enhance progressively using `min-width` queries
-- AND no `max-width` queries SHALL be used
+#### Scenario: Footer displays consistently
+- **WHEN** footer is rendered on any device
+- **THEN** footer maintains fixed 60px height and consistent layout
+- **AND** no media queries SHALL be used for responsive adjustments
 
-### Requirement: Consistent Breakpoint System
-Standardized breakpoint system MUST be used across all CSS files.
-#### Scenario:
-- WHEN implementing responsive design
-- THEN developers SHALL use standardized breakpoints: 481px, 769px, 1025px
-- AND MUST apply consistently across all CSS files
+#### Scenario: Header displays consistently  
+- **WHEN** header is rendered on any device
+- **THEN** header maintains fixed 60px height and consistent layout
+- **AND** carousel transitions SHALL work consistently across all viewports
+
+#### Scenario: Buttons maintain touch targets
+- **WHEN** buttons are displayed on any device
+- **THEN** buttons maintain 48x48px minimum touch target size
+- **AND** styling SHALL remain consistent across all viewports
 
 ### Requirement: Touch-Friendly Interactions
-All interactive elements MUST be optimized for touch interactions.
-#### Scenario:
-- WHEN using touch devices
-- THEN all interactive elements SHALL have minimum 48px touch targets
-- AND proper spacing MUST prevent accidental touches
-- AND hover states SHALL work appropriately for touch
+All interactive elements MUST be optimized for touch interactions with consistent sizing across all devices.
+
+#### Scenario: Consistent button interactions
+- **WHEN** using interactive elements on any device
+- **THEN** all buttons SHALL have minimum 48px touch targets
+- **AND** hover/active states SHALL work consistently
+- **AND** no responsive sizing SHALL be applied
 
 ### Requirement: Mobile Performance Optimization
 CSS MUST be optimized for mobile performance and user experience.

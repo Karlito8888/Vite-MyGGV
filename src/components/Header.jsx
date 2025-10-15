@@ -117,34 +117,36 @@ function Header() {
     <header className="header">
       <div className="container">
         <div className="header-content df wh100">
-          {user ? (
-            loading ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-loading">Loading messages...</div>
-              </div>
-            ) : error || subscriptionError ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-error">
-                  {subscriptionError || 'Unable to load messages'}
+          <div className="header-main">
+            {user ? (
+              loading ? (
+                <div className="header-carousel">
+                  <div className="carousel-message carousel-loading">Loading messages...</div>
                 </div>
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-empty">Welcome to MyGGV!</div>
-              </div>
+              ) : error || subscriptionError ? (
+                <div className="header-carousel">
+                  <div className="carousel-message carousel-error">
+                    {subscriptionError || 'Unable to load messages'}
+                  </div>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="header-carousel">
+                  <div className="carousel-message carousel-empty">Welcome to MyGGV!</div>
+                </div>
+              ) : (
+                <div className="header-carousel">
+                  <div className={`carousel-message carousel-active ${transitionState}`}>
+                    {currentMessage.message}
+                  </div>
+                </div>
+              )
             ) : (
-              <div className="header-carousel">
-                <div className={`carousel-message carousel-active ${transitionState}`}>
-                  {currentMessage.message}
-                </div>
-              </div>
-            )
-          ) : (
-            <>
-              <img src={ggvLogo} alt="MyGGV" className="header-logo" />
-              <h1 className="sr-only">MyGGV</h1>
-            </>
-          )}
+              <>
+                <img src={ggvLogo} alt="MyGGV" className="header-logo" />
+                <h1 className="sr-only">MyGGV</h1>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

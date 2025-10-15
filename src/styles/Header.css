@@ -2,6 +2,10 @@
 .header {
   grid-area: head;
   height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   padding: 0.1rem 0;
@@ -10,9 +14,17 @@
 
 .header-content {
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   text-align: left;
+  gap: 1rem;
+}
+
+.header-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header-logo {
@@ -103,19 +115,9 @@
   }
 }
 
-/* Improve animation performance */
-@media (prefers-reduced-motion: reduce) {
-  .carousel-message {
-    animation: none;
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-  
-  .carousel-message.fading-out,
-  .carousel-message.fading-in {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
-}
+
+
+
+
+
+

@@ -9,6 +9,7 @@
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #4b5563;
   --color-border: #e5e7eb;
+  --color-border-button: #e5e7eb;
   --color-button-primary: #50aa61;
   --color-button-primary-hover: #459955;
   --color-button-secondary: #6b7280;
@@ -18,6 +19,10 @@
   --color-error-bg: #fef2f2;
   --color-error-border: #fecaca;
   --color-error-text: #dc2626;
+  /* Sidebar variables */
+  --sidebar-width: 280px;
+  --sidebar-z-index: 1001;
+  --overlay-z-index: 1000;
 }
 
 :root.dark {
@@ -28,6 +33,7 @@
   --color-text-primary: #f5f5f5;
   --color-text-secondary: #9ca3af;
   --color-border: #404040;
+  --color-border-button: #50aa61;
   --color-button-primary: #5bc46d;
   --color-button-primary-hover: #6dd17d;
   --color-button-secondary: #4b5563;
@@ -37,6 +43,10 @@
   --color-error-bg: #3d1a1a;
   --color-error-border: #5c2626;
   --color-error-text: #f87171;
+  /* Sidebar variables */
+  --sidebar-width: 280px;
+  --sidebar-z-index: 1001;
+  --overlay-z-index: 1000;
 }
 
 /* Reset and base styles */
@@ -44,6 +54,19 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Page container styles */
+.page-container {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.page-container h2 {
+  color: var(--color-text-primary);
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 html {
@@ -86,7 +109,10 @@ body {
 
 .main-content {
   grid-area: main;
-  height: 100%;
+  height: calc(100% - 120px);
+  height: calc(100vh - 120px);
+  height: calc(100dvh - 120px);
+  height: calc(100svh - 120px);
 }
 
 /* Mobile-first responsive design */
@@ -276,4 +302,30 @@ h2 {
 }
 .mb-6 {
   margin-bottom: 1.5rem;
+}
+
+
+
+/* Body scroll lock when sidebar is open */
+body.sidebar-open {
+  overflow: hidden;
+}
+
+/* Z-index layering for proper stacking */
+.z-overlay {
+  z-index: var(--overlay-z-index);
+}
+
+.z-sidebar {
+  z-index: var(--sidebar-z-index);
+}
+
+/* Additional hover and active states for buttons */
+.color-hover {
+  background-color: var(--color-surface);
+}
+
+.color-active {
+  background-color: var(--color-primary);
+  color: white;
 }

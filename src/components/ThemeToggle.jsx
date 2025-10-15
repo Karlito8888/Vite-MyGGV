@@ -1,31 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import '../styles/ThemeToggle.css'
 
 function ThemeToggle() {
   const [theme, setTheme] = useState(() => {
-    // Get initial theme from localStorage or default to light
-    return localStorage.getItem('theme') || 'light'
+    // Get initial theme from localStorage or default to dark
+    return localStorage.getItem('theme') || 'dark'
   })
-  
-  const [isScrolled, setIsScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY
-      setIsScrolled(scrollY > 60)
-    }
-
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    // Initial check
-    handleScroll()
-
-    // Cleanup event listener on unmount
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
@@ -49,7 +29,7 @@ function ThemeToggle() {
 
   return (
     <button
-      className={`theme-toggle df ${isScrolled ? 'scrolled' : ''}`}
+      className="theme-toggle df"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}

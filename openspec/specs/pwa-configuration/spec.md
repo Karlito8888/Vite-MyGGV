@@ -4,23 +4,25 @@
 TBD - created by archiving change integrate-pwa-appimages. Update Purpose after archive.
 ## Requirements
 ### Requirement: PWA Manifest Icon Configuration
+The system SHALL provide comprehensive icon support for PWA installation and browser display while optimizing initial page load performance.
 
-The PWA configuration SHALL reference all available AppImages icons using Vite's public directory conventions with root absolute paths.
+#### Scenario: HTML favicon optimization
+- **WHEN** a user loads the application
+- **THEN** the system SHALL display project-specific favicon from AppImages directory
+- **AND** SHALL preload critical icons to improve perceived performance
+- **AND** SHALL maintain compatibility with Vite PWA plugin configuration
 
-#### Scenario: Android icons properly configured
-- **WHEN** the PWA is installed on an Android device
-- **THEN** the manifest SHALL include Android launcher icons from `/AppImages/android/` directory
-- **AND** icons SHALL be available in sizes: 48x48, 72x72, 96x96, 144x144, 192x192, 512x512
+#### Scenario: Icon hierarchy for different platforms
+- **WHEN** the application is accessed on different platforms
+- **THEN** the system SHALL provide appropriate icon sizes and formats
+- **AND** SHALL ensure proper fallback chain for browser compatibility
+- **AND** SHALL not conflict with PWA manifest icon configuration
 
-#### Scenario: iOS icons properly configured
-- **WHEN** the PWA is accessed on an iOS device
-- **THEN** the manifest SHALL include iOS icons from `/AppImages/ios/` directory
-- **AND** icons SHALL cover all required iOS sizes from 16x16 to 1024x1024
-
-#### Scenario: Windows 11 icons properly configured
-- **WHEN** the PWA is installed on Windows 11
-- **THEN** the manifest SHALL include Windows 11 tile and logo icons from `/AppImages/windows11/` directory
-- **AND** icons SHALL include SmallTile, Square150x150Logo, Wide310x150Logo, LargeTile, Square44x44Logo, and StoreLogo variants
+#### Scenario: Performance optimization
+- **WHEN** icons are loaded during initial page load
+- **THEN** critical icons SHALL be preloaded to reduce rendering delay
+- **AND** SHALL use optimal file formats for each use case
+- **AND** SHALL maintain existing PWA caching strategies
 
 ### Requirement: Public Asset Path Convention
 

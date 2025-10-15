@@ -5,42 +5,36 @@ TBD - created by archiving change add-theme-toggle. Update Purpose after archive
 ## Requirements
 ### Requirement: Theme Toggle Component
 
-The application SHALL provide a theme toggle component that adapts its position based on scroll behavior for improved accessibility.
+The application SHALL provide a theme toggle component integrated within the footer layout with proper positioning and styling.
 
-#### Scenario: Toggle button renders in correct initial position
+#### Scenario: Theme toggle renders correctly in footer
 - **WHEN** user navigates to any protected route (Home, Profile)
-- **THEN** a theme toggle button SHALL be visible
-- **AND** the button SHALL be positioned at `top: calc(60px + 0.1rem)` when page is at top
+- **THEN** a theme toggle button SHALL be visible in the footer
+- **AND** the button SHALL be positioned within the footer flexbox layout
 - **AND** the button SHALL display a sun icon when dark theme is active
 - **AND** the button SHALL display a moon icon when light theme is active
 
-#### Scenario: Toggle button follows scroll
-- **WHEN** user scrolls down more than 60px from the top of the page
-- **THEN** the theme toggle button SHALL move to `top: 0.1rem`
-- **AND** the position change SHALL be animated smoothly
-- **AND** the button SHALL remain fixed to the viewport
-
-#### Scenario: Toggle button returns to original position
-- **WHEN** user scrolls back up to within 60px of the top of the page
-- **THEN** the theme toggle button SHALL return to `top: calc(60px + 0.1rem)`
-- **AND** the position change SHALL be animated smoothly
-- **AND** the button SHALL maintain its right-side positioning
-
-#### Scenario: User toggles from light to dark theme
-- **WHEN** user clicks the theme toggle button while light theme is active
+#### Scenario: User toggles theme from footer position
+- **WHEN** user clicks the theme toggle button in the footer while light theme is active
 - **THEN** the application SHALL switch to dark theme
 - **AND** the theme preference SHALL be saved to localStorage as 'dark'
 - **AND** all UI elements SHALL update to use dark theme colors
 - **AND** the toggle icon SHALL change from moon to sun
-- **AND** the scroll-responsive positioning SHALL be maintained
+- **AND** the button SHALL maintain proper footer positioning
 
-#### Scenario: User toggles from dark to light theme
-- **WHEN** user clicks the theme toggle button while dark theme is active
-- **THEN** the application SHALL switch to light theme
-- **AND** the theme preference SHALL be saved to localStorage as 'light'
-- **AND** all UI elements SHALL update to use light theme colors
-- **AND** the toggle icon SHALL change from sun to moon
-- **AND** the scroll-responsive positioning SHALL be maintained
+#### Scenario: Theme toggle styling coordination
+- **WHEN** the theme toggle is rendered in the footer
+- **THEN** it SHALL use CSS custom properties from index.css
+- **AND** ThemeToggle.css SHALL properly integrate with theme variables
+- **AND** the button SHALL maintain 48x48px minimum touch target size
+- **AND** transitions SHALL be smooth and responsive
+
+#### Scenario: Mobile-first footer theme toggle
+- **WHEN** rendered on mobile devices
+- **THEN** the theme toggle SHALL be easily accessible in footer
+- **AND** SHALL not interfere with hamburger menu functionality
+- **AND** SHALL maintain proper spacing and alignment
+- **AND** SHALL be easily tappable with thumb
 
 ### Requirement: Theme Persistence
 
@@ -53,12 +47,12 @@ The application SHALL persist the user's theme preference across sessions using 
 
 #### Scenario: Default theme on first visit
 - **WHEN** user visits the application for the first time
-- **THEN** the application SHALL default to light theme
-- **AND** localStorage SHALL be initialized with 'light' value
+- **THEN** the application SHALL default to dark theme
+- **AND** localStorage SHALL be initialized with 'dark' value
 
 #### Scenario: localStorage unavailable fallback
 - **WHEN** localStorage is unavailable (private browsing, disabled)
-- **THEN** the application SHALL default to light theme
+- **THEN** the application SHALL default to dark theme
 - **AND** theme changes SHALL still work within the current session
 - **AND** no errors SHALL be thrown
 
@@ -76,6 +70,7 @@ The application SHALL use CSS custom properties (variables) for all theme-depend
   - `--color-text-primary`: #1a1a1a
   - `--color-text-secondary`: #4b5563
   - `--color-border`: #e5e7eb
+  - `--color-border-button`: #e5e7eb (gray for light theme buttons)
 
 #### Scenario: Dark theme color variables defined
 - **WHEN** dark theme is active
@@ -87,6 +82,7 @@ The application SHALL use CSS custom properties (variables) for all theme-depend
   - `--color-text-primary`: #f5f5f5
   - `--color-text-secondary`: #9ca3af
   - `--color-border`: #404040
+  - `--color-border-button`: #50aa61 (green for dark theme buttons)
 
 #### Scenario: All CSS files use theme variables
 - **WHEN** any CSS file defines colors
@@ -154,31 +150,40 @@ The theme toggle button SHALL be optimized for mobile touch interactions.
 - **AND** the transition SHALL not cause layout shift
 - **AND** the transition SHALL feel responsive and immediate
 
-### Requirement: Scroll-Responsive Positioning
+### Requirement: Footer Layout Integration
+The theme toggle component SHALL be properly integrated within the footer flexbox layout with consistent styling alongside the hamburger button.
 
-The theme toggle button SHALL dynamically adjust its position based on scroll position to maintain accessibility.
+#### Scenario: Consistent footer button styling
+- **WHEN** HamburgerButton and ThemeToggle are displayed together in footer
+- **THEN** both buttons SHALL have identical size, border, background, hover, and active states
+- **AND** both SHALL maintain 48x48px touch targets
+- **AND** visual consistency SHALL be preserved across themes
 
-#### Scenario: Scroll position detection
-- **WHEN** the user scrolls the page
-- **THEN** the component SHALL monitor scroll position in real-time
-- **AND** the component SHALL use a 60px threshold for position changes
-- **AND** the scroll detection SHALL be performant with proper event handling
+#### Scenario: Footer flexbox layout with consistent buttons
+- **WHEN** the footer renders with both buttons
+- **THEN** the hamburger button SHALL maintain left positioning
+- **AND** the copyright text SHALL maintain center positioning  
+- **AND** the theme toggle SHALL maintain right positioning
+- **AND** both buttons SHALL have identical visual styling
 
-#### Scenario: Smooth position transitions
-- **WHEN** the button position changes due to scrolling
-- **THEN** the transition SHALL be smooth and visually appealing
-- **AND** the transition duration SHALL be approximately 200ms
-- **AND** the transition SHALL not interfere with user interactions
+#### Scenario: Button interactions remain consistent
+- **WHEN** user interacts with either footer button
+- **THEN** hover, active, and focus states SHALL behave identically
+- **AND** theme switching functionality SHALL work as expected
+- **AND** menu toggle functionality SHALL work as expected
 
-#### Scenario: Performance optimization
-- **WHEN** implementing scroll event listeners
-- **THEN** the component SHALL use proper event listener cleanup on unmount
-- **AND** the scroll handling SHALL be optimized to prevent performance issues
-- **AND** the component SHALL handle rapid scrolling gracefully
+### Requirement: Conditional Button Border Colors
+Footer buttons SHALL use theme-specific border colors for enhanced visual distinction.
 
-#### Scenario: Responsive positioning across devices
-- **WHEN** viewed on different screen sizes
-- **THEN** the scroll-responsive behavior SHALL work consistently
-- **AND** the 60px threshold SHALL be appropriate for mobile and desktop
-- **AND** the button SHALL remain accessible on all device types
+#### Scenario: Dark mode button borders
+- **WHEN** dark theme is active
+- **THEN** HamburgerButton and ThemeToggle borders SHALL be green (#50aa61)
+- **AND** borders SHALL provide good contrast against dark background
+- **AND** hover states SHALL transition to primary color as expected
+
+#### Scenario: Light mode button borders
+- **WHEN** light theme is active
+- **THEN** HamburgerButton and ThemeToggle borders SHALL be gray (#e5e7eb)
+- **AND** borders SHALL provide subtle distinction in light theme
+- **AND** hover states SHALL transition to primary color as expected
 
