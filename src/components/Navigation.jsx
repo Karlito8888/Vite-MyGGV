@@ -9,7 +9,8 @@ import {
   CloudIcon,
   ShoppingBagIcon,
   MapPinIcon,
-  UserIcon
+  UserIcon,
+  BellIcon
 } from '@heroicons/react/24/outline'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import '../styles/Navigation.css'
@@ -155,6 +156,13 @@ function Navigation() {
             <MapPinIcon className="nav-icon" />
             <span>GPS</span>
           </a>
+          <Link 
+            to="/location-requests" 
+            className={`nav-link ${location.pathname === '/location-requests' ? 'active' : ''}`}
+          >
+            <BellIcon className="nav-icon" />
+            <span>Requests</span>
+          </Link>
           <Link 
             to="/profile" 
             className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}

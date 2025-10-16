@@ -38,7 +38,7 @@ export default [
         { allowConstantExport: true },
       ],
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-console': 'warn',
+      'no-console': 'off',
       'prefer-const': 'error',
       'no-var': 'error'
     },

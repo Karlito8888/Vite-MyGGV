@@ -19,13 +19,13 @@ export function AuthProvider({ children }) {
       const { user, error, method } = await getCurrentUserWithClaims(true);
 
       if (error) {
-        // eslint-disable-next-line no-console
+         
         console.error(`Authentication failed using ${method}:`, error.message);
         setUser(null);
       } else {
         setUser(user);
         if (method === "getUser") {
-          // eslint-disable-next-line no-console
+           
           console.warn(
             "Using fallback authentication method - consider updating Supabase client"
           );
@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
         const { user, error, method } = await getCurrentUserWithClaims(true);
 
         if (error || !user) {
-          // eslint-disable-next-line no-console
+           
           console.error(
             `Auth verification failed using ${method}:`,
             error?.message || "No user found"
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
         } else {
           setUser(user);
           if (method === "getUser") {
-            // eslint-disable-next-line no-console
+             
             console.warn(
               "Using fallback authentication method during auth state change"
             );

@@ -1,8 +1,10 @@
 import { useAuth } from '../utils/useAuth'
+import { useAutoRedirect } from '../utils/useAutoRedirect'
 import '../styles/Home.css'
 
 function Home() {
   const { user, logout } = useAuth()
+  useAutoRedirect()
 
   const handleLogout = () => {
     logout()

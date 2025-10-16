@@ -38,7 +38,7 @@ export async function getCurrentUserWithClaims(useFallback = true) {
     
     if (error) {
       if (useFallback) {
-        // eslint-disable-next-line no-console
+         
         console.warn('getClaims() failed, falling back to getUser():', error.message)
         const { data: { user }, error: userError } = await supabase.auth.getUser()
         return { user, error: userError, method: 'getUser' }
@@ -50,7 +50,7 @@ export async function getCurrentUserWithClaims(useFallback = true) {
     return { user, error: null, method: 'getClaims' }
   } catch (err) {
     if (useFallback) {
-      // eslint-disable-next-line no-console
+       
       console.warn('getClaims() threw error, falling back to getUser():', err.message)
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser()

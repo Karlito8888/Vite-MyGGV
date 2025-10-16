@@ -1,0 +1,200 @@
+import { useState, useRef, useCallback, useEffect } from 'react'
+import ReactCrop from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
+
+const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
+  return {
+    x: (mediaWidth - Math.min(mediaWidth, mediaHeight)) / 2,
+    y: (mediaHeight - Math.min(mediaWidth, mediaHeight)) / 2,
+    width: Math.min(mediaWidth, mediaHeight),
+    height: Math.min(mediaWidth, mediaHeight),
+    unit: 'px',
+    aspect
+  }
+}
+
+const getCroppedPngImage = async (imageSrc, scaleFactor, pixelCrop, maxImageSize) => {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+
+  if (!ctx) {
+    throw new Error('Context is null, this should never happen.')
+  }
+
+  const scaleX = imageSrc.naturalWidth / imageSrc.width
+  const scaleY = imageSrc.naturalHeight / imageSrc.height
+
+  ctx.imageSmoothingEnabled = false
+  canvas.width = pixelCrop.width
+  canvas.height = pixelCrop.height
+
+  ctx.drawImage(
+    imageSrc,
+    pixelCrop.x * scaleX,
+    pixelCrop.y * scaleY,
+    pixelCrop.width * scaleX,
+    pixelCrop.height * scaleY,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  )
+
+  const croppedImageUrl = canvas.toDataURL('image/png')
+  const response = await fetch(croppedImageUrl)
+  const blob = await response.blob()
+
+  if (blob.size > maxImageSize) {
+    return await getCroppedPngImage(imageSrc, scaleFactor * 0.9, pixelCrop, maxImageSize)
+  }
+
+  return croppedImageUrl
+}
+
+function ImageCropper({ imageFile, onCrop, onCancel }) {
+  const imgRef = useRef(null)
+  const [imgSrc, setImgSrc] = useState('')
+  const [crop, setCrop] = useState()
+  const [completedCrop, setCompletedCrop] = useState(null)
+
+  useEffect(() => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''))
+    reader.readAsDataURL(imageFile)
+  }, [imageFile])
+
+  const onImageLoad = useCallback((e) => {
+    const { width, height } = e.currentTarget
+    const newCrop = centerAspectCrop(width, height, 1)
+    setCrop(newCrop)
+  }, [])
+
+  const applyCrop = async () => {
+    if (!(imgRef.current && completedCrop)) return
+
+    const croppedImage = await getCroppedPngImage(imgRef.current, 1, completedCrop, 1024 * 1024 * 5)
+    onCrop(croppedImage)
+  }
+
+  if (!imgSrc) return null
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '1rem'
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '8px',
+        maxWidth: '600px',
+        width: '100%',
+        maxHeight: '90vh',
+        overflowY: 'auto'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '1rem 1.5rem',
+          borderBottom: '1px solid #e5e7eb'
+        }}>
+          <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#1f2937' }}>
+            Crop Your Avatar
+          </h3>
+          <button 
+            type="button" 
+            onClick={onCancel}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              color: '#6b7280',
+              padding: '0.25rem',
+              width: '2rem',
+              height: '2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '4px'
+            }}
+          >
+            ×
+          </button>
+        </div>
+        
+        <div style={{ padding: '1.5rem' }}>
+          <ReactCrop
+            crop={crop}
+            onChange={setCrop}
+            onComplete={(c) => setCompletedCrop(c)}
+            aspect={1}
+            style={{ '--rc-border-color': '#3b82f6', '--rc-focus-color': '#3b82f6' }}
+          >
+            <img
+              ref={imgRef}
+              alt="crop"
+              src={imgSrc}
+              onLoad={onImageLoad}
+              style={{ maxWidth: '100%' }}
+            />
+          </ReactCrop>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          padding: '1rem 1.5rem 1.5rem',
+          borderTop: '1px solid #e5e7eb'
+        }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            style={{
+              flex: 1,
+              padding: '0.75rem 1rem',
+              borderRadius: '6px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              border: 'none',
+              fontSize: '0.875rem',
+              backgroundColor: '#f3f4f6',
+              color: '#374151'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={applyCrop}
+            disabled={!completedCrop}
+            style={{
+              flex: 1,
+              padding: '0.75rem 1rem',
+              borderRadius: '6px',
+              fontWeight: 500,
+              cursor: completedCrop ? 'pointer' : 'not-allowed',
+              border: 'none',
+              fontSize: '0.875rem',
+              backgroundColor: completedCrop ? '#3b82f6' : '#9ca3af',
+              color: 'white'
+            }}
+          >
+            Crop & Upload
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ImageCropper

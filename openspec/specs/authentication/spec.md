@@ -18,12 +18,25 @@ All components SHALL use the `useAuth` hook for authentication state management 
 - **AND** no components shall use `useContext(AuthContext)`
 
 ### Requirement: User Authentication State
-The system SHALL provide user authentication state management through Supabase authentication.
+The system SHALL provide user authentication state management through Supabase authentication using email/password credentials.
 
-#### Scenario: User login
-- **WHEN** a user provides valid credentials
-- **THEN** the system SHALL authenticate the user
+#### Scenario: User login with email and password
+- **WHEN** a user provides valid email and password
+- **THEN** the system SHALL authenticate the user using signInWithPassword
 - **AND** provide user state to components
+- **AND** redirect to appropriate page based on onboarding status
+
+#### Scenario: User login with invalid credentials
+- **WHEN** a user provides invalid email or password
+- **THEN** the system SHALL display appropriate error message
+- **AND** maintain user on login page
+- **AND** allow user to retry authentication
+
+#### Scenario: New user registration and login
+- **WHEN** a new user provides email and password for the first time
+- **THEN** the system SHALL create a new user account
+- **AND** authenticate the user successfully
+- **AND** redirect to onboarding flow
 
 #### Scenario: User logout
 - **WHEN** a user logs out
@@ -34,6 +47,27 @@ The system SHALL provide user authentication state management through Supabase a
 - **WHEN** an unauthenticated user accesses a protected route
 - **THEN** the system SHALL redirect to login page
 - **AND** preserve the intended destination
+
+### Requirement: Email Password Authentication Form
+The login form SHALL collect both email address and password from users for authentication.
+
+#### Scenario: Form validation
+- **WHEN** user submits login form
+- **THEN** email field SHALL be validated for proper format
+- **AND** password field SHALL be required
+- **AND** appropriate error messages SHALL be displayed for invalid inputs
+
+#### Scenario: Password input security
+- **WHEN** user enters password
+- **THEN** password field SHALL use type="password"
+- **AND** password SHALL be masked during input
+- **AND** password SHALL not be displayed in error messages
+
+#### Scenario: Form submission
+- **WHEN** user submits valid email and password
+- **THEN** form SHALL call signInWithPassword with provided credentials
+- **AND** display loading state during authentication
+- **AND** handle success and error responses appropriately
 
 ### Requirement: Real-time User Presence
 The system SHALL provide real-time user presence tracking using Supabase Presence functionality.
@@ -67,4 +101,31 @@ The authentication context SHALL manage user presence state alongside authentica
 - **THEN** the system SHALL unsubscribe from presence channels
 - **AND** all presence state SHALL be cleaned up
 - **AND** resources SHALL be properly released
+
+### Requirement: OAuth Provider Support
+The system SHALL support multiple OAuth providers for user authentication including Google, Facebook, and Microsoft Azure.
+
+#### Scenario: Azure OAuth authentication
+- **WHEN** a user clicks "Continue with Microsoft" button
+- **THEN** the system SHALL initiate Azure OAuth flow via Supabase
+- **AND** redirect user to Microsoft authentication
+- **AND** handle authentication callback appropriately
+
+#### Scenario: OAuth provider loading states
+- **WHEN** any OAuth authentication is in progress
+- **THEN** the system SHALL display "Connecting..." text
+- **AND** disable the respective provider button
+- **AND** maintain consistent loading behavior across all providers
+
+#### Scenario: OAuth error handling
+- **WHEN** OAuth authentication fails for any provider
+- **THEN** the system SHALL display appropriate error message
+- **AND** clear loading state
+- **AND** allow user to retry authentication
+
+#### Scenario: Visual consistency across providers
+- **WHEN** displaying OAuth provider buttons
+- **THEN** all buttons SHALL follow consistent structure and styling
+- **AND** each provider SHALL use appropriate brand colors and logos
+- **AND** maintain responsive design across all viewport sizes
 

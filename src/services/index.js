@@ -40,3 +40,6 @@ export * from './conversationCleanupNotificationsService'
 // Forum services
 export * from './forumsService'
 export * from './threadsService'
+
+// Onboarding service
+export * from './onboardingService'

@@ -31,6 +31,10 @@
     }
   },
   "mcp": {
+    "shadcn": {
+      "type": "remote",
+      "url": "https://www.shadcn.io/api/mcp"
+    },
     "supabase": {
       "type": "local",
       "command": [
@@ -53,7 +57,7 @@
       "type": "remote",
       "url": "http://localhost:8051/mcp",
       "enabled": true
-    }
+    },
     // "context7": {
     //   "type": "local",
     //   "command": [
@@ -65,12 +69,12 @@
     //   ],
     //   "enabled": true
     // },
-    // "web-search-prime": {
-    //   "type": "remote",
-    //   "url": "https://api.z.ai/api/mcp/web_search_prime/mcp",
-    //   "headers": {
-    //     "Authorization": "a658fdcc71e545d4b99eb83537a7182e.1HMfx0E47HCLUUGd"
-    //   }
-    // }
+    "web-search-prime": {
+      "type": "remote",
+      "url": "https://api.z.ai/api/mcp/web_search_prime/mcp",
+      "headers": {
+        "Authorization": "a658fdcc71e545d4b99eb83537a7182e.1HMfx0E47HCLUUGd"
+      }
+    }
   }
 }

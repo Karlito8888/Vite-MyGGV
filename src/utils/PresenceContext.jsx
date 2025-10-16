@@ -107,13 +107,13 @@ export function PresenceProvider({ children }) {
                 }, 0);
               } catch (error) {
                 // Keep error logging for debugging
-                // eslint-disable-next-line no-console
+                 
                 console.error('Error tracking presence:', error);
               }
             }
           });
       } catch (error) {
-        // eslint-disable-next-line no-console
+         
         console.error('Error initializing presence:', error);
         setTimeout(() => {
           setIsOnline(false);

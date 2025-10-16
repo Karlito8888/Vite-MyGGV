@@ -19,28 +19,28 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.hamburger-btn:hover {
+.hamburger-btn:hover:not(.disabled) {
   background-color: var(--color-surface);
   border-color: var(--color-primary);
   transform: scale(1.05);
 }
 
-.hamburger-btn:active {
+.hamburger-btn:active:not(.disabled) {
   background-color: var(--color-primary);
   color: white;
   transform: scale(0.95);
 }
 
-.hamburger-btn:focus {
+.hamburger-btn:focus:not(.disabled) {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.hamburger-btn:focus:not(:focus-visible) {
+.hamburger-btn:focus:not(:focus-visible):not(.disabled) {
   outline: none;
 }
 
-.hamburger-btn:focus-visible {
+.hamburger-btn:focus-visible:not(.disabled) {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -52,7 +52,7 @@
   transition: transform 0.2s ease;
 }
 
-.hamburger-btn:hover .hamburger-icon {
+.hamburger-btn:hover:not(.disabled) .hamburger-icon {
   transform: scale(1.1);
 }
 
@@ -60,8 +60,15 @@
   transform: rotate(90deg);
 }
 
-.hamburger-btn.open:hover .hamburger-icon {
+.hamburger-btn.open:hover:not(.disabled) .hamburger-icon {
   transform: rotate(90deg) scale(1.1);
+}
+
+/* Disabled state */
+.hamburger-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Animation for menu lines when open (optional enhancement) */

@@ -22,7 +22,7 @@ function Profile() {
       const { data, error } = await getCurrentUserProfile();
 
       if (error) {
-        // eslint-disable-next-line no-console
+         
         console.error("Error loading profile:", error);
         setError(error.message);
       } else {

@@ -23,14 +23,14 @@ export async function executeQuery(queryPromise) {
     const { data, error } = await queryPromise
     
     if (error) {
-      // eslint-disable-next-line no-console
+       
       console.error('Supabase query error:', error)
       return { data: null, error }
     }
     
     return { data, error: null }
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.error('Unexpected error:', err)
     return { data: null, error: err }
   }

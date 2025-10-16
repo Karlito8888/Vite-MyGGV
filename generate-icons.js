@@ -15,7 +15,7 @@ const publicDir = path.join(__dirname, "public");
 async function generatePlaceholderIcon(size, filename) {
   // For now, we'll create a note
   // In production, you'd use a proper image conversion library
-  // eslint-disable-next-line no-console
+   
   console.log(`✓ Generated ${filename} (${size}x${size})`);
 
   // Create a placeholder file that indicates the icon should be generated
@@ -43,7 +43,7 @@ const icons = [
   { size: 180, name: "apple-touch-icon.png" },
 ];
 
-// eslint-disable-next-line no-console
+ 
 console.log("Generating PWA icon placeholders...\n");
 
 icons.forEach((icon) => {
@@ -55,14 +55,14 @@ fs.copyFileSync(
   path.join(publicDir, "icon-base.svg"),
   path.join(publicDir, "favicon.svg")
 );
-// eslint-disable-next-line no-console
+ 
 console.log("✓ Created favicon.svg");
 
-// eslint-disable-next-line no-console
+ 
 console.log("\n✅ Icon placeholders created!");
-// eslint-disable-next-line no-console
+ 
 console.log("\nNote: For production, generate actual PNG files using:");
-// eslint-disable-next-line no-console
+ 
 console.log("  - Online tools: realfavicongenerator.net");
-// eslint-disable-next-line no-console
+ 
 console.log("  - CLI tools: npm install sharp && node generate-icons-sharp.js");

@@ -11,6 +11,7 @@ import Infos from './pages/Infos'
 import Money from './pages/Money'
 import Weather from './pages/Weather'
 import Marketplace from './pages/Marketplace'
+import LocationRequests from './pages/LocationRequests'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -85,6 +86,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Marketplace />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="location-requests" 
+            element={
+              <ProtectedRoute>
+                <LocationRequests />
               </ProtectedRoute>
             } 
           />
