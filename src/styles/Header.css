@@ -107,11 +107,9 @@
 .header-avatar {
   position: absolute;
   left: 5px;
-  bottom: -50%;
-  transform: translateY(-50%);
+  bottom: -26px;
   z-index: 10;
   opacity: 0;
-  /* No CSS transitions - JavaScript only */
 }
 
 .header-avatar--visible {
@@ -120,41 +118,4 @@
 
 .header-avatar--hidden {
   opacity: 0;
-}
-
-/* Responsive sizing for header avatar */
-@media (max-width: 767px) {
-  .header-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .header-avatar .avatar {
-    width: 32px !important;
-    height: 32px !important;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .header-avatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .header-avatar .avatar {
-    width: 48px !important;
-    height: 48px !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .header-avatar {
-    width: 64px;
-    height: 64px;
-  }
-
-  .header-avatar .avatar {
-    width: 64px !important;
-    height: 64px !important;
-  }
 }

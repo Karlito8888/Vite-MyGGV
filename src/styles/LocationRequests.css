@@ -1,14 +1,14 @@
 .location-requests-container {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .location-requests-container h2 {
   color: #2c3e50;
   margin-bottom: 10px;
-  font-size: 28px;
+  font-size: 24px;
   text-align: center;
 }
 
@@ -40,7 +40,7 @@
 .request-card {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border: 1px solid #e1e8ed;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -53,8 +53,8 @@
 
 .request-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 15px;
 }
 
@@ -72,12 +72,14 @@
 
 .requester-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
   padding: 15px;
   background: #f8f9fa;
   border-radius: 8px;
+  text-align: center;
 }
 
 .requester-avatar {
@@ -121,18 +123,20 @@
 .request-actions {
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: 12px 15px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 100px;
+  min-height: 48px;
+  min-width: 44px;
+  flex: 1;
 }
 
 .btn:disabled {
@@ -184,43 +188,57 @@
   line-height: 1.5;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Progressive Enhancement for larger screens */
+@media (min-width: 481px) {
   .location-requests-container {
-    padding: 15px;
+    max-width: 800px;
+    padding: 20px;
   }
   
-  .request-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .requester-info {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .request-actions {
-    justify-content: center;
-  }
-  
-  .btn {
-    flex: 1;
-    min-width: auto;
-  }
-}
-
-@media (max-width: 480px) {
   .location-requests-container h2 {
-    font-size: 24px;
+    font-size: 26px;
   }
   
   .request-card {
-    padding: 15px;
+    padding: 18px;
   }
   
   .btn {
-    padding: 12px 15px;
-    font-size: 13px;
+    padding: 11px 18px;
+    font-size: 14px;
+    min-width: 100px;
+    flex: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .location-requests-container h2 {
+    font-size: 28px;
+  }
+  
+  .request-card {
+    padding: 20px;
+  }
+  
+  .request-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0;
+  }
+  
+  .requester-info {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+  }
+  
+  .request-actions {
+    justify-content: flex-end;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }

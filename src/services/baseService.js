@@ -41,7 +41,7 @@ export async function executeQuery(queryPromise) {
  * @returns {Promise<{user: Object|null, error: Error|null}>}
  */
 export async function getCurrentUser() {
-  const { user, error } = await getCurrentUserWithClaims(true)
+  const { user, error } = await getCurrentUserWithClaims()
   return { user, error }
 }
 

@@ -72,6 +72,7 @@ The avatar integration SHALL maintain optimal performance characteristics.
 - AND avatar images SHALL be lazy loaded after main content
 - AND transitions SHALL use efficient requestAnimationFrame
 - AND memory SHALL be properly cleaned up on component unmount
+- AND debug console.log statements SHALL be removed to prevent console pollution and performance overhead
 
 ### Requirement: Accessibility Compliance
 The avatar SHALL maintain accessibility standards and screen reader compatibility.
@@ -84,7 +85,7 @@ The avatar SHALL maintain accessibility standards and screen reader compatibilit
 - AND appropriate ARIA attributes SHALL be applied
 
 ### Requirement: State Management Integration
-Avatar visibility and transitions SHALL be properly managed through component state.
+Avatar visibility and transitions SHALL be properly managed through component state, and Realtime subscription state SHALL be managed through service functions.
 
 #### Scenario:
 - WHEN managing avatar appearance states
@@ -92,4 +93,17 @@ Avatar visibility and transitions SHALL be properly managed through component st
 - AND transition state SHALL be tracked (idle/transitioning)
 - AND state changes SHALL trigger appropriate JavaScript transitions
 - AND cleanup SHALL occur on component unmount
+- AND Realtime subscription state SHALL be managed through service functions
+- AND subscription errors SHALL be handled through service callbacks
+
+### Requirement: Service-Based Realtime Subscription
+Header message Realtime subscriptions SHALL be managed through the messagesHeaderService layer to separate data concerns from UI components.
+
+#### Scenario:
+- WHEN the Header component needs real-time message updates
+- THEN subscription logic SHALL be handled by messagesHeaderService functions
+- AND the Header SHALL call subscribeToHeaderMessages() to establish connection
+- AND the Header SHALL receive subscription status callbacks through the service
+- AND cleanup SHALL be handled by unsubscribeFromHeaderMessages() function
+- AND no direct Supabase channel management SHALL exist in UI components
 

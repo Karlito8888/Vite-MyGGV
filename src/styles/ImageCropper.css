@@ -15,9 +15,10 @@
 .image-cropper-modal {
   background: white;
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 100%;
   width: 100%;
-  max-height: 90vh;
+  margin: 0.5rem;
+  max-height: 95vh;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
@@ -26,7 +27,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -44,8 +45,10 @@
   cursor: pointer;
   color: #6b7280;
   padding: 0.25rem;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,13 +62,13 @@
 }
 
 .image-cropper-content {
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .image-cropper-container {
   position: relative;
   width: 100%;
-  height: 300px;
+  height: 250px;
   overflow: hidden;
   background-color: #f9fafb;
   border: 2px solid #e5e7eb;
@@ -86,14 +89,17 @@
   background-color: #3b82f6;
   border: 2px solid white;
   border-radius: 2px;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
 }
 
 .image-cropper-actions {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 0.75rem 1rem 1rem;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -106,6 +112,9 @@
   transition: all 0.2s;
   border: none;
   font-size: 0.875rem;
+  width: 100%;
+  min-height: 48px;
+  min-width: 44px;
 }
 
 .btn-secondary {
@@ -131,31 +140,46 @@
   cursor: not-allowed;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 640px) {
+/* Progressive Enhancement for larger screens */
+@media (min-width: 641px) {
   .image-cropper-modal {
-    margin: 0.5rem;
-    max-height: 95vh;
+    max-width: 600px;
+    margin: 0;
+    max-height: 90vh;
   }
   
   .image-cropper-container {
-    height: 250px;
+    height: 300px;
   }
   
   .image-cropper-header {
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.5rem;
   }
   
   .image-cropper-content {
-    padding: 1rem;
+    padding: 1.5rem;
   }
   
   .image-cropper-actions {
-    padding: 0.75rem 1rem 1rem;
-    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    flex-direction: row;
   }
   
   .image-cropper-actions .btn {
-    width: 100%;
+    width: auto;
+  }
+  
+  .close-btn {
+    width: 2rem;
+    height: 2rem;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .image-cropper-container .ReactCrop__drag-handle {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
   }
 }

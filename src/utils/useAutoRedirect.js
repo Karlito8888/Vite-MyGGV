@@ -1,44 +1,82 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { supabase } from './supabase'
 import { useAuth } from './useAuth'
-import { onboardingService } from '../services/onboardingService'
 
+/**
+ * Hook to handle auto-redirect notifications after location approval
+ * Checks for redirect_to_home flag and shows notification
+ */
 export function useAutoRedirect() {
-  const navigate = useNavigate()
   const { user } = useAuth()
-  const [isChecking, setIsChecking] = useState(false)
+  const [hasShownNotification, setHasShownNotification] = useState(false)
 
   useEffect(() => {
-    if (!user) return
+    if (!user || hasShownNotification) return
 
-    const checkForRedirect = async () => {
-      setIsChecking(true)
-      
+    const checkRedirectFlag = async () => {
       try {
-        const needsRedirect = await onboardingService.checkRedirectNeeded(user.id)
-        
-        if (needsRedirect) {
-          // Clear the redirect flag
-          await onboardingService.clearRedirectFlag(user.id)
-          
-          // Redirect to home
-          navigate('/home', { replace: true })
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('redirect_to_home')
+          .eq('id', user.id)
+          .single()
+
+        if (error) {
+          console.error('Error checking redirect flag:', error)
+          return
         }
-      } catch (error) {
-        console.error('Error checking redirect status:', error)
-      } finally {
-        setIsChecking(false)
+
+        if (data?.redirect_to_home === true) {
+          // Show notification
+          alert('🎉 Great news! Your location request has been approved!')
+          
+          // Clear the flag
+          const { error: clearError } = await supabase
+            .from('profiles')
+            .update({ redirect_to_home: false })
+            .eq('id', user.id)
+
+          if (clearError) {
+            console.error('Error clearing redirect flag:', clearError)
+          }
+
+          setHasShownNotification(true)
+        }
+      } catch (err) {
+        console.error('Error in useAutoRedirect:', err)
       }
     }
 
-    // Check immediately
-    checkForRedirect()
+    checkRedirectFlag()
 
-    // Set up interval to check periodically (every 5 seconds)
-    const interval = setInterval(checkForRedirect, 5000)
+    // Also listen for realtime updates
+    const channel = supabase
+      .channel('profile-redirect-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`
+        },
+        (payload) => {
+          if (payload.new?.redirect_to_home === true && !hasShownNotification) {
+            alert('🎉 Great news! Your location request has been approved!')
+            
+            // Clear the flag
+            supabase
+              .from('profiles')
+              .update({ redirect_to_home: false })
+              .eq('id', user.id)
+              .then(() => setHasShownNotification(true))
+          }
+        }
+      )
+      .subscribe()
 
-    return () => clearInterval(interval)
-  }, [user, navigate])
-
-  return { isChecking }
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, hasShownNotification])
 }

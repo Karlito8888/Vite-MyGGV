@@ -10,6 +10,8 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
   flex-shrink: 0;
   position: relative;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Force online status to override default border */
@@ -18,23 +20,23 @@
   box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
 }
 
-/* Size variants */
+/* Size variants - Mobile-first */
 .avatar--small {
-  width: 32px;
-  height: 32px;
-  font-size: 12px;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
 }
 
 .avatar--medium {
-  width: 64px;
-  height: 64px;
-  font-size: 24px;
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
 }
 
 .avatar--large {
-  width: 96px;
-  height: 96px;
-  font-size: 36px;
+  width: 80px;
+  height: 80px;
+  font-size: 32px;
 }
 
 /* Image styling */
@@ -105,34 +107,45 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-/* Mobile-first responsive design */
-@media (max-width: 480px) {
-  .avatar--large {
-    width: 80px;
-    height: 80px;
-    font-size: 32px;
+/* Progressive Enhancement for larger screens */
+@media (min-width: 481px) {
+  .avatar--medium {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
   }
   
-  .avatar--medium {
-    width: 56px;
-    height: 56px;
-    font-size: 20px;
+  .avatar--large {
+    width: 88px;
+    height: 88px;
+    font-size: 34px;
   }
 }
 
-/* Touch-friendly sizing for mobile */
-@media (max-width: 768px) {
-  .avatar {
-    min-width: 44px;
-    min-height: 44px;
+@media (min-width: 769px) {
+  .avatar--small {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
   }
   
-  .avatar--small {
-    min-width: 44px;
-    min-height: 44px;
-    width: 44px;
-    height: 44px;
-    font-size: 14px;
+  .avatar--medium {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
+  
+  .avatar--large {
+    width: 96px;
+    height: 96px;
+    font-size: 36px;
+  }
+  
+  .avatar {
+    min-width: auto;
+    min-height: auto;
   }
 }
 

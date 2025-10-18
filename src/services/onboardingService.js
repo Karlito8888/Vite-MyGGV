@@ -133,28 +133,58 @@ export const onboardingService = {
 
   async completeOnboarding(userId, profileData) {
     try {
-      // Extract profile fields and location fields
+      // Validate required fields
+      if (!userId) {
+        throw new Error('User ID is required for onboarding')
+      }
+      
+      if (!profileData) {
+        throw new Error('Profile data is required for onboarding')
+      }
+
       const { username, avatar_url, avatar_file, block, lot } = profileData
+      
+      // Validate username
+      if (!username || username.trim().length === 0) {
+        throw new Error('Username is required')
+      }
+
+      // Validate location fields
+      if (!block || block.trim().length === 0) {
+        throw new Error('Block is required')
+      }
+
+      if (!lot || lot.trim().length === 0) {
+        throw new Error('Lot is required')
+      }
       
       let finalAvatarUrl = avatar_url
 
       // Handle avatar file upload if provided
       if (avatar_file && !avatar_url) {
-        const uploadResult = await avatarService.uploadAvatar(userId, avatar_file)
-        if (uploadResult.success) {
-          finalAvatarUrl = uploadResult.data.url
-        } else {
-          console.error('Avatar upload failed:', uploadResult.error)
+        try {
+          const uploadResult = await avatarService.uploadAvatar(userId, avatar_file)
+          if (uploadResult.success) {
+            finalAvatarUrl = uploadResult.data.url
+            console.log('Avatar uploaded successfully for user:', userId)
+          } else {
+            console.warn('Avatar upload failed, continuing with onboarding:', uploadResult.error)
+            // Continue with onboarding even if avatar upload fails
+          }
+        } catch (avatarError) {
+          console.warn('Avatar upload error, continuing with onboarding:', avatarError.message)
           // Continue with onboarding even if avatar upload fails
         }
       }
       
       // Update profile with username and avatar first
       const profileUpdateData = {
-        username,
+        username: username.trim(),
         avatar_url: finalAvatarUrl,
         updated_at: new Date().toISOString()
       }
+
+      console.log('Updating profile for user:', userId, profileUpdateData)
 
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
@@ -163,9 +193,16 @@ export const onboardingService = {
         .select()
         .single()
 
-      if (profileError) throw profileError
+      if (profileError) {
+        console.error('Profile update error:', profileError)
+        throw new Error(`Failed to update profile: ${profileError.message}`)
+      }
+
+      console.log('Profile updated successfully for user:', userId)
 
       // Handle location assignment using the optimized workflow
+      console.log('Handling location assignment for user:', userId, 'block:', block.trim(), 'lot:', lot.trim())
+
       const { data: locationResult, error: locationError } = await supabase
         .rpc('handle_onboarding_location_assignment', {
           p_user_id: userId,
@@ -174,7 +211,12 @@ export const onboardingService = {
           p_request_message: 'I would like to be associated with this location during onboarding'
         })
 
-      if (locationError) throw locationError
+      if (locationError) {
+        console.error('Location assignment error:', locationError)
+        throw new Error(`Failed to assign location: ${locationError.message}`)
+      }
+
+      console.log('Location assignment result for user:', userId, locationResult)
 
       // Determine if onboarding should be completed now or later
       const assignmentType = locationResult.assignment_type
@@ -183,47 +225,63 @@ export const onboardingService = {
       if (assignmentType === 'direct') {
         // Direct assignment - complete onboarding now
         shouldCompleteOnboarding = true
+        console.log('Direct location assignment for user:', userId)
       } else if (assignmentType === 'request') {
-        // Request sent - don't complete onboarding yet
-        shouldCompleteOnboarding = false
+        // Request sent - ALSO complete onboarding to allow app access
+        // The trigger will handle the rest when approved
+        shouldCompleteOnboarding = true
+        console.log('Location request sent for user:', userId, 'completing onboarding anyway')
+      } else {
+        console.warn('Unknown assignment type for user:', userId, assignmentType)
+        // Default to completing onboarding for safety
+        shouldCompleteOnboarding = true
       }
 
       if (shouldCompleteOnboarding) {
         // Complete onboarding
+        console.log('Completing onboarding for user:', userId)
+
         const { error: finalUpdateError } = await supabase
           .from('profiles')
           .update({ onboarding_completed: true })
           .eq('id', userId)
 
-        if (finalUpdateError) throw finalUpdateError
+        if (finalUpdateError) {
+          console.error('Final onboarding update error:', finalUpdateError)
+          throw new Error(`Failed to complete onboarding: ${finalUpdateError.message}`)
+        }
+
+        console.log('Onboarding completed successfully for user:', userId)
 
         return {
           success: true,
           data: updatedProfile,
           locationResult: {
-            type: 'direct_assignment',
-            message: 'Location assigned and onboarding completed successfully',
+            type: assignmentType === 'direct' ? 'direct_assignment' : 'pending_approval',
+            message: assignmentType === 'direct' 
+              ? 'Location assigned and onboarding completed successfully'
+              : 'Location request sent. You can use the app while waiting for approval.',
             details: locationResult.result
           }
         }
       } else {
-        // Onboarding pending approval
+        // This shouldn't happen anymore, but keep as fallback
+        console.warn('Unexpected: shouldCompleteOnboarding is false for user:', userId)
         return {
           success: true,
           data: updatedProfile,
           locationResult: {
             type: 'pending_approval',
             message: 'Location request sent. Onboarding will be completed after owner approval.',
-            details: locationResult.result,
-            note: 'You can continue using the app, but some features may be limited until location is approved.'
+            details: locationResult.result
           }
         }
       }
     } catch (error) {
-      console.error('Error completing onboarding:', error)
+      console.error('Error completing onboarding for user:', userId, error)
       return {
         success: false,
-        error: error.message
+        error: error.message || 'An unknown error occurred during onboarding'
       }
     }
   },
@@ -349,64 +407,7 @@ export const onboardingService = {
     }
   },
 
-  /**
-    * Handle location assignment during onboarding
-    * @param {string} userId - User ID
-    * @param {Object} data - Onboarding data including block, lot, and avatar
-    * @returns {Promise<Object>} Result with assignment details
-    */
-  async handleLocationAssignment(userId, data) {
-    try {
-      const { username, avatar_url, avatar_file, block, lot } = data
-      
-      let finalAvatarUrl = avatar_url
 
-      // Handle avatar file upload if provided
-      if (avatar_file && !avatar_url) {
-        const uploadResult = await avatarService.uploadAvatar(userId, avatar_file)
-        if (uploadResult.success) {
-          finalAvatarUrl = uploadResult.data.url
-        } else {
-          console.error('Avatar upload failed:', uploadResult.error)
-          // Continue with onboarding even if avatar upload fails
-        }
-      }
-
-      // Update profile with username and avatar
-      const profileUpdateData = {
-        username,
-        avatar_url: finalAvatarUrl,
-        updated_at: new Date().toISOString()
-      }
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update(profileUpdateData)
-        .eq('id', userId)
-
-      if (profileError) throw profileError
-
-      // Handle location assignment
-      const { data: result, error } = await supabase.rpc('handle_onboarding_location_assignment', {
-        p_user_id: userId,
-        p_block: block,
-        p_lot: lot
-      })
-
-      if (error) throw error
-
-      return {
-        success: true,
-        data: result
-      }
-    } catch (error) {
-      console.error('Error handling location assignment:', error)
-      return {
-        success: false,
-        error: error.message
-      }
-    }
-  },
 
   /**
    * Check if user should be redirected to home

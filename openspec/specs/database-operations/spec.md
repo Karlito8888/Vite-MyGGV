@@ -19,7 +19,7 @@ The system SHALL provide a centralized service layer for all database operations
 
 ### Requirement: RLS Policy Compliance
 
-All CRUD operations SHALL respect and enforce the Row Level Security (RLS) policies defined in the database for each table, with enhanced authentication verification using Supabase's `getClaims()` method instead of `getUser()` for improved security and performance.
+All CRUD operations SHALL respect and enforce the Row Level Security (RLS) policies defined in the database for each table, using Supabase's `getClaims()` method exclusively for authentication verification.
 
 #### Scenario: User can only modify own records
 - **WHEN** a user attempts to update a record with `profile_id` ownership
@@ -36,8 +36,8 @@ All CRUD operations SHALL respect and enforce the Row Level Security (RLS) polic
 #### Scenario: Invalid or expired claims
 - **WHEN** `getClaims()` returns an error or invalid claims
 - **THEN** the system handles authentication failure gracefully
-- **AND** falls back to `getUser()` if necessary
 - **AND** user is redirected to login or appropriate error state
+- **AND** no fallback to `getUser()` is performed
 
 #### Scenario: Protected route access
 - **WHEN** accessing protected routes
@@ -198,13 +198,13 @@ The system SHALL provide CRUD services for forums and threads with public read a
 
 ### Requirement: Error Handling
 
-All service functions SHALL implement consistent error handling and return structured responses, with enhanced authentication error handling for claims verification.
+All service functions SHALL implement consistent error handling and return structured responses, using claims-only authentication verification.
 
 #### Scenario: Claims verification failure
 - **WHEN** `getClaims()` fails or returns invalid claims
 - **THEN** the service SHALL gracefully handle authentication errors
-- **AND** provide fallback to `getUser()` when appropriate
 - **AND** return structured error responses for authentication failures
+- **AND** no fallback authentication methods are used
 
 #### Scenario: Successful operation
 - **WHEN** a CRUD operation succeeds with verified claims

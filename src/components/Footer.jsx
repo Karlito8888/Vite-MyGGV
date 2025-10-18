@@ -11,7 +11,7 @@ function Footer({ onMenuToggle, isSidebarOpen = false }) {
             onToggle={onMenuToggle}
             isOpen={isSidebarOpen}
           />
-          <p>&copy; {new Date().getFullYear()} Garden Grove Village</p>
+          <p>&copy; {new Date().getFullYear()} - MyGGV -  Garden Grove Village</p>
           <ThemeToggle />
         </div>
       </div>

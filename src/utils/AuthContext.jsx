@@ -17,20 +17,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Check for existing session on app load using getClaims() for better security
     const getClaimsSession = async () => {
-      const { user, error, method } = await getCurrentUserWithClaims(true);
+      const { user, error, method } = await getCurrentUserWithClaims();
 
       if (error) {
-         
         console.error(`Authentication failed using ${method}:`, error.message);
         setUser(null);
       } else {
         setUser(user);
-        if (method === "getUser") {
-           
-          console.warn(
-            "Using fallback authentication method - consider updating Supabase client"
-          );
-        }
       }
 
       setLoading(false);
@@ -47,10 +40,9 @@ export function AuthProvider({ children }) {
       
       // When auth state changes, verify with getClaims() for security
       if (session?.user) {
-        const { user, error, method } = await getCurrentUserWithClaims(true);
+        const { user, error, method } = await getCurrentUserWithClaims();
 
         if (error || !user) {
-           
           console.error(
             `Auth verification failed using ${method}:`,
             error?.message || "No user found"
@@ -58,12 +50,6 @@ export function AuthProvider({ children }) {
           setUser(null);
         } else {
           setUser(user);
-          if (method === "getUser") {
-             
-            console.warn(
-              "Using fallback authentication method during auth state change"
-            );
-          }
         }
       } else {
         setUser(null);

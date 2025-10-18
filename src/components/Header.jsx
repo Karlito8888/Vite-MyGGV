@@ -3,13 +3,14 @@ import "../styles/Header.css";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
 import { useAuth } from "../utils/useAuth";
-import { usePresence } from "../utils/PresenceContext";
-import { listActiveHeaderMessages } from "../services/messagesHeaderService";
-import { supabase } from "../utils/supabase";
+import {
+  listActiveHeaderMessages,
+  subscribeToHeaderMessages,
+  unsubscribeFromHeaderMessages,
+} from "../services/messagesHeaderService";
 
 function Header() {
   const { user } = useAuth();
-  const { isOnline } = usePresence();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,40 +57,28 @@ function Header() {
     if (user) {
       fetchMessages();
 
-      // Setup realtime subscription
-      const channel = supabase
-        .channel("header-messages")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "messages_header",
-          },
-          (_payload) => {
-            // Refetch messages on any change
-            fetchMessages();
-          }
-        )
-        .subscribe((status) => {
+      // Setup realtime subscription through service
+      const subscription = subscribeToHeaderMessages(
+        fetchMessages, // onMessageChange callback
+        (status) => {
+          // onStatusChange callback
           if (status === "SUBSCRIBED") {
             setSubscriptionError(null);
           } else if (status === "CHANNEL_ERROR") {
             setSubscriptionError("Realtime connection failed");
           }
-        });
+        }
+      );
 
-      subscriptionRef.current = channel;
+      subscriptionRef.current = subscription;
 
       return () => {
-        if (channel) {
-          supabase.removeChannel(channel);
-        }
+        unsubscribeFromHeaderMessages(subscription);
       };
     } else {
       // Cleanup when user logs out
       if (subscriptionRef.current) {
-        supabase.removeChannel(subscriptionRef.current);
+        unsubscribeFromHeaderMessages(subscriptionRef.current);
         subscriptionRef.current = null;
       }
       setMessages([]);
@@ -237,18 +226,6 @@ function Header() {
     const messageHasUser =
       currentMessage && currentMessage.user && currentMessage.user.id;
 
-    // Debug logging
-    if (import.meta.env.DEV) {
-      console.log("Avatar visibility check:", {
-        user: !!user,
-        messagesLength: messages.length,
-        transitionState,
-        messageHasUser,
-        currentMessageIndex,
-        currentMessageUser: currentMessage?.user?.full_name || "No user",
-      });
-    }
-
     if (
       user &&
       messages.length > 0 &&
@@ -315,14 +292,13 @@ function Header() {
                     currentMessage.user.email ||
                     "User"
                   } avatar`}
-                  size="medium"
+                  size="small"
                   fallback={
                     currentMessage.user.full_name ||
                     currentMessage.user.email ||
                     "User"
                   }
                   defaultAvatar={true}
-                  isOnline={isOnline}
                   className="header-avatar-component"
                 />
               </div>

@@ -6,20 +6,33 @@ Establish mobile-first responsive design standards across all CSS files to ensur
 ### Requirement: Mobile-First Base Styles
 All CSS base styles MUST target mobile devices first without requiring media queries for mobile display, using fixed styles across all viewports.
 
-#### Scenario: Footer displays consistently
-- **WHEN** footer is rendered on any device
-- **THEN** footer maintains fixed 60px height and consistent layout
-- **AND** no media queries SHALL be used for responsive adjustments
+#### Scenario: LocationRequests mobile-first layout
+- **WHEN** LocationRequests component renders on mobile devices
+- **THEN** base styles SHALL target mobile viewport without media queries
+- **AND** request cards SHALL be optimized for mobile touch interactions
+- **AND** buttons SHALL maintain 48px minimum touch targets
+- **AND** layout SHALL be single-column by default
 
-#### Scenario: Header displays consistently  
-- **WHEN** header is rendered on any device
-- **THEN** header maintains fixed 60px height and consistent layout
-- **AND** carousel transitions SHALL work consistently across all viewports
+#### Scenario: Onboarding mobile-first forms
+- **WHEN** Onboarding component renders on mobile devices
+- **THEN** form inputs SHALL be optimized for mobile without media queries
+- **AND** wheel picker SHALL be touch-friendly by default
+- **AND** all interactive elements SHALL have adequate touch targets
+- **AND** form layout SHALL fit mobile viewport properly
 
-#### Scenario: Buttons maintain touch targets
-- **WHEN** buttons are displayed on any device
-- **THEN** buttons maintain 48x48px minimum touch target size
-- **AND** styling SHALL remain consistent across all viewports
+#### Scenario: Avatar mobile-first sizing
+- **WHEN** Avatar component renders on mobile devices
+- **THEN** avatar sizes SHALL be optimized for mobile by default
+- **AND** touch interactions SHALL work without responsive adjustments
+- **AND** upload mode SHALL be mobile-optimized by default
+- **AND** all avatar variants SHALL be touch-friendly
+
+#### Scenario: Progressive enhancement for larger screens
+- **WHEN** components render on larger screens
+- **THEN** media queries SHALL enhance rather than replace mobile styles
+- **AND** desktop layouts SHALL build upon mobile foundation
+- **AND** touch targets SHALL remain accessible on all devices
+- **AND** performance SHALL remain optimized for mobile first
 
 ### Requirement: Touch-Friendly Interactions
 All interactive elements MUST be optimized for touch interactions with consistent sizing across all devices.

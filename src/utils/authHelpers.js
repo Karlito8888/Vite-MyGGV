@@ -29,36 +29,19 @@ export function extractUserFromClaims(claims) {
 /**
  * Get current user with claims-based verification
  * Uses getClaims() for better security and performance
- * @param {boolean} useFallback - Whether to use getUser() as fallback (default: true)
  * @returns {Promise<{user: Object|null, error: Error|null, method: string}>}
  */
-export async function getCurrentUserWithClaims(useFallback = true) {
+export async function getCurrentUserWithClaims() {
   try {
     const { data, error } = await supabase.auth.getClaims()
     
     if (error) {
-      if (useFallback) {
-         
-        console.warn('getClaims() failed, falling back to getUser():', error.message)
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
-        return { user, error: userError, method: 'getUser' }
-      }
       return { user: null, error, method: 'getClaims' }
     }
     
     const user = extractUserFromClaims(data?.claims)
     return { user, error: null, method: 'getClaims' }
   } catch (err) {
-    if (useFallback) {
-       
-      console.warn('getClaims() threw error, falling back to getUser():', err.message)
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
-        return { user, error: userError, method: 'getUser' }
-      } catch {
-        return { user: null, error: err, method: 'getUser' }
-      }
-    }
     return { user: null, error: err, method: 'getClaims' }
   }
 }
@@ -81,35 +64,18 @@ export function isValidClaims(claims) {
 /**
  * Get user ID from claims without full user object extraction
  * Useful for quick authentication checks
- * @param {boolean} useFallback - Whether to use getUser() as fallback (default: true)
  * @returns {Promise<string|null>} User ID or null
  */
-export async function getUserIdFromClaims(useFallback = true) {
+export async function getUserIdFromClaims() {
   try {
     const { data, error } = await supabase.auth.getClaims()
     
     if (error || !data?.claims?.sub) {
-      if (useFallback) {
-        try {
-          const { data: { user } } = await supabase.auth.getUser()
-          return user?.id || null
-        } catch {
-          return null
-        }
-      }
       return null
     }
     
     return data.claims.sub
   } catch {
-    if (useFallback) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        return user?.id || null
-      } catch {
-        return null
-      }
-    }
     return null
   }
 }
@@ -119,7 +85,7 @@ export async function getUserIdFromClaims(useFallback = true) {
  * @returns {Promise<{userId: string|null, error: Error|null}>}
  */
 export async function getAuthenticatedUserId() {
-  const userId = await getUserIdFromClaims(true)
+  const userId = await getUserIdFromClaims()
   
   if (!userId) {
     return { 

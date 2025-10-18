@@ -189,7 +189,7 @@ function Login() {
   if (authTransitioning) {
     return (
       <div className="login-page df">
-        <div className="container">
+        <div className="container-centered">
           <div className="login-card">
             <div className="text-center">
               <div>Signing you in...</div>
@@ -202,7 +202,7 @@ function Login() {
 
   return (
     <div className="login-page df">
-      <div className="container">
+      <div className="container-centered">
         <div className="login-card">
           <h2>{isSignUpMode ? 'Sign Up' : 'Sign In'}</h2>
 

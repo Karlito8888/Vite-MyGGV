@@ -46,21 +46,21 @@ The onboarding page SHALL use the Avatar component instead of URL input for avat
 - **AND** the system SHALL allow users to replace the default avatar with a custom upload
 
 ### Requirement: Onboarding Service
-The onboarding service SHALL handle avatar file uploads and storage.
+The onboarding service SHALL handle avatar file uploads, storage, and location assignment with comprehensive error handling.
 
-#### Scenario: Avatar file processing
-- **WHEN** a user submits the onboarding form with a new avatar
-- **THEN** the onboarding service SHALL process the uploaded image file
-- **AND** the service SHALL upload the processed avatar to the Supabase "avatars" bucket
-- **AND** the service SHALL store the avatar URL in the user's profile
-- **AND** the service SHALL handle upload errors gracefully
+#### Scenario: Enhanced error handling in onboarding service
+- **WHEN** an error occurs during onboarding
+- **THEN** the onboarding service SHALL provide detailed error messages
+- **AND** SHALL log comprehensive debugging information
+- **AND** SHALL handle avatar upload failures gracefully
+- **AND** SHALL validate all required input fields before processing
 
-#### Scenario: Avatar storage management
-- **WHEN** storing avatars in Supabase
-- **THEN** the service SHALL use the "avatars" bucket with appropriate naming convention
-- **AND** the service SHALL ensure proper file permissions and access controls
-- **AND** the service SHALL handle duplicate file names appropriately
-- **AND** the service SHALL maintain reasonable file sizes for storage efficiency
+#### Scenario: Consistent onboarding completion
+- **WHEN** onboarding completes (both direct assignment and request scenarios)
+- **THEN** `onboarding_completed` SHALL always be set to true
+- **AND** users SHALL have access to the application
+- **AND** subsequent status checks SHALL return consistent results
+- **AND** the service SHALL remove duplicate method implementations
 
 ### Requirement: Protected Route Enhancement
 Protected routes SHALL require both authentication and completed onboarding.

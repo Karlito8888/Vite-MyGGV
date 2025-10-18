@@ -111,7 +111,7 @@ The Navigation component SHALL support drag-to-scroll functionality on desktop d
 
 ### Requirement: Enhanced Footer Navigation Slider
 
-The Navigation component SHALL provide modern slider functionality with smooth animations and enhanced user interactions.
+The Navigation component SHALL provide modern slider functionality with smooth animations, enhanced user interactions, and a 3-column vertical grid layout for optimal vertical space utilization.
 
 #### Scenario: Modern animations and transitions
 - **WHEN** users interact with the navigation
@@ -121,19 +121,40 @@ The Navigation component SHALL provide modern slider functionality with smooth a
 
 #### Scenario: Enhanced touch gestures
 - **WHEN** users swipe on mobile devices
-- **THEN** responsive touch gestures SHALL be supported
-- **AND** swipe momentum SHALL be natural
+- **THEN** responsive vertical touch gestures SHALL be supported
+- **AND** vertical swipe momentum SHALL be natural
 - **AND** touch targets SHALL meet accessibility standards
 
 #### Scenario: Visual feedback improvements
 - **WHEN** navigation has scrollable content
 - **THEN** modern visual indicators SHALL be displayed
 - **AND** micro-interactions SHALL be implemented
-- **AND** scroll position SHALL be clearly indicated
+- **AND** vertical scroll position SHALL be clearly indicated
+
+#### Scenario: 3-column vertical grid layout
+- **WHEN** the navigation is displayed on any screen size
+- **THEN** nav-scroll-content SHALL use CSS Grid with 3 columns and vertical flow
+- **AND** navigation items SHALL be distributed vertically across the grid
+- **AND** the layout SHALL automatically adapt to content height
+- **AND** vertical scrolling SHALL be enabled for overflow
+
+#### Scenario: Vertical drag scrolling
+- **WHEN** users click and drag vertically on the navigation
+- **THEN** the navigation SHALL scroll smoothly following vertical mouse movement
+- **AND** the cursor SHALL change to indicate vertical drag state
+- **AND** vertical momentum scrolling SHALL continue after drag release
+
+#### Scenario: Responsive vertical grid behavior
+- **WHEN** viewing on different screen sizes
+- **THEN** the vertical grid SHALL maintain 3 columns
+- **AND** navigation SHALL use vertical scroll behavior
+- **AND** all navigation items SHALL remain accessible
+- **AND** grid SHALL adapt to available vertical space
 
 #### Scenario: Performance and accessibility
 - **WHEN** navigation animations are active
 - **THEN** hardware acceleration SHALL be utilized
 - **AND** reduced motion preferences SHALL be respected
 - **AND** keyboard navigation SHALL be fully functional
+- **AND** screen reader compatibility SHALL be preserved
 

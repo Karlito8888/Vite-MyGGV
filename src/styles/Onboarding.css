@@ -59,11 +59,12 @@
   padding: 0.75rem;
   border: 2px solid var(--color-border);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 16px;
   font-family: inherit;
   background-color: var(--color-background);
   color: var(--color-text-primary);
   transition: border-color 0.2s ease;
+  min-height: 48px;
 }
 
 .form-group input:focus,
@@ -106,7 +107,7 @@
   border: 2px solid var(--color-border);
   border-radius: 8px;
   background-color: var(--color-background);
-  min-height: 200px;
+  min-height: 240px;
   position: relative;
 }
 
@@ -123,7 +124,7 @@
 /* Picker item styling for selected state */
 .picker-item {
   padding: 0 1rem;
-  height: 40px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,25 +143,25 @@
 
 /* Placeholder and loading states */
 .picker-placeholder {
-  padding: 2rem;
+  padding: 2.5rem;
   color: var(--color-text-secondary);
   font-style: italic;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
+  min-height: 240px;
 }
 
 .picker-loading {
-  padding: 2rem;
+  padding: 2.5rem;
   color: var(--color-text-secondary);
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 200px;
+  min-height: 240px;
 }
 
 .picker-loading::after {
@@ -178,52 +179,45 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Mobile-specific optimizations */
-@media (max-width: 768px) {
+/* Progressive Enhancement for larger screens */
+@media (min-width: 769px) {
   .wheel-picker-container {
-    min-height: 240px;
+    min-height: 200px;
   }
   
   .rmp-picker {
-    height: 240px;
+    height: 200px;
   }
   
   .rmp-picker-item {
-    height: 48px;
-    font-size: 1.1rem;
+    height: 40px;
+    font-size: 1rem;
   }
   
   .picker-wheel-item {
-    padding: 0.75rem 1.25rem;
-    font-size: 1.1rem;
+    padding: 0 1rem;
+    font-size: 1rem;
   }
   
   .rmp-picker::before {
-    height: 48px;
+    height: 40px;
   }
   
   .picker-placeholder,
   .picker-loading {
-    padding: 2.5rem;
-    min-height: 240px;
+    padding: 2rem;
+    min-height: 200px;
   }
   
-  /* Better touch scrolling on mobile */
-  .rmp-picker-column {
-    -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
-    scroll-behavior: smooth;
+  .picker-item {
+    height: 40px;
   }
 }
 
-/* Touch-friendly improvements */
-@media (hover: none) {
-  .rmp-picker-item {
-    height: 48px;
-  }
-  
-  .picker-wheel-item {
-    padding: 0.75rem 1.25rem;
-  }
+/* Touch-friendly improvements for all devices */
+.rmp-picker-column {
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+  scroll-behavior: smooth;
 }
 
 .error-message {

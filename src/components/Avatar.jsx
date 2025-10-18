@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ImageCropper from './ImageCropper'
 import { avatarService } from '../services/avatarService'
+import { usePresence } from '../utils/PresenceContext'
 import '../styles/Avatar.css'
 
 /**
@@ -11,7 +12,7 @@ import '../styles/Avatar.css'
  * @param {string} props.size - Size variant: 'small', 'medium', 'large'
  * @param {string} props.fallback - Fallback text/initial when no image
  * @param {string} props.className - Additional CSS classes
- * @param {boolean} props.isOnline - Whether the user is currently online
+
  * @param {boolean} props.uploadMode - Enable upload functionality
  * @param {Function} props.onUpload - Callback when avatar is uploaded
  * @param {boolean} props.defaultAvatar - Use default GGV avatar as fallback
@@ -22,11 +23,11 @@ function Avatar({
   size = 'medium', 
   fallback = 'U', 
   className = '', 
-  isOnline = false,
   uploadMode = false,
   onUpload,
   defaultAvatar = false
 }) {
+  const { isOnline } = usePresence()
   const [imageError, setImageError] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [showCropper, setShowCropper] = useState(false)

@@ -1,48 +1,102 @@
 import { useEffect } from 'react'
 import { useAuth } from '../utils/useAuth'
-import { listActiveHeaderMessages } from '../services/messagesHeaderService'
+import { getProfileById } from '../services/profilesService'
+import { listLocations } from '../services/locationsService'
+import { onboardingService } from '../services/onboardingService'
 
-// Hook to preload critical data for home page
-export const usePreloadData = () => {
+/**
+ * Preload critical data for better UX
+ * This hook runs in the background after the user lands on home to improve perceived performance
+ * 
+ * @returns {void} - This hook doesn't return anything, it performs data preloading as a side effect
+ * 
+ * @example
+ * ```jsx
+ * function Home() {
+ *   usePreloadData(); // Preloads user profile, locations, and requests
+ *   return <div>Home content</div>;
+ * }
+ * ```
+ */
+export function usePreloadData() {
   const { user } = useAuth()
 
   useEffect(() => {
-    if (user) {
-      // Preload header messages in background
-      const preloadHeaderMessages = async () => {
-        try {
-          await listActiveHeaderMessages()
-        } catch (error) {
-          // Silent fail for preloading
-          console.debug('Header messages preload failed:', error)
-        }
-      }
+    if (!user) return
 
-      // Use requestIdleCallback if available, otherwise setTimeout
-      if (window.requestIdleCallback) {
-        window.requestIdleCallback(preloadHeaderMessages)
-      } else {
-        setTimeout(preloadHeaderMessages, 100)
+    const preloadData = async () => {
+      try {
+        // Preload user profile data
+        const profilePromise = getProfileById(user.id).catch(() => null)
+        
+        // Preload available locations for potential future use
+        const locationsPromise = listLocations().catch(() => null)
+        
+        // Preload user's location requests
+        const locationRequestsPromise = onboardingService.getUserLocationRequests(user.id).catch(() => null)
+
+        // Wait for all to complete (but don't block UI)
+        await Promise.allSettled([
+          profilePromise,
+          locationsPromise,
+          locationRequestsPromise
+        ])
+        
+        console.debug('Data preloading completed for user:', user.id)
+      } catch (error) {
+        // Silent fail - preloading is optional
+        console.debug('Preload data error:', error)
       }
     }
+
+    // Delay preload slightly to prioritize initial render
+    const timer = setTimeout(preloadData, 500)
+    return () => clearTimeout(timer)
   }, [user])
 }
 
-// Hook to preload navigation icons
-export const usePreloadIcons = () => {
+/**
+ * Preload icon images for better UX
+ * Loads common icons used throughout the app to prevent loading delays
+ * 
+ * @returns {void} - This hook doesn't return anything, it performs icon preloading as a side effect
+ * 
+ * @example
+ * ```jsx
+ * function Home() {
+ *   usePreloadIcons(); // Preloads app icons in the background
+ *   return <div>Home content</div>;
+ * }
+ * ```
+ */
+export function usePreloadIcons() {
   useEffect(() => {
-    // Preload entire @heroicons/react package for better chunking
-    // This avoids the dynamic import warnings and lets Vite handle it optimally
     const preloadIcons = () => {
-      import('@heroicons/react/24/outline').catch(() => {
-        // Ignore errors during preloading
+      const iconPaths = [
+        '/AppImages/ios/180.png',
+        '/AppImages/android/android-launchericon-192-192.png',
+        '/src/assets/logos/ggv-100.png',
+        '/src/assets/logos/ggv-70.png',
+        '/src/assets/img/house.png',
+        '/src/assets/img/pin.png',
+        '/src/assets/img/post.png',
+        '/src/assets/img/smartphone.png',
+        '/src/assets/img/money.png',
+        '/src/assets/logos/coin.png',
+        '/src/assets/logos/gps.png',
+        '/src/assets/logos/facebook.png'
+      ]
+
+      iconPaths.forEach(path => {
+        const img = new Image()
+        img.src = path
       })
+      
+      console.debug('Icon preloading completed')
     }
 
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(preloadIcons)
-    } else {
-      setTimeout(preloadIcons, 200)
-    }
+    // Delay icon preload to prioritize critical content
+    const timer = setTimeout(preloadIcons, 1000)
+    return () => clearTimeout(timer)
   }, [])
 }

@@ -13,25 +13,25 @@ import {
   BellIcon
 } from '@heroicons/react/24/outline'
 import { useState, useRef, useEffect, useCallback } from 'react'
-import '../styles/Navigation.css'
+import '../styles/Sidebar.css'
 
 function Navigation({ onClose }) {
   const { user } = useAuth()
   const location = useLocation()
   const scrollContainerRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
+  const [startY, setStartY] = useState(0)
+  const [scrollTop, setScrollTop] = useState(0)
 
-  // Mouse event handlers for drag scrolling
+  // Mouse event handlers for vertical drag scrolling
   const handleMouseDown = useCallback((e) => {
     if (!scrollContainerRef.current) return
     
     e.preventDefault() // Add preventDefault here
-    console.log('Mouse down - scrollLeft:', scrollContainerRef.current.scrollLeft)
+    console.log('Mouse down - scrollTop:', scrollContainerRef.current.scrollTop)
     setIsDragging(true)
-    setStartX(e.pageX)
-    setScrollLeft(scrollContainerRef.current.scrollLeft)
+    setStartY(e.pageY)
+    setScrollTop(scrollContainerRef.current.scrollTop)
     scrollContainerRef.current.style.cursor = 'grabbing'
   }, [])
 
@@ -39,12 +39,12 @@ function Navigation({ onClose }) {
     if (!isDragging || !scrollContainerRef.current) return
     
     e.preventDefault()
-    const x = e.pageX
-    const walk = (x - startX) * 2
-    const newScrollLeft = scrollLeft - walk
-    console.log('Mouse move - walk:', walk, 'newScrollLeft:', newScrollLeft)
-    scrollContainerRef.current.scrollLeft = newScrollLeft
-  }, [isDragging, startX, scrollLeft])
+    const y = e.pageY
+    const walk = (y - startY) * 2
+    const newScrollTop = scrollTop - walk
+    console.log('Mouse move - walk:', walk, 'newScrollTop:', newScrollTop)
+    scrollContainerRef.current.scrollTop = newScrollTop
+  }, [isDragging, startY, scrollTop])
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false)

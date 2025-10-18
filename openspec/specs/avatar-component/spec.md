@@ -13,6 +13,7 @@ A reusable Avatar component MUST be created to display user profile images consi
 - AND the component SHALL display fallback text when no image is provided
 - AND the component SHALL handle broken image URLs gracefully
 - AND the component SHALL follow mobile-first responsive design principles
+- AND the component SHALL manage its own presence state internally without requiring external props
 
 ### Requirement: Avatar Component Styling
 Avatar components SHALL have consistent visual styling across the application.
@@ -59,35 +60,32 @@ The Avatar component SHALL handle errors gracefully and maintain accessibility s
 - AND the component SHALL support keyboard navigation
 
 ### Requirement: Online Status Indicator
-The Avatar component SHALL display a visual indicator when the user is online.
+The Avatar component SHALL display a visual indicator when the user is online by managing its own presence state.
 
-#### Scenario: Green border for online status
-- **WHEN** the user's presence state is "online"
-- **THEN** the Avatar component SHALL display a green border
-- **AND** the green border SHALL be visually distinct from the default border
-- **AND** the indicator SHALL be responsive across all device sizes
+#### Scenario: Self-managed online status
+- **WHEN** the Avatar component is rendered
+- **THEN** it SHALL internally use the usePresence hook to determine online status
+- **AND** the component SHALL display a green border when the user is online
+- **AND** the component SHALL display the default border when the user is offline
+- **AND** the presence logic SHALL be encapsulated within the Avatar component
 
-#### Scenario: Default border for offline status
-- **WHEN** the user's presence state is "offline" or unknown
-- **THEN** the Avatar component SHALL display the default border color
-- **AND** the component SHALL maintain existing styling behavior
+#### Scenario: Simplified component interface
+- **WHEN** using the Avatar component in any part of the application
+- **THEN** developers SHALL NOT need to import usePresence hook
+- **AND** developers SHALL NOT need to pass isOnline prop
+- **AND** the component SHALL automatically handle presence state
+- **AND** the component SHALL maintain all existing functionality
 
 ### Requirement: Avatar Component Interface
-The Avatar component SHALL accept additional props for upload functionality.
+The Avatar component SHALL accept props for upload functionality but no longer requires isOnline prop.
 
-#### Scenario: Upload props integration
-- **WHEN** the Avatar component is used with upload functionality
+#### Scenario: Updated props interface
+- **WHEN** the Avatar component is used
 - **THEN** it SHALL accept `onUpload`, `uploadMode`, and `defaultAvatar` props
-- **AND** the component SHALL maintain backward compatibility with existing props
+- **AND** it SHALL NOT accept `isOnline` prop (removed)
+- **AND** the component SHALL maintain backward compatibility with all other existing props
 - **AND** the component SHALL provide appropriate UI for upload mode
 - **AND** the component SHALL handle file selection and processing
-
-#### Scenario: Dynamic avatar updates
-- **WHEN** a new avatar is uploaded through the component
-- **THEN** the Avatar component SHALL update its display immediately
-- **AND** the component SHALL call the provided `onUpload` callback with image data
-- **AND** the transition SHALL be smooth and visually appealing
-- **AND** the component SHALL handle upload states appropriately
 
 ### Requirement: Avatar Upload Integration
 The Avatar component SHALL support file upload functionality for onboarding flow integration.

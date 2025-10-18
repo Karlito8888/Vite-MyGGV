@@ -143,3 +143,50 @@ export async function extendHeaderMessageExpiration(id, daysToAdd) {
 
   return updateHeaderMessage(id, { expires_at: newExpiration.toISOString() })
 }
+
+/**
+ * Subscribe to real-time updates for header messages
+ * @param {Function} onMessageChange - Callback function when messages change
+ * @param {Function} onStatusChange - Callback function for subscription status
+ * @returns {Object} Subscription object with cleanup function
+ */
+export function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
+  const channel = supabase
+    .channel("header-messages")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "messages_header",
+      },
+      (_payload) => {
+        // Trigger message refresh on any change
+        if (onMessageChange) {
+          onMessageChange();
+        }
+      }
+    )
+    .subscribe((status) => {
+      if (onStatusChange) {
+        onStatusChange(status);
+      }
+    });
+
+  return {
+    channel,
+    unsubscribe: () => {
+      supabase.removeChannel(channel);
+    }
+  };
+}
+
+/**
+ * Unsubscribe from header messages real-time updates
+ * @param {Object} subscription - Subscription object returned by subscribeToHeaderMessages
+ */
+export function unsubscribeFromHeaderMessages(subscription) {
+  if (subscription && subscription.unsubscribe) {
+    subscription.unsubscribe();
+  }
+}

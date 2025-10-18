@@ -140,26 +140,29 @@ function Onboarding() {
         submissionData.avatar_url = currentAvatar
       }
 
-      // Use the new optimized location assignment workflow
-      const result = await onboardingService.handleLocationAssignment(user.id, submissionData)
+      // Use completeOnboarding which properly handles onboarding_completed flag
+      const result = await onboardingService.completeOnboarding(user.id, submissionData)
       
       if (result.success) {
-        if (result.data?.location_request_sent) {
-          // Location request was sent, show message and navigate to home
-          alert('Your location request has been sent to the current owner. You will be notified when it is approved.')
-          navigate('/home')
-        } else if (result.data?.location_assigned) {
-          // Location was assigned directly
-          alert('Location assigned successfully!')
-          navigate('/home')
+        const locationType = result.locationResult?.type
+        
+        if (locationType === 'direct_assignment') {
+          // Location was assigned directly and onboarding completed
+          navigate('/home', { replace: true })
+        } else if (locationType === 'pending_approval') {
+          // Location request sent - allow access but show notification
+          // The backend will complete onboarding when approved via trigger
+          alert('Welcome! Your location request has been sent. You can start using the app while waiting for approval.')
+          navigate('/home', { replace: true })
         } else {
-          // Onboarding completed without location assignment
-          navigate('/home')
+          // Fallback - onboarding completed
+          navigate('/home', { replace: true })
         }
       } else {
         setFormError('root', { message: result.error || 'Failed to complete onboarding' })
       }
-    } catch {
+    } catch (error) {
+      console.error('Onboarding error:', error)
       setFormError('root', { message: 'An error occurred during onboarding' })
     }
   }
@@ -167,7 +170,7 @@ function Onboarding() {
   if (isLoading) {
     return (
       <div className="onboarding-page">
-        <div className="container">
+        <div className="container-centered">
           <div className="onboarding-content">
             <p>Loading your profile...</p>
           </div>
@@ -178,7 +181,7 @@ function Onboarding() {
 
   return (
     <div className="onboarding-page">
-      <div className="container">
+      <div className="container-centered">
         <div className="onboarding-content">
           <h2>Welcome to Your PWA App!</h2>
           <p className="onboarding-subtitle">

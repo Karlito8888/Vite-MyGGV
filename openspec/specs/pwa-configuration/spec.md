@@ -4,25 +4,29 @@
 TBD - created by archiving change integrate-pwa-appimages. Update Purpose after archive.
 ## Requirements
 ### Requirement: PWA Manifest Icon Configuration
-The system SHALL provide comprehensive icon support for PWA installation and browser display while optimizing initial page load performance.
+The system SHALL provide comprehensive icon support for PWA installation and browser display while optimizing initial page load performance through preloading hooks.
 
-#### Scenario: HTML favicon optimization
+#### Scenario: HTML favicon optimization with preloading
 - **WHEN** a user loads the application
 - **THEN** the system SHALL display project-specific favicon from AppImages directory
-- **AND** SHALL preload critical icons to improve perceived performance
+- **AND** SHALL preload critical icons using `usePreloadIcons` hook to improve perceived performance
 - **AND** SHALL maintain compatibility with Vite PWA plugin configuration
+- **AND** SHALL preload data using `usePreloadData` hook for better UX
 
-#### Scenario: Icon hierarchy for different platforms
+#### Scenario: Enhanced icon hierarchy for different platforms
 - **WHEN** the application is accessed on different platforms
 - **THEN** the system SHALL provide appropriate icon sizes and formats
 - **AND** SHALL ensure proper fallback chain for browser compatibility
 - **AND** SHALL not conflict with PWA manifest icon configuration
+- **AND** SHALL use preloading strategies to reduce loading delays
 
-#### Scenario: Performance optimization
-- **WHEN** icons are loaded during initial page load
-- **THEN** critical icons SHALL be preloaded to reduce rendering delay
+#### Scenario: Advanced performance optimization
+- **WHEN** icons and data are loaded during initial page load
+- **THEN** critical icons SHALL be preloaded using `usePreloadIcons` hook to reduce rendering delay
+- **AND** critical data SHALL be preloaded using `usePreloadData` hook
 - **AND** SHALL use optimal file formats for each use case
 - **AND** SHALL maintain existing PWA caching strategies
+- **AND** SHALL handle preloading errors gracefully without breaking UI
 
 ### Requirement: Public Asset Path Convention
 

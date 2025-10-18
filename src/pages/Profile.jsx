@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../utils/useAuth";
-import { usePresence } from "../utils/PresenceContext";
 import { getCurrentUserProfile } from "../services/profilesService";
 import Avatar from "../components/Avatar";
 import "../styles/Profile.css";
 
 function Profile() {
   const { user } = useAuth();
-  const { isOnline } = usePresence();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -212,7 +210,6 @@ function Profile() {
               alt="Profile avatar"
               size="large"
               fallback={profile.full_name || profile.username || "User"}
-              isOnline={isOnline}
             />
           </div>
         </div>
