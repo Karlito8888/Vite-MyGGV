@@ -2,51 +2,26 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
-import { onboardingService } from '../services/onboardingService'
+
 import '../styles/Login.css'
 
 function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [checkingOnboarding, setCheckingOnboarding] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
   
-  const { user } = useAuth()
+  const { user, authTransitioning } = useAuth()
   const navigate = useNavigate()
 
+  // Redirect if user is already authenticated - let ProtectedRoute handle onboarding
   useEffect(() => {
-    const checkOnboardingAndRedirect = async () => {
-      if (!user) return
-      
-      setCheckingOnboarding(true)
-      setError('')
-      
-      try {
-        const result = await onboardingService.getOnboardingStatus(user.id)
-        
-        if (result.success) {
-          if (result.onboardingCompleted) {
-            navigate('/home')
-          } else {
-            navigate('/onboarding')
-          }
-        } else {
-          setError('Failed to check onboarding status')
-          navigate('/onboarding')
-        }
-    } catch {
-      setError('An error occurred during login')
-      navigate('/onboarding')
-    } finally {
-        setCheckingOnboarding(false)
-      }
+    if (user && !authTransitioning) {
+      navigate('/home', { replace: true })
     }
-
-    checkOnboardingAndRedirect()
-  }, [user, navigate])
+  }, [user, authTransitioning, navigate])
 
 
 
@@ -58,10 +33,11 @@ function Login() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          redirectTo: `${window.location.origin}/login`,
+          redirectTo: `${window.location.origin}/`,
         },
       })
       if (error) throw error
+      // Don't set loading to false here - let the auth transition handle it
     } catch (err) {
       setError(err.message || `${provider} login failed`)
       setLoading(false)
@@ -186,7 +162,8 @@ function Login() {
         if (error) throw error
       }
       
-      // Authentication successful, user will be redirected by useEffect
+      // Authentication successful - the auth state change will trigger redirect
+      // Don't wait here, let AuthContext handle the state change smoothly
     } catch (err) {
       console.error('Auth error:', err)
       if (isSignUpMode) {
@@ -209,13 +186,13 @@ function Login() {
     }
   }
 
-  if (checkingOnboarding) {
+  if (authTransitioning) {
     return (
       <div className="login-page df">
         <div className="container">
           <div className="login-card">
             <div className="text-center">
-              <div>Checking your account...</div>
+              <div>Signing you in...</div>
             </div>
           </div>
         </div>

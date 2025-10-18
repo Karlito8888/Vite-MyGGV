@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '../utils/useAuth'
-import '../styles/HamburgerButton.css'
+import '../styles/Footer.css'
 
 function HamburgerButton({ onToggle, isOpen = false }) {
   const { user } = useAuth()

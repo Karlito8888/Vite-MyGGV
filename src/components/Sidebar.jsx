@@ -1,10 +1,29 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Navigation from './Navigation'
 import '../styles/Sidebar.css'
 
 function Sidebar({ isOpen, onClose }) {
   const closeButtonRef = useRef(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const [shouldRender, setShouldRender] = useState(false)
+  
+  // Handle opening/closing animations
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true)
+      // Trigger animations after render
+      setTimeout(() => {
+        setIsVisible(true)
+      }, 10)
+    } else {
+      setIsVisible(false)
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        setShouldRender(false)
+      }, 300)
+    }
+  }, [isOpen])
   
   // Handle Escape key press and focus management
   useEffect(() => {
@@ -31,13 +50,13 @@ function Sidebar({ isOpen, onClose }) {
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!shouldRender) return null
 
   return (
     <>
       {/* Backdrop overlay */}
       <div 
-        className="sidebar-overlay" 
+        className={`sidebar-overlay ${isVisible ? 'open' : ''}`}
         onClick={onClose}
         aria-label="Close navigation menu"
         role="button"
@@ -51,7 +70,7 @@ function Sidebar({ isOpen, onClose }) {
       
       {/* Sidebar */}
       <div 
-        className="sidebar"
+        className={`sidebar ${isVisible ? 'open' : ''}`}
         role="navigation"
         aria-label="Main navigation menu"
         aria-modal="true"
@@ -68,7 +87,7 @@ function Sidebar({ isOpen, onClose }) {
         
         {/* Navigation component */}
         <div className="sidebar-navigation">
-          <Navigation />
+          <Navigation onClose={onClose} />
         </div>
       </div>
     </>

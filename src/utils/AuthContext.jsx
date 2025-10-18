@@ -12,6 +12,7 @@ export { AuthContext };
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authTransitioning, setAuthTransitioning] = useState(false);
 
   useEffect(() => {
     // Check for existing session on app load using getClaims() for better security
@@ -41,6 +42,9 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Set transitioning state to prevent UI flashes
+      setAuthTransitioning(true);
+      
       // When auth state changes, verify with getClaims() for security
       if (session?.user) {
         const { user, error, method } = await getCurrentUserWithClaims(true);
@@ -64,7 +68,10 @@ export function AuthProvider({ children }) {
       } else {
         setUser(null);
       }
+      
       setLoading(false);
+      // Small delay to ensure smooth transitions
+      setTimeout(() => setAuthTransitioning(false), 100);
     });
 
     return () => subscription.unsubscribe();
@@ -98,6 +105,7 @@ export function AuthProvider({ children }) {
     loginWithSocial,
     logout,
     loading,
+    authTransitioning,
   };
 
   return (

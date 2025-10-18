@@ -1,3 +1,4 @@
+/* Footer Layout */
 .footer {
   grid-area: foot;
   height: 60px;
@@ -9,7 +10,7 @@
     border-color 0.2s ease;
 }
 
-.footer-content {
+.footer .footer-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -17,31 +18,68 @@
   width: 100%;
 }
 
-/* Footer-specific overrides for components */
-.footer .hamburger-btn {
-  padding: 0.5rem;
-  min-height: 48px;
-  min-width: 48px;
-}
-
-.footer .hamburger-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
+/* Common Button Styles - Hamburger Button & Theme Toggle */
+.footer .hamburger-btn,
 .footer .theme-toggle {
-  /* Maintain 48x48px touch target for accessibility */
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  min-height: 48px;
-  /* Adjust padding to fit within footer height */
-  padding: 0.25rem;
-  /* Ensure proper positioning in footer */
-  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--color-border-button);
+  border-radius: 50%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  opacity: 0.8;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.footer-content p {
+.footer .hamburger-btn:hover:not(.disabled),
+.footer .theme-toggle:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.footer .hamburger-btn:active:not(.disabled),
+.footer .theme-toggle:active {
+  background-color: var(--color-primary);
+  color: white;
+  transform: scale(0.95);
+}
+
+.footer .hamburger-btn:focus:not(.disabled),
+.footer .theme-toggle:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.footer .hamburger-btn:focus:not(:focus-visible):not(.disabled),
+.footer .theme-toggle:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.footer .hamburger-btn:focus-visible:not(.disabled),
+.footer .theme-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Hamburger Button Specific Styles */
+.footer .hamburger-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Copyright Text */
+.footer .footer-content p {
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.5;
@@ -49,29 +87,13 @@
   text-align: center;
 }
 
-.sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
+.footer .theme-toggle svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: inherit;
+  transition: transform 0.2s ease;
 }
 
-/* Screen reader only improvements */
-.sr-only:focus {
-  position: static !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0.5rem !important;
-  margin: 0 !important;
-  overflow: visible !important;
-  clip: auto !important;
-  white-space: normal !important;
-  border: 2px solid var(--color-primary) !important;
+.footer .theme-toggle:hover svg {
+  transform: scale(1.1);
 }
-
-

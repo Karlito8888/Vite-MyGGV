@@ -1,10 +1,15 @@
 import { useAuth } from '../utils/useAuth'
 import { useAutoRedirect } from '../utils/useAutoRedirect'
+import { usePreloadData, usePreloadIcons } from '../hooks/usePreloadData'
 import '../styles/Home.css'
 
 function Home() {
   const { user, logout } = useAuth()
   useAutoRedirect()
+  
+  // Preload critical data and icons for better UX
+  usePreloadData()
+  usePreloadIcons()
 
   const handleLogout = () => {
     logout()

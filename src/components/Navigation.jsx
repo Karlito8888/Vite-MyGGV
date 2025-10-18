@@ -15,7 +15,7 @@ import {
 import { useState, useRef, useEffect, useCallback } from 'react'
 import '../styles/Navigation.css'
 
-function Navigation() {
+function Navigation({ onClose }) {
   const { user } = useAuth()
   const location = useLocation()
   const scrollContainerRef = useRef(null)
@@ -60,6 +60,13 @@ function Navigation() {
     }
   }, [])
 
+  // Handle navigation link clicks
+  const handleLinkClick = () => {
+    if (onClose) {
+      onClose()
+    }
+  }
+
   // Add global mouse event listeners for better drag handling
   useEffect(() => {
     if (!isDragging) return
@@ -101,6 +108,7 @@ function Navigation() {
           <Link 
             to="/home" 
             className={`nav-link ${location.pathname === '/home' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <HomeIcon className="nav-icon" />
             <span>Home</span>
@@ -108,6 +116,7 @@ function Navigation() {
           <Link 
             to="/messages" 
             className={`nav-link ${location.pathname === '/messages' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <ChatBubbleLeftRightIcon className="nav-icon" />
             <span>Messages</span>
@@ -115,6 +124,7 @@ function Navigation() {
           <Link 
             to="/games" 
             className={`nav-link ${location.pathname === '/games' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <PuzzlePieceIcon className="nav-icon" />
             <span>Games</span>
@@ -122,6 +132,7 @@ function Navigation() {
           <Link 
             to="/infos" 
             className={`nav-link ${location.pathname === '/infos' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <InformationCircleIcon className="nav-icon" />
             <span>Infos</span>
@@ -129,6 +140,7 @@ function Navigation() {
           <Link 
             to="/money" 
             className={`nav-link ${location.pathname === '/money' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <CurrencyDollarIcon className="nav-icon" />
             <span>Money</span>
@@ -136,6 +148,7 @@ function Navigation() {
           <Link 
             to="/weather" 
             className={`nav-link ${location.pathname === '/weather' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <CloudIcon className="nav-icon" />
             <span>Weather</span>
@@ -143,6 +156,7 @@ function Navigation() {
           <Link 
             to="/marketplace" 
             className={`nav-link ${location.pathname === '/marketplace' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <ShoppingBagIcon className="nav-icon" />
             <span>Marketplace</span>
@@ -152,6 +166,7 @@ function Navigation() {
             className="nav-link external-link" 
             target="_blank" 
             rel="noopener noreferrer"
+            onClick={handleLinkClick}
           >
             <MapPinIcon className="nav-icon" />
             <span>GPS</span>
@@ -159,6 +174,7 @@ function Navigation() {
           <Link 
             to="/location-requests" 
             className={`nav-link ${location.pathname === '/location-requests' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <BellIcon className="nav-icon" />
             <span>Requests</span>
@@ -166,6 +182,7 @@ function Navigation() {
           <Link 
             to="/profile" 
             className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
+            onClick={handleLinkClick}
           >
             <UserIcon className="nav-icon" />
             <span>Profile</span>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import '../styles/ThemeToggle.css'
+import '../styles/Footer.css'
 
 function ThemeToggle() {
   const [theme, setTheme] = useState(() => {

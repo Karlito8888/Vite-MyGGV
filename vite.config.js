@@ -11,7 +11,34 @@ export default defineConfig({
       registerType: "autoUpdate",
       // Include commonly referenced assets in service worker cache
       // Using root absolute paths for Vite public directory convention
-      includeAssets: ["/AppImages/ios/16.png", "/AppImages/ios/180.png"],
+      includeAssets: [
+        "/AppImages/ios/16.png", 
+        "/AppImages/ios/180.png",
+        "src/assets/img/*.png",
+        "src/assets/logos/*.png"
+      ],
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources'
+            }
+          }
+        ]
+      },
       manifest: {
         name: "MyGGV",
         short_name: "MyGGV",
@@ -125,6 +152,29 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'supabase': ['@supabase/supabase-js'],
+          'ui': ['@radix-ui/react-slot', 'class-variance-authority', 'clsx', 'tailwind-merge'],
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@supabase/supabase-js',
+      '@heroicons/react'
+    ]
+  },
   server: {
     port: 5173,
     host: true,

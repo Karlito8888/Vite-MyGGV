@@ -4,14 +4,14 @@ import { useAuth } from '../utils/useAuth'
 import { onboardingService } from '../services/onboardingService'
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading, authTransitioning } = useAuth()
   const [checkingOnboarding, setCheckingOnboarding] = useState(false)
   const [onboardingChecked, setOnboardingChecked] = useState(false)
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      if (!user || onboardingChecked) return
+      if (!user || onboardingChecked || authTransitioning) return
 
       setCheckingOnboarding(true)
       
@@ -23,6 +23,8 @@ function ProtectedRoute({ children }) {
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error)
+        // Default to onboarding if check fails
+        setOnboardingCompleted(false)
       } finally {
         setCheckingOnboarding(false)
         setOnboardingChecked(true)
@@ -30,9 +32,9 @@ function ProtectedRoute({ children }) {
     }
 
     checkOnboardingStatus()
-  }, [user, onboardingChecked])
+  }, [user, onboardingChecked, authTransitioning])
 
-  if (loading || checkingOnboarding) {
+  if (loading || checkingOnboarding || authTransitioning) {
     return (
       <div className="container text-center mt-6">
         <div>Loading...</div>

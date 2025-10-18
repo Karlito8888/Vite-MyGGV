@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { supabase } from './supabase';
-import { useAuth } from './useAuth';
+import { createContext, useState, useEffect, useContext } from "react";
+import { supabase } from "./supabase";
+import { useAuth } from "./useAuth";
 
 const PresenceContext = createContext();
 
@@ -10,10 +10,6 @@ export function PresenceProvider({ children }) {
   const [isOnline, setIsOnline] = useState(false);
   const [presenceChannel, setPresenceChannel] = useState(null);
   const { user } = useAuth();
-
-
-
-
 
   useEffect(() => {
     let channel = null;
@@ -43,44 +39,48 @@ export function PresenceProvider({ children }) {
 
         // Set up presence event handlers
         channel
-          .on('presence', { event: 'sync' }, () => {
+          .on("presence", { event: "sync" }, () => {
             const presenceState = channel.presenceState();
-            
+
             // Check if user is present in any key (Supabase uses generated keys)
             const userKeys = Object.keys(presenceState);
-            const isUserOnline = userKeys.some(key => {
+            const isUserOnline = userKeys.some((key) => {
               const presences = presenceState[key];
-              return presences.some(presence => presence.user_id === user.id);
+              return presences.some((presence) => presence.user_id === user.id);
             });
-            
 
-            
             // Use setTimeout to avoid synchronous setState
             setTimeout(() => {
               setIsOnline(isUserOnline);
             }, 0);
           })
-          .on('presence', { event: 'join' }, ({ newPresences }) => {
+          .on("presence", { event: "join" }, ({ newPresences }) => {
             // Check if the joined presence belongs to our user
-            const isUserJoin = newPresences.some(presence => presence.user_id === user.id);
+            const isUserJoin = newPresences.some(
+              (presence) => presence.user_id === user.id
+            );
             if (isUserJoin) {
               setTimeout(() => {
                 setIsOnline(true);
               }, 0);
             }
           })
-          .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+          .on("presence", { event: "leave" }, ({ leftPresences }) => {
             // Check if the left presence belongs to our user
-            const isUserLeave = leftPresences.some(presence => presence.user_id === user.id);
+            const isUserLeave = leftPresences.some(
+              (presence) => presence.user_id === user.id
+            );
             if (isUserLeave) {
               setTimeout(() => {
                 setIsOnline(false);
               }, 0);
             }
           })
-          .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+          .on("presence", { event: "leave" }, ({ leftPresences }) => {
             // Check if the left presence belongs to our user
-            const isUserLeave = leftPresences.some(presence => presence.user_id === user.id);
+            const isUserLeave = leftPresences.some(
+              (presence) => presence.user_id === user.id
+            );
             if (isUserLeave) {
               setTimeout(() => {
                 setIsOnline(false);
@@ -88,18 +88,14 @@ export function PresenceProvider({ children }) {
             }
           })
           .subscribe(async (status) => {
-
-            
-            if (status === 'SUBSCRIBED') {
+            if (status === "SUBSCRIBED") {
               // Track the user's presence with their info
               const trackData = {
                 user_id: user.id,
                 email: user.email,
                 online_at: new Date().toISOString(),
               };
-              
 
-              
               try {
                 await channel.track(trackData);
                 setTimeout(() => {
@@ -107,14 +103,13 @@ export function PresenceProvider({ children }) {
                 }, 0);
               } catch (error) {
                 // Keep error logging for debugging
-                 
-                console.error('Error tracking presence:', error);
+
+                console.error("Error tracking presence:", error);
               }
             }
           });
       } catch (error) {
-         
-        console.error('Error initializing presence:', error);
+        console.error("Error initializing presence:", error);
         setTimeout(() => {
           setIsOnline(false);
         }, 0);
@@ -143,7 +138,7 @@ export function PresenceProvider({ children }) {
 export const usePresence = () => {
   const context = useContext(PresenceContext);
   if (!context) {
-    throw new Error('usePresence must be used within a PresenceProvider');
+    throw new Error("usePresence must be used within a PresenceProvider");
   }
   return context;
 };

@@ -8,7 +8,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   z-index: var(--overlay-z-index);
   opacity: 0;
-  animation: fadeIn 0.3s ease-out forwards;
+  transition: opacity 0.3s ease-out;
 }
 
 /* Sidebar Container */
@@ -16,19 +16,19 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px;
+  width: 320px;
   max-width: 85vw;
   height: 100%;
   background-color: var(--color-background);
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   z-index: var(--sidebar-z-index);
   transform: translateX(-100%);
-  animation: slideIn 0.3s ease-out forwards;
+  transition: transform 0.3s ease-out;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   letter-spacing: 1px !important;
 }
 
@@ -104,9 +104,9 @@
   color: var(--color-text-primary);
   transition: all 0.2s ease;
   white-space: nowrap;
-  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   font-size: 1rem;
   letter-spacing: 1px !important;
   min-height: 48px;
@@ -158,23 +158,13 @@
   opacity: 0.7;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Sidebar states */
+.sidebar-overlay.open {
+  opacity: 1;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.sidebar.open {
+  transform: translateX(0);
 }
 
 /* Touch-friendly interactions */
@@ -182,16 +172,16 @@
   .sidebar-close-btn:hover {
     transform: none;
   }
-  
+
   .sidebar-close-btn:active {
     transform: scale(0.95);
     background-color: var(--color-surface);
   }
-  
+
   .sidebar-navigation .nav-link:hover {
     transform: none;
   }
-  
+
   .sidebar-navigation .nav-link:active {
     transform: scale(0.98);
     background-color: var(--color-surface);
@@ -200,24 +190,20 @@
 
 /* Mobile-first responsive adjustments */
 @media (min-width: 768px) {
-  .sidebar {
-    width: 300px;
-  }
-  
   .sidebar-close-btn {
     top: 1.5rem;
     right: 1.5rem;
   }
-  
+
   .sidebar-navigation {
     padding: 5rem 1.5rem 1.5rem 1.5rem;
   }
-  
+
   .sidebar-navigation .nav-link {
     padding: 1.25rem 1.5rem;
     font-size: 1.1rem;
   }
-  
+
   .sidebar-navigation .nav-icon {
     width: 1.5rem;
     height: 1.5rem;
@@ -230,26 +216,26 @@
     background-color: var(--color-background);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
   }
-  
+
   .sidebar-close-btn:hover {
     background-color: var(--color-surface);
   }
-  
+
   .sidebar-close-icon {
     color: var(--color-text-primary);
   }
-  
+
   .sidebar-navigation .nav-link {
     color: var(--color-text-primary);
     border-color: transparent;
   }
-  
+
   .sidebar-navigation .nav-link:hover {
     background-color: var(--color-surface);
     color: var(--color-primary);
     border-color: var(--color-primary);
   }
-  
+
   .sidebar-navigation .nav-link.active {
     background-color: var(--color-primary);
     color: white;
