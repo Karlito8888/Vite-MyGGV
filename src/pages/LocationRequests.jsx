@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../utils/useAuth'
-import { useAutoRedirect } from '../utils/useAutoRedirect'
 import { onboardingService } from '../services/onboardingService'
 import '../styles/LocationRequests.css'
 
 function LocationRequests() {
   const { user } = useAuth()
-  useAutoRedirect()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState({})

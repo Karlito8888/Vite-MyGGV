@@ -2,33 +2,35 @@
 
 ## Purpose
 Implement a conditional onboarding flow that checks user completion status after login and routes users appropriately.
-## Requirements
-### Requirement: Post-Login Onboarding Check
-The system SHALL check the user's onboarding completion status after successful authentication using claims-based user identification.
 
-#### Scenario: New user login
+## Requirements
+
+### Requirement: Post-Login Onboarding Check
+The system SHALL check the user's onboarding completion status after successful authentication using the centralized onboardingService instead of direct database queries.
+
+#### Scenario: New user login with centralized service
 - **WHEN** a user authenticates with `onboarding_completed = false` or null
 - **THEN** the system SHALL extract user ID from `data.claims.sub`
-- **AND** fetch the user's profile from `public.profiles` table using claims.sub
+- **AND** use onboardingService.getOnboardingStatusWithCache() to fetch status
 - **AND** redirect to `/onboarding` page if onboarding is incomplete
 - **AND** the user SHALL not access protected routes until onboarding is completed
 
-#### Scenario: Returning user login
+#### Scenario: Returning user login with centralized service
 - **WHEN** a user authenticates with `onboarding_completed = true`
 - **THEN** the system SHALL extract user ID from `data.claims.sub`
-- **AND** verify onboarding status using claims-based user identification
+- **AND** use onboardingService.getOnboardingStatusWithCache() to verify status
 - **AND** redirect directly to `/home` page
 - **AND** bypass the onboarding page
 
-#### Scenario: Onboarding status verification
+#### Scenario: Onboarding status verification with caching
 - **WHEN** checking onboarding status
 - **THEN** the system SHALL use `data.claims.sub` as the user identifier
-- **AND** fetch the user's profile from `public.profiles` table
+- **AND** use onboardingService.getOnboardingStatusWithCache() to fetch status with caching
 - **AND** verify the `onboarding_completed` boolean field
 - **AND** handle loading states appropriately during claims verification
 
 ### Requirement: Enhanced Onboarding Page
-The onboarding page SHALL use the Avatar component instead of URL input for avatar selection.
+The onboarding page SHALL use centralized redirect handling services for location approval notifications instead of implementing direct database queries.
 
 #### Scenario: Avatar component integration
 - **WHEN** displaying the onboarding form
@@ -37,21 +39,14 @@ The onboarding page SHALL use the Avatar component instead of URL input for avat
 - **AND** the component SHALL display the current avatar or default GGV logo
 - **AND** users SHALL be able to upload new avatars through the component
 
-#### Scenario: Avatar upload workflow
-- **WHEN** a user clicks to upload a new avatar
-- **THEN** the system SHALL open the basic square image cropper
-- **AND** the user SHALL be able to crop their image to square format
-- **AND** the cropped image SHALL be processed and prepared for upload
-- **AND** the system SHALL validate image format and size before upload
-
-#### Scenario: Default avatar display
-- **WHEN** a user has no existing avatar in their profile
-- **THEN** the onboarding page SHALL display the default GGV logo (src/assets/logos/ggv-100.png)
-- **AND** the default avatar SHALL be properly sized and styled
-- **AND** the system SHALL allow users to replace the default avatar with a custom upload
+#### Scenario: Location approval notification with centralized service
+- **WHEN** a user's location request is approved
+- **THEN** the system SHALL use onboardingService.checkAndHandleRedirect() for notification
+- **AND** the service SHALL handle both notification display and flag clearing
+- **AND** useAutoRedirect hook SHALL act as a thin wrapper around the service
 
 ### Requirement: Onboarding Service
-The onboarding service SHALL handle avatar file uploads, storage, and location assignment with comprehensive error handling.
+The onboarding service SHALL handle avatar file uploads, storage, and location assignment with comprehensive error handling and centralized status checking.
 
 #### Scenario: Enhanced error handling in onboarding service
 - **WHEN** an error occurs during onboarding
@@ -59,6 +54,13 @@ The onboarding service SHALL handle avatar file uploads, storage, and location a
 - **AND** SHALL log comprehensive debugging information
 - **AND** SHALL handle avatar upload failures gracefully
 - **AND** SHALL validate all required input fields before processing
+
+#### Scenario: Centralized status checking with caching
+- **WHEN** multiple components need onboarding status
+- **THEN** the onboardingService SHALL provide getOnboardingStatusWithCache() method
+- **AND** the service SHALL cache results for 5 minutes to reduce database queries
+- **AND** the cache SHALL be invalidated when status changes
+- **AND** all components SHALL use the same centralized method
 
 #### Scenario: Consistent onboarding completion
 - **WHEN** onboarding completes (both direct assignment and request scenarios)
@@ -68,19 +70,20 @@ The onboarding service SHALL handle avatar file uploads, storage, and location a
 - **AND** the service SHALL remove duplicate method implementations
 
 ### Requirement: Protected Route Enhancement
-Protected routes SHALL require both claims-based authentication and completed onboarding verification.
+Protected routes SHALL require both claims-based authentication and completed onboarding verification using the centralized service.
 
 #### Scenario: Protected route access without onboarding
 - **WHEN** an authenticated user with incomplete onboarding tries to access a protected route
 - **THEN** the system SHALL verify authentication using `getClaims()`
 - **AND** extract user ID from `data.claims.sub`
-- **AND** check onboarding status using claims-based identification
+- **AND** check onboarding status using centralized onboardingService
 - **AND** redirect to `/onboarding` page
 - **AND** preserve the intended destination for post-onboarding redirect
 
 #### Scenario: Protected route access with onboarding
 - **WHEN** an authenticated user with completed onboarding accesses a protected route
-- **THEN** the system SHALL verify authentication using claims-based approach
+- **THEN** the system SHALL verify authentication using `getClaims()`
+- **AND** use onboarding status from the centralized service
 - **AND** allow access to the requested route
 - **AND** not redirect to onboarding
 
@@ -108,7 +111,7 @@ The system SHALL collect mandatory location information during onboarding.
 - **AND** the system SHALL provide appropriate loading states during upload
 
 ### Requirement: Claims-Based Onboarding Service
-The onboarding service SHALL use claims-based user identification for all onboarding operations.
+The onboarding service SHALL use claims-based user identification for all onboarding operations and provide centralized status checking with caching.
 
 #### Scenario: Onboarding completion with claims
 - **WHEN** completing onboarding process
@@ -117,11 +120,14 @@ The onboarding service SHALL use claims-based user identification for all onboar
 - **AND** set `onboarding_completed` to true using claims.sub
 - **AND** handle avatar upload and location assignment with claims-based identification
 
-#### Scenario: Onboarding status retrieval
+#### Scenario: Onboarding status retrieval with caching
 - **WHEN** retrieving onboarding status
 - **THEN** the service SHALL use `data.claims.sub` to query the profiles table
+- **AND** implement caching to reduce database queries
 - **AND** return the current onboarding completion status
 - **AND** handle cases where no profile exists yet
+
+## ADDED Requirements
 
 ### Requirement: Centralized Redirect Handling Service
 The system SHALL provide a combined method in onboardingService.js that handles both redirect checking and flag clearing to eliminate duplication and ensure atomic operations.

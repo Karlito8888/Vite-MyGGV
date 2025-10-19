@@ -148,14 +148,15 @@ function Onboarding() {
         
         if (locationType === 'direct_assignment') {
           // Location was assigned directly and onboarding completed
+          alert('🎉 Onboarding completed successfully! Welcome to your app!')
           navigate('/home', { replace: true })
         } else if (locationType === 'pending_approval') {
           // Location request sent - allow access but show notification
-          // The backend will complete onboarding when approved via trigger
-          alert('Welcome! Your location request has been sent. You can start using the app while waiting for approval.')
+          alert('🎉 Onboarding completed! Your location request has been sent. You can start using the app while waiting for approval.')
           navigate('/home', { replace: true })
         } else {
           // Fallback - onboarding completed
+          alert('🎉 Onboarding completed successfully! Welcome to your app!')
           navigate('/home', { replace: true })
         }
       } else {

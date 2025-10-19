@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { supabase } from "./supabase";
-import { getCurrentUserWithClaims } from "./authHelpers";
 import { PresenceProvider } from "./PresenceContext";
+import { onboardingService } from "../services/onboardingService";
 
 const AuthContext = createContext();
 
@@ -15,49 +15,97 @@ export function AuthProvider({ children }) {
   const [authTransitioning, setAuthTransitioning] = useState(false);
 
   useEffect(() => {
-    // Check for existing session on app load using getClaims() for better security
-    const getClaimsSession = async () => {
-      const { user, error, method } = await getCurrentUserWithClaims();
+    // Check for existing session on app load using claims-based authentication
+    const initializeAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getClaims();
 
-      if (error) {
-        console.error(`Authentication failed using ${method}:`, error.message);
+        if (error) {
+          console.error('Failed to get claims:', error.message);
+          setUser(null);
+        } else if (data?.claims) {
+          // Extract user info from JWT claims using Supabase's getClaims() method
+          const userData = {
+            id: data.claims.sub,
+            email: data.claims.email,
+            role: data.claims.role || 'authenticated',
+            user_metadata: data.claims.user_metadata || {},
+            app_metadata: data.claims.app_metadata || {}
+          };
+          
+          // Fetch onboarding status
+          try {
+            const onboardingResult = await onboardingService.getOnboardingStatus(data.claims.sub);
+            userData.onboarding_completed = onboardingResult.onboardingCompleted;
+          } catch (error) {
+            console.error('Error fetching onboarding status:', error);
+            userData.onboarding_completed = false;
+          }
+          
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err);
         setUser(null);
-      } else {
-        setUser(user);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
-    getClaimsSession();
+    initializeAuth();
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Set transitioning state to prevent UI flashes
-      setAuthTransitioning(true);
-      
-      // When auth state changes, verify with getClaims() for security
-      if (session?.user) {
-        const { user, error, method } = await getCurrentUserWithClaims();
+      console.log('Auth state change:', event);
 
-        if (error || !user) {
-          console.error(
-            `Auth verification failed using ${method}:`,
-            error?.message || "No user found"
-          );
+      // Skip INITIAL_SESSION to avoid double processing
+      if (event === 'INITIAL_SESSION') {
+        return;
+      }
+
+      // Set transitioning state briefly
+      setAuthTransitioning(true);
+
+      if (session?.user) {
+        // Get claims for the authenticated user
+        const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+        
+        if (claimsError) {
+          console.error('Failed to get claims:', claimsError.message);
           setUser(null);
+        } else if (claimsData?.claims) {
+          const userData = {
+            id: claimsData.claims.sub,
+            email: claimsData.claims.email,
+            role: claimsData.claims.role || 'authenticated',
+            user_metadata: claimsData.claims.user_metadata || {},
+            app_metadata: claimsData.claims.app_metadata || {}
+          };
+          
+          // Fetch onboarding status
+          try {
+            const onboardingResult = await onboardingService.getOnboardingStatus(claimsData.claims.sub);
+            userData.onboarding_completed = onboardingResult.onboardingCompleted;
+          } catch (error) {
+            console.error('Error fetching onboarding status:', error);
+            userData.onboarding_completed = false;
+          }
+          
+          setUser(userData);
         } else {
-          setUser(user);
+          setUser(null);
         }
       } else {
         setUser(null);
       }
-      
+
       setLoading(false);
-      // Small delay to ensure smooth transitions
-      setTimeout(() => setAuthTransitioning(false), 100);
+      // Immediate transition end - no artificial delay
+      setAuthTransitioning(false);
     });
 
     return () => subscription.unsubscribe();

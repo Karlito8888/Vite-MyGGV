@@ -1,40 +1,11 @@
-import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../utils/useAuth'
-import { onboardingService } from '../services/onboardingService'
 
 function ProtectedRoute({ children }) {
-  const { user, loading, authTransitioning } = useAuth()
-  const [checkingOnboarding, setCheckingOnboarding] = useState(false)
-  const [onboardingChecked, setOnboardingChecked] = useState(false)
-  const [onboardingCompleted, setOnboardingCompleted] = useState(false)
+  const { user, loading } = useAuth()
 
-  useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      if (!user || onboardingChecked || authTransitioning) return
-
-      setCheckingOnboarding(true)
-      
-      try {
-        const result = await onboardingService.getOnboardingStatus(user.id)
-        
-        if (result.success) {
-          setOnboardingCompleted(result.onboardingCompleted)
-        }
-      } catch (error) {
-        console.error('Error checking onboarding status:', error)
-        // Default to onboarding if check fails
-        setOnboardingCompleted(false)
-      } finally {
-        setCheckingOnboarding(false)
-        setOnboardingChecked(true)
-      }
-    }
-
-    checkOnboardingStatus()
-  }, [user, onboardingChecked, authTransitioning])
-
-  if (loading || checkingOnboarding || authTransitioning) {
+  // Show loading during auth check
+  if (loading) {
     return (
       <div className="container text-center mt-6">
         <div>Loading...</div>
@@ -42,14 +13,17 @@ function ProtectedRoute({ children }) {
     )
   }
 
+  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" replace />
   }
 
-  if (onboardingChecked && !onboardingCompleted) {
+  // Redirect to onboarding if not completed
+  if (!user.onboarding_completed) {
     return <Navigate to="/onboarding" replace />
   }
 
+  // Render children if access is granted
   return children
 }
 

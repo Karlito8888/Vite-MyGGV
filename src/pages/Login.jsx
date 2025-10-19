@@ -13,15 +13,16 @@ function Login() {
   const [successMessage, setSuccessMessage] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
   
-  const { user, authTransitioning } = useAuth()
+  const { user, authTransitioning, onboardingCompleted } = useAuth()
   const navigate = useNavigate()
 
-  // Redirect if user is already authenticated - let ProtectedRoute handle onboarding
+  // Redirect if user is already authenticated
   useEffect(() => {
-    if (user && !authTransitioning) {
+    // Wait for auth to stabilize and onboarding status to load
+    if (user && !authTransitioning && !loading && onboardingCompleted !== null) {
       navigate('/home', { replace: true })
     }
-  }, [user, authTransitioning, navigate])
+  }, [user, authTransitioning, loading, onboardingCompleted, navigate])
 
 
 

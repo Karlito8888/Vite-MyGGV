@@ -10,18 +10,22 @@ function Sidebar({ isOpen, onClose }) {
   
   // Handle opening/closing animations
   useEffect(() => {
+    const timers = []
+    
     if (isOpen) {
-      setShouldRender(true)
-      // Trigger animations after render
-      setTimeout(() => {
-        setIsVisible(true)
-      }, 10)
+      timers.push(
+        setTimeout(() => setShouldRender(true), 0),
+        setTimeout(() => setIsVisible(true), 10)
+      )
     } else {
-      setIsVisible(false)
-      // Remove from DOM after animation completes
-      setTimeout(() => {
-        setShouldRender(false)
-      }, 300)
+      timers.push(
+        setTimeout(() => setIsVisible(false), 0),
+        setTimeout(() => setShouldRender(false), 300)
+      )
+    }
+    
+    return () => {
+      timers.forEach(timer => clearTimeout(timer))
     }
   }, [isOpen])
   

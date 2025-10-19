@@ -1,22 +1,4 @@
-# Authentication System
-
-## Purpose
-Provide consistent authentication state management across all components using the modern `useAuth` hook pattern.
-## Requirements
-### Requirement: Authentication Hook Usage
-All components SHALL use the `useAuth` hook for authentication state management instead of importing `AuthContext` directly.
-
-#### Scenario: Component authentication access
-- **WHEN** a component needs authentication state
-- **THEN** it SHALL import `useAuth` from `../utils/useAuth`
-- **AND** call `useAuth()` to get auth context
-- **AND** NOT import `AuthContext` directly
-
-#### Scenario: Consistent authentication pattern
-- **WHEN** reviewing component authentication code
-- **THEN** all components SHALL follow the same `useAuth` pattern
-- **AND** no components shall use `useContext(AuthContext)`
-
+## MODIFIED Requirements
 ### Requirement: User Authentication State
 The system SHALL provide user authentication state management through Supabase authentication using the modern `getClaims()` method with asymmetric JWT verification for optimal performance and security.
 
@@ -43,45 +25,6 @@ The system SHALL provide user authentication state management through Supabase a
 - **AND** maintain loading state during OAuth processing
 - **AND** redirect to appropriate destination after successful auth
 
-### Requirement: Email Password Authentication Form
-The login form SHALL collect both email address and password from users for authentication.
-
-#### Scenario: Form validation
-- **WHEN** user submits login form
-- **THEN** email field SHALL be validated for proper format
-- **AND** password field SHALL be required
-- **AND** appropriate error messages SHALL be displayed for invalid inputs
-
-#### Scenario: Password input security
-- **WHEN** user enters password
-- **THEN** password field SHALL use type="password"
-- **AND** password SHALL be masked during input
-- **AND** password SHALL not be displayed in error messages
-
-#### Scenario: Form submission
-- **WHEN** user submits valid email and password
-- **THEN** form SHALL call signInWithPassword with provided credentials
-- **AND** display loading state during authentication
-- **AND** handle success and error responses appropriately
-
-### Requirement: Real-time User Presence
-The system SHALL provide real-time user presence tracking using Supabase Presence functionality.
-
-#### Scenario: User comes online
-- **WHEN** a user authenticates and connects to the application
-- **THEN** the system SHALL subscribe to a presence channel for that user
-- **AND** the user's presence state SHALL be updated to "online"
-
-#### Scenario: User goes offline
-- **WHEN** a user disconnects or closes the application
-- **THEN** the system SHALL automatically clean up the presence state
-- **AND** the user's presence state SHALL be updated to "offline"
-
-#### Scenario: Presence state synchronization
-- **WHEN** multiple users are connected to the same presence channel
-- **THEN** the system SHALL broadcast presence changes to all connected clients
-- **AND** each client SHALL maintain an up-to-date presence state for all users
-
 ### Requirement: Authentication Context
 The authentication context SHALL manage user authentication state using claims-based data structure from Supabase's `getClaims()` method.
 
@@ -97,33 +40,6 @@ The authentication context SHALL manage user authentication state using claims-b
 - **THEN** the system SHALL clear claims-based authentication state
 - **AND** unsubscribe from presence channels
 - **AND** release all authentication-related resources
-
-### Requirement: OAuth Provider Support
-The system SHALL support multiple OAuth providers for user authentication including Google, Facebook, and Microsoft Azure.
-
-#### Scenario: Azure OAuth authentication
-- **WHEN** a user clicks "Continue with Microsoft" button
-- **THEN** the system SHALL initiate Azure OAuth flow via Supabase
-- **AND** redirect user to Microsoft authentication
-- **AND** handle authentication callback appropriately
-
-#### Scenario: OAuth provider loading states
-- **WHEN** any OAuth authentication is in progress
-- **THEN** the system SHALL display "Connecting..." text
-- **AND** disable the respective provider button
-- **AND** maintain consistent loading behavior across all providers
-
-#### Scenario: OAuth error handling
-- **WHEN** OAuth authentication fails for any provider
-- **THEN** the system SHALL display appropriate error message
-- **AND** clear loading state
-- **AND** allow user to retry authentication
-
-#### Scenario: Visual consistency across providers
-- **WHEN** displaying OAuth provider buttons
-- **THEN** all buttons SHALL follow consistent structure and styling
-- **AND** each provider SHALL use appropriate brand colors and logos
-- **AND** maintain responsive design across all viewport sizes
 
 ### Requirement: Authentication Loading States
 The system SHALL provide consistent loading states during all authentication operations using the faster `getClaims()` method for JWT verification.
@@ -158,6 +74,7 @@ The system SHALL handle route transitions during authentication using claims-bas
 - **AND** prevent flashing between login and protected content
 - **AND** show appropriate loading states
 
+## ADDED Requirements
 ### Requirement: Claims-Based User Data Structure
 The system SHALL use the claims structure from `getClaims()` as the primary source of user authentication data.
 
@@ -174,4 +91,3 @@ The system SHALL use the claims structure from `getClaims()` as the primary sour
 - **THEN** the system SHALL handle authentication as unauthenticated
 - **AND** set user state to null
 - **AND** clear any existing authentication data
-

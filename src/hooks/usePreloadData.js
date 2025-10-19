@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useAuth } from '../utils/useAuth'
 import { getProfileById } from '../services/profilesService'
 import { listLocations } from '../services/locationsService'
-import { onboardingService } from '../services/onboardingService'
+
 
 /**
  * Preload critical data for better UX
@@ -13,7 +13,7 @@ import { onboardingService } from '../services/onboardingService'
  * @example
  * ```jsx
  * function Home() {
- *   usePreloadData(); // Preloads user profile, locations, and requests
+ *   usePreloadData(); // Preloads user profile and locations
  *   return <div>Home content</div>;
  * }
  * ```
@@ -32,14 +32,13 @@ export function usePreloadData() {
         // Preload available locations for potential future use
         const locationsPromise = listLocations().catch(() => null)
         
-        // Preload user's location requests
-        const locationRequestsPromise = onboardingService.getUserLocationRequests(user.id).catch(() => null)
+        // Note: getUserLocationRequests removed due to SQL query issues
+        // Location requests will be loaded when needed, not preloaded
 
         // Wait for all to complete (but don't block UI)
         await Promise.allSettled([
           profilePromise,
-          locationsPromise,
-          locationRequestsPromise
+          locationsPromise
         ])
         
         console.debug('Data preloading completed for user:', user.id)

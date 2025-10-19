@@ -57,6 +57,11 @@ export const onboardingService = {
     }
   },
 
+  /**
+   * Get onboarding status from database
+   * @param {string} userId - User ID
+   * @returns {Promise<Object>} Status object with success, onboardingCompleted, and error
+   */
   async getOnboardingStatus(userId) {
     try {
       const { data, error } = await supabase
@@ -65,6 +70,15 @@ export const onboardingService = {
         .eq('id', userId)
         .single()
 
+      // Handle case where profile doesn't exist yet
+      if (error && error.code === 'PGRST116') {
+        // No rows returned - user needs onboarding
+        return {
+          success: true,
+          onboardingCompleted: false
+        }
+      }
+      
       if (error) throw error
       
       return {
@@ -409,47 +423,6 @@ export const onboardingService = {
 
 
 
-  /**
-   * Check if user should be redirected to home
-   * @param {string} userId - User ID
-   * @returns {Promise<boolean>} Whether redirect is needed
-   */
-  async checkRedirectNeeded(userId) {
-    try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('redirect_to_home')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-
-      return profile?.redirect_to_home || false
-    } catch (error) {
-      console.error('Error checking redirect status:', error)
-      return false
-    }
-  },
-
-  /**
-   * Clear redirect flag after handling
-   * @param {string} userId - User ID
-   * @returns {Promise<boolean>} Success status
-   */
-  async clearRedirectFlag(userId) {
-    try {
-      const { error } = await supabase.rpc('clear_redirect_flag', {
-        user_id: userId
-      })
-
-      if (error) throw error
-
-      return true
-    } catch (error) {
-      console.error('Error clearing redirect flag:', error)
-      return false
-    }
-  }
 
 
 }
