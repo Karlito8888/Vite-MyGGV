@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useAuth } from '../utils/useAuth'
 import { getProfileById } from '../services/profilesService'
 import { listLocations } from '../services/locationsService'
+import { useUser } from '../contexts/UserContext'
 
 
 /**
@@ -19,13 +19,13 @@ import { listLocations } from '../services/locationsService'
  * ```
  */
 export function usePreloadData() {
-  const { user } = useAuth()
-
+  const { user } = useUser()
+  
   useEffect(() => {
-    if (!user) return
-
     const preloadData = async () => {
       try {
+        if (!user) return
+
         // Preload user profile data
         const profilePromise = getProfileById(user.id).catch(() => null)
         

@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
 import Sidebar from './Sidebar'
+import { UserProvider } from '../contexts/UserContext'
+import { PresenceProvider } from '../utils/PresenceContext'
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -16,14 +18,18 @@ function Layout() {
   }
 
   return (
-    <div className="app-layout">
-      <Header />
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-      <main className="main-content">
-        <Outlet />
-      </main>
-      <Footer onMenuToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-    </div>
+    <UserProvider>
+      <PresenceProvider>
+        <div className="app-layout">
+          <Header />
+          <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+          <main className="main-content">
+            <Outlet />
+          </main>
+          <Footer onMenuToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        </div>
+      </PresenceProvider>
+    </UserProvider>
   )
 }
 

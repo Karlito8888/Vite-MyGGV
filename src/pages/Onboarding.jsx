@@ -1,28 +1,29 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuth } from '../utils/useAuth'
-import { onboardingService } from '../services/onboardingService'
-import { avatarService } from '../services/avatarService'
-import { onboardingSchema } from '../schemas/onboardingSchema'
-import Avatar from '../components/Avatar'
-import Picker from 'react-mobile-picker'
-import '../styles/Onboarding.css'
-
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ClimbingBoxLoader } from "react-spinners";
+import { supabase } from "../utils/supabase";
+import { onboardingService } from "../services/onboardingService";
+import { avatarService } from "../services/avatarService";
+import { onboardingSchema } from "../schemas/onboardingSchema";
+import { useUser } from "../contexts/UserContext";
+import Avatar from "../components/Avatar";
+import Picker from "react-mobile-picker";
+import "../styles/Onboarding.css";
 
 function Onboarding() {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const [isLoading, setIsLoading] = useState(true)
-  const [availableBlocks, setAvailableBlocks] = useState([])
-  const [availableLots, setAvailableLots] = useState([])
-  const [loadingBlocks, setLoadingBlocks] = useState(false)
-  const [loadingLots, setLoadingLots] = useState(false)
-  const [currentAvatar, setCurrentAvatar] = useState('')
-  const [avatarFile, setAvatarFile] = useState(null)
-  
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(true);
+  const [showInitialLoader, setShowInitialLoader] = useState(true);
+  const [availableBlocks, setAvailableBlocks] = useState([]);
+  const [availableLots, setAvailableLots] = useState([]);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
+  const [loadingLots, setLoadingLots] = useState(false);
+  const [currentAvatar, setCurrentAvatar] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+
   const {
     control,
     handleSubmit,
@@ -31,143 +32,181 @@ function Onboarding() {
     clearErrors,
     reset,
     watch,
-    setValue
+    setValue,
   } = useForm({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
-      username: '',
-      avatar_url: '',
-      block: '',
-      lot: ''
+      username: "",
+      avatar_url: "",
+      block: "",
+      lot: "",
     },
-    mode: 'onBlur'
-  })
+    mode: "onBlur",
+  });
 
-  const selectedBlock = watch('block')
+  const selectedBlock = watch("block");
 
   // Fetch available blocks on component mount
   useEffect(() => {
     const fetchBlocks = async () => {
-      setLoadingBlocks(true)
+      setLoadingBlocks(true);
       try {
-        const result = await onboardingService.getAvailableBlocks()
+        const result = await onboardingService.getAvailableBlocks();
         if (result.success) {
-          setAvailableBlocks(result.data)
+          setAvailableBlocks(result.data);
         }
       } catch (error) {
-        console.error('Error fetching blocks:', error)
+        console.error("Error fetching blocks:", error);
       } finally {
-        setLoadingBlocks(false)
+        setLoadingBlocks(false);
       }
-    }
+    };
 
-    fetchBlocks()
-  }, [])
+    fetchBlocks();
+  }, []);
 
   // Fetch lots when block changes
   useEffect(() => {
     if (!selectedBlock) {
-      setAvailableLots([])
-      setValue('lot', '')
-      return
+      setAvailableLots([]);
+      setValue("lot", "");
+      return;
     }
 
     const fetchLots = async () => {
-      setLoadingLots(true)
+      setLoadingLots(true);
       try {
-        const result = await onboardingService.getLotsByBlock(selectedBlock)
+        const result = await onboardingService.getLotsByBlock(selectedBlock);
         if (result.success) {
-          setAvailableLots(result.data)
-          setValue('lot', '') // Reset lot when block changes
+          setAvailableLots(result.data);
+          setValue("lot", ""); // Reset lot when block changes
         }
       } catch (error) {
-        console.error('Error fetching lots:', error)
+        console.error("Error fetching lots:", error);
       } finally {
-        setLoadingLots(false)
+        setLoadingLots(false);
       }
-    }
+    };
 
-    fetchLots()
-  }, [selectedBlock, setValue])
+    fetchLots();
+  }, [selectedBlock, setValue]);
 
   useEffect(() => {
     if (!user) {
-      navigate('/login')
-      return
+      navigate("/login");
+      return;
     }
 
-    // Fetch existing profile data for pre-population
-    const fetchProfileData = async () => {
+    const checkOnboardingStatus = async () => {
       try {
-        const result = await onboardingService.getProfileData(user.id)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", user.id)
+          .single();
+
+        setShowInitialLoader(false);
+
+        if (profile?.onboarding_completed) {
+          navigate("/home");
+          return;
+        }
+
+        // Fetch profile data for onboarding form
+        const result = await onboardingService.getProfileData(user.id);
         if (result.success) {
-          reset(result.data)
-          setCurrentAvatar(result.data.avatar_url || '')
+          reset(result.data);
+          setCurrentAvatar(result.data.avatar_url || "");
         }
       } catch (error) {
-        console.error('Error fetching profile data:', error)
+        console.error("Error checking onboarding status:", error);
+        setShowInitialLoader(false);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchProfileData()
-  }, [user, navigate, reset])
+    checkOnboardingStatus();
+  }, [user, navigate, reset]);
 
   const handleAvatarUpload = async (imageBlob) => {
     try {
-      const result = await avatarService.uploadAvatar(user.id, imageBlob)
+      const result = await avatarService.uploadAvatar(user.id, imageBlob);
       if (result.success) {
-        setCurrentAvatar(result.data.url)
-        setAvatarFile(imageBlob)
-        setValue('avatar_url', result.data.url)
-        return result.data.url
+        setCurrentAvatar(result.data.url);
+        setAvatarFile(imageBlob);
+        setValue("avatar_url", result.data.url);
+        return result.data.url;
       } else {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
     } catch (error) {
-      console.error('Avatar upload error:', error)
-      throw error
+      console.error("Avatar upload error:", error);
+      throw error;
     }
-  }
+  };
 
   const onSubmit = async (data) => {
     try {
       // Include avatar file in submission if available
-      const submissionData = { ...data }
+      const submissionData = { ...data };
       if (avatarFile && currentAvatar) {
-        submissionData.avatar_file = avatarFile
-        submissionData.avatar_url = currentAvatar
+        submissionData.avatar_file = avatarFile;
+        submissionData.avatar_url = currentAvatar;
       }
 
       // Use completeOnboarding which properly handles onboarding_completed flag
-      const result = await onboardingService.completeOnboarding(user.id, submissionData)
-      
+      const result = await onboardingService.completeOnboarding(
+        user.id,
+        submissionData
+      );
+
       if (result.success) {
-        const locationType = result.locationResult?.type
-        
-        if (locationType === 'direct_assignment') {
+        const locationType = result.locationResult?.type;
+
+        if (locationType === "direct_assignment") {
           // Location was assigned directly and onboarding completed
-          alert('🎉 Onboarding completed successfully! Welcome to your app!')
-          navigate('/home', { replace: true })
-        } else if (locationType === 'pending_approval') {
+          alert("🎉 Onboarding completed successfully! Welcome to your app!");
+          navigate("/home", { replace: true });
+        } else if (locationType === "pending_approval") {
           // Location request sent - allow access but show notification
-          alert('🎉 Onboarding completed! Your location request has been sent. You can start using the app while waiting for approval.')
-          navigate('/home', { replace: true })
+          alert(
+            "🎉 Onboarding completed! Your location request has been sent. You can start using the app while waiting for approval."
+          );
+          navigate("/home", { replace: true });
         } else {
           // Fallback - onboarding completed
-          alert('🎉 Onboarding completed successfully! Welcome to your app!')
-          navigate('/home', { replace: true })
+          alert("🎉 Onboarding completed successfully! Welcome to your app!");
+          navigate("/home", { replace: true });
         }
       } else {
-        setFormError('root', { message: result.error || 'Failed to complete onboarding' })
+        setFormError("root", {
+          message: result.error || "Failed to complete onboarding",
+        });
       }
     } catch (error) {
-      console.error('Onboarding error:', error)
-      setFormError('root', { message: 'An error occurred during onboarding' })
+      console.error("Onboarding error:", error);
+      setFormError("root", { message: "An error occurred during onboarding" });
     }
+  };
+
+  // Show initial loader for 3 seconds
+  if (showInitialLoader) {
+    return (
+      <div className="onboarding-page">
+        <div className="container-centered">
+          <div className="loader-wrapper">
+            <div className="loader-container">
+              <ClimbingBoxLoader color="var(--color-primary)" size={35} loading={true} />
+              <p className="loader-text">Preparing your experience...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  // Show loading state while fetching profile data
   if (isLoading) {
     return (
       <div className="onboarding-page">
@@ -177,7 +216,7 @@ function Onboarding() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -188,9 +227,11 @@ function Onboarding() {
           <p className="onboarding-subtitle">
             Let's get you set up with your essential information
           </p>
-          
-          {errors.root && <div className="error-message">{errors.root.message}</div>}
-          
+
+          {errors.root && (
+            <div className="error-message">{errors.root.message}</div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
             <div className="form-group">
               <label htmlFor="username">Username</label>
@@ -204,11 +245,11 @@ function Onboarding() {
                     id="username"
                     placeholder="Choose a username"
                     maxLength="50"
-                    className={errors.username ? 'error' : ''}
+                    className={errors.username ? "error" : ""}
                     onChange={(e) => {
-                      field.onChange(e)
+                      field.onChange(e);
                       if (errors.username) {
-                        clearErrors('username')
+                        clearErrors("username");
                       }
                     }}
                   />
@@ -217,7 +258,9 @@ function Onboarding() {
               {errors.username && (
                 <span className="error-text">{errors.username.message}</span>
               )}
-              <small>Letters, numbers, and underscores only (min 3 characters)</small>
+              <small>
+                Letters, numbers, and underscores only (min 3 characters)
+              </small>
             </div>
 
             <div className="form-group">
@@ -226,7 +269,7 @@ function Onboarding() {
                 <Avatar
                   src={currentAvatar}
                   size="large"
-                  fallback={watch('username') || 'U'}
+                  fallback={watch("username") || "U"}
                   uploadMode={true}
                   onUpload={handleAvatarUpload}
                   defaultAvatar={true}
@@ -239,12 +282,7 @@ function Onboarding() {
               <Controller
                 name="avatar_url"
                 control={control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="hidden"
-                  />
-                )}
+                render={({ field }) => <input {...field} type="hidden" />}
               />
             </div>
 
@@ -259,11 +297,11 @@ function Onboarding() {
                       <div className="picker-loading">Loading blocks...</div>
                     ) : availableBlocks.length > 0 ? (
                       <Picker
-                        value={{ block: field.value || '' }}
+                        value={{ block: field.value || "" }}
                         onChange={(newValue) => {
-                          field.onChange(newValue.block)
+                          field.onChange(newValue.block);
                           if (errors.block) {
-                            clearErrors('block')
+                            clearErrors("block");
                           }
                         }}
                         wheelMode="natural"
@@ -272,9 +310,14 @@ function Onboarding() {
                       >
                         <Picker.Column name="block">
                           {availableBlocks.map((block, index) => (
-                            <Picker.Item key={`block-${index}-${block}`} value={block}>
+                            <Picker.Item
+                              key={`block-${index}-${block}`}
+                              value={block}
+                            >
                               {({ selected }) => (
-                                <div className={`picker-item ${selected ? 'selected' : ''}`}>
+                                <div
+                                  className={`picker-item ${selected ? "selected" : ""}`}
+                                >
                                   {block}
                                 </div>
                               )}
@@ -283,7 +326,9 @@ function Onboarding() {
                         </Picker.Column>
                       </Picker>
                     ) : (
-                      <div className="picker-placeholder">No blocks available</div>
+                      <div className="picker-placeholder">
+                        No blocks available
+                      </div>
                     )}
                   </div>
                 )}
@@ -300,18 +345,22 @@ function Onboarding() {
                 name="lot"
                 control={control}
                 render={({ field }) => (
-                  <div className={`wheel-picker-container ${!selectedBlock ? 'disabled' : ''}`}>
+                  <div
+                    className={`wheel-picker-container ${!selectedBlock ? "disabled" : ""}`}
+                  >
                     {!selectedBlock ? (
-                      <div className="picker-placeholder">Select a block first</div>
+                      <div className="picker-placeholder">
+                        Select a block first
+                      </div>
                     ) : loadingLots ? (
                       <div className="picker-loading">Loading lots...</div>
                     ) : availableLots.length > 0 ? (
                       <Picker
-                        value={{ lot: field.value || '' }}
+                        value={{ lot: field.value || "" }}
                         onChange={(newValue) => {
-                          field.onChange(newValue.lot)
+                          field.onChange(newValue.lot);
                           if (errors.lot) {
-                            clearErrors('lot')
+                            clearErrors("lot");
                           }
                         }}
                         wheelMode="natural"
@@ -320,9 +369,14 @@ function Onboarding() {
                       >
                         <Picker.Column name="lot">
                           {availableLots.map((lot, index) => (
-                            <Picker.Item key={`lot-${index}-${lot}`} value={lot}>
+                            <Picker.Item
+                              key={`lot-${index}-${lot}`}
+                              value={lot}
+                            >
                               {({ selected }) => (
-                                <div className={`picker-item ${selected ? 'selected' : ''}`}>
+                                <div
+                                  className={`picker-item ${selected ? "selected" : ""}`}
+                                >
                                   {lot}
                                 </div>
                               )}
@@ -331,7 +385,9 @@ function Onboarding() {
                         </Picker.Column>
                       </Picker>
                     ) : (
-                      <div className="picker-placeholder">No lots available</div>
+                      <div className="picker-placeholder">
+                        No lots available
+                      </div>
                     )}
                   </div>
                 )}
@@ -342,19 +398,24 @@ function Onboarding() {
               <small>Select your lot number from available locations</small>
             </div>
 
-            <button 
+            <button
               type="submit"
               className="btn btn-primary"
               disabled={isSubmitting}
-              style={{ width: '100%', maxWidth: '300px', margin: '2rem auto 0', display: 'block' }}
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+                margin: "2rem auto 0",
+                display: "block",
+              }}
             >
-              {isSubmitting ? 'Completing Setup...' : 'Complete Setup'}
+              {isSubmitting ? "Completing Setup..." : "Complete Setup"}
             </button>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Onboarding
+export default Onboarding;

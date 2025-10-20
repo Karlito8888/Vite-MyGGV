@@ -17,12 +17,12 @@ import '../styles/Avatar.css'
  * @param {Function} props.onUpload - Callback when avatar is uploaded
  * @param {boolean} props.defaultAvatar - Use default GGV avatar as fallback
  */
-function Avatar({ 
-  src, 
-  alt = 'User avatar', 
-  size = 'medium', 
-  fallback = 'U', 
-  className = '', 
+function Avatar({
+  src,
+  alt = 'User avatar',
+  size = 'medium',
+  fallback = 'U',
+  className = '',
   uploadMode = false,
   onUpload,
   defaultAvatar = false
@@ -38,27 +38,9 @@ function Avatar({
 
 
 
-  // Determine if we should show fallback
   const showFallback = !src || imageError
-
-  // Get avatar source (use default avatar if enabled and no src)
-  const getAvatarSrc = () => {
-    if (src && !imageError) {
-      return src
-    }
-    if (defaultAvatar && showFallback) {
-      return avatarService.getDefaultAvatarUrl()
-    }
-    return null
-  }
-
-  // Generate fallback text (use first character if it's a letter, otherwise use provided fallback)
-  const getFallbackText = () => {
-    if (fallback && fallback.length > 0 && /[a-zA-Z]/.test(fallback[0])) {
-      return fallback[0].toUpperCase()
-    }
-    return 'U'
-  }
+  const avatarSrc = (src && !imageError) ? src : (defaultAvatar ? avatarService.getDefaultAvatarUrl() : null)
+  const fallbackText = (fallback && /[a-zA-Z]/.test(fallback[0])) ? fallback[0].toUpperCase() : 'U'
 
   const handleImageError = () => {
     setImageError(true)
@@ -81,7 +63,7 @@ function Avatar({
 
     setSelectedFile(file)
     setShowCropper(true)
-    
+
     // Reset file input
     event.target.value = ''
   }
@@ -115,24 +97,18 @@ function Avatar({
     'avatar',
     `avatar--${size}`,
     showFallback ? 'avatar--fallback' : '',
-    !imageLoaded && getAvatarSrc() ? 'avatar--loading' : '',
+    !imageLoaded && avatarSrc ? 'avatar--loading' : '',
     isOnline ? 'avatar--online' : '',
     uploadMode ? 'avatar--upload-mode' : '',
     className
   ].filter(Boolean).join(' ')
-
-
-
-
-
-  const avatarSrc = getAvatarSrc()
 
   return (
     <>
       <div className={avatarClasses}>
         {showFallback && !avatarSrc ? (
           <div className="avatar__fallback">
-            <span className="avatar__fallback-text">{getFallbackText()}</span>
+            <span className="avatar__fallback-text">{fallbackText}</span>
           </div>
         ) : (
           <>
@@ -145,12 +121,12 @@ function Avatar({
             />
             {!imageLoaded && avatarSrc && (
               <div className="avatar__loading-placeholder">
-                <span className="avatar__fallback-text">{getFallbackText()}</span>
+                <span className="avatar__fallback-text">{fallbackText}</span>
               </div>
             )}
           </>
         )}
-        
+
         {uploadMode && (
           <div className="avatar__upload-overlay">
             <input

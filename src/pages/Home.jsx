@@ -1,16 +1,19 @@
-import { useAuth } from '../utils/useAuth'
+import { supabase } from '../utils/supabase'
 import { usePreloadData, usePreloadIcons } from '../hooks/usePreloadData'
+import { useUser } from '../contexts/UserContext'
 import '../styles/Home.css'
 
 function Home() {
-  const { user, logout } = useAuth()
+  const { user } = useUser()
   
   // Preload critical data and icons for better UX
   usePreloadData()
   usePreloadIcons()
 
-  const handleLogout = () => {
-    logout()
+
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
   }
 
   return (

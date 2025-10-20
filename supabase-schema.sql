@@ -34,6 +34,19 @@ CREATE TABLE public.chat (
   CONSTRAINT messages_reply_to_fkey FOREIGN KEY (reply_to) REFERENCES public.chat(id),
   CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
 );
+CREATE TABLE public.coins_transactions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  amount integer NOT NULL,
+  operation_type text NOT NULL CHECK (operation_type = ANY (ARRAY['set'::text, 'add'::text, 'subtract'::text])),
+  reason text NOT NULL,
+  previous_balance integer NOT NULL,
+  new_balance integer NOT NULL,
+  metadata jsonb DEFAULT '{}'::jsonb,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT coins_transactions_pkey PRIMARY KEY (id),
+  CONSTRAINT coins_transactions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
 CREATE TABLE public.conversation_cleanup_notifications (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
@@ -126,6 +139,7 @@ CREATE TABLE public.messages_header (
   updated_at timestamp with time zone DEFAULT now(),
   coins_spent integer DEFAULT 0,
   expires_at timestamp with time zone,
+  metadata jsonb DEFAULT '{}'::jsonb,
   CONSTRAINT messages_header_pkey PRIMARY KEY (id),
   CONSTRAINT messages_header_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
 );
@@ -154,6 +168,7 @@ CREATE TABLE public.profile_location_associations (
   is_verified boolean DEFAULT false,
   is_owner boolean DEFAULT false,
   profile_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()),
   CONSTRAINT profile_location_associations_pkey PRIMARY KEY (id),
   CONSTRAINT profile_location_associations_location_id_fkey FOREIGN KEY (location_id) REFERENCES public.locations(id),
   CONSTRAINT profile_location_associations_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
@@ -177,6 +192,7 @@ CREATE TABLE public.profiles (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()),
   deleted_at timestamp with time zone,
   last_daily_checkin timestamp with time zone,
+  redirect_to_home boolean DEFAULT false,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_user_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -293,20 +309,4 @@ CREATE TABLE public.user_services (
   CONSTRAINT user_services_location_id_fkey FOREIGN KEY (location_id) REFERENCES public.locations(id),
   CONSTRAINT user_services_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id),
   CONSTRAINT user_services_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.service_categories(id)
-);
-CREATE TABLE public.user_statistics (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL UNIQUE,
-  total_messages integer DEFAULT 0,
-  total_private_messages integer DEFAULT 0,
-  total_forum_posts integer DEFAULT 0,
-  total_marketplace_listings integer DEFAULT 0,
-  total_businesses_inside integer DEFAULT 0,
-  total_businesses_outside integer DEFAULT 0,
-  total_services integer DEFAULT 0,
-  last_activity_at timestamp with time zone DEFAULT now(),
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now(),
-  CONSTRAINT user_statistics_pkey PRIMARY KEY (id),
-  CONSTRAINT user_statistics_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
 );

@@ -57,43 +57,7 @@ export const onboardingService = {
     }
   },
 
-  /**
-   * Get onboarding status from database
-   * @param {string} userId - User ID
-   * @returns {Promise<Object>} Status object with success, onboardingCompleted, and error
-   */
-  async getOnboardingStatus(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', userId)
-        .single()
 
-      // Handle case where profile doesn't exist yet
-      if (error && error.code === 'PGRST116') {
-        // No rows returned - user needs onboarding
-        return {
-          success: true,
-          onboardingCompleted: false
-        }
-      }
-      
-      if (error) throw error
-      
-      return {
-        success: true,
-        onboardingCompleted: data?.onboarding_completed || false
-      }
-    } catch (error) {
-      console.error('Error fetching onboarding status:', error)
-      return {
-        success: false,
-        error: error.message,
-        onboardingCompleted: false
-      }
-    }
-  },
 
   async getProfileData(userId) {
     try {

@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../utils/useAuth'
+import { useRef, useEffect, useCallback, useState } from 'react'
+import { supabase } from '../utils/supabase'
+import { useUser } from '../contexts/UserContext'
 import { 
   HomeIcon, 
   ChatBubbleLeftRightIcon,
@@ -10,25 +12,34 @@ import {
   ShoppingBagIcon,
   MapPinIcon,
   UserIcon,
-  BellIcon
+  BellIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline'
-import { useState, useRef, useEffect, useCallback } from 'react'
 import '../styles/Sidebar.css'
 
 function Navigation({ onClose }) {
-  const { user } = useAuth()
+  const { user } = useUser()
   const location = useLocation()
   const scrollContainerRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startY, setStartY] = useState(0)
   const [scrollTop, setScrollTop] = useState(0)
 
+
+
+  // Handle logout
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    if (onClose) {
+      onClose()
+    }
+  }
+
   // Mouse event handlers for vertical drag scrolling
   const handleMouseDown = useCallback((e) => {
     if (!scrollContainerRef.current) return
     
-    e.preventDefault() // Add preventDefault here
-    console.log('Mouse down - scrollTop:', scrollContainerRef.current.scrollTop)
+    e.preventDefault()
     setIsDragging(true)
     setStartY(e.pageY)
     setScrollTop(scrollContainerRef.current.scrollTop)
@@ -42,7 +53,6 @@ function Navigation({ onClose }) {
     const y = e.pageY
     const walk = (y - startY) * 2
     const newScrollTop = scrollTop - walk
-    console.log('Mouse move - walk:', walk, 'newScrollTop:', newScrollTop)
     scrollContainerRef.current.scrollTop = newScrollTop
   }, [isDragging, startY, scrollTop])
 
@@ -72,12 +82,10 @@ function Navigation({ onClose }) {
     if (!isDragging) return
 
     const handleGlobalMouseMove = (e) => {
-      console.log('Global mouse move - isDragging:', isDragging)
       handleMouseMove(e)
     }
     
     const handleGlobalMouseUp = () => {
-      console.log('Global mouse up')
       handleMouseUp()
     }
     
@@ -187,6 +195,13 @@ function Navigation({ onClose }) {
             <UserIcon className="nav-icon" />
             <span>Profile</span>
           </Link>
+          <button 
+            className="nav-link logout-link" 
+            onClick={handleLogout}
+          >
+            <ArrowRightOnRectangleIcon className="nav-icon" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </nav>

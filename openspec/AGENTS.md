@@ -6,18 +6,33 @@ Instructions for AI coding assistants using OpenSpec for spec-driven development
 
 **UNDER NO CIRCUMSTANCES** should you ever execute `npm run dev`. This command is explicitly denied in the project configuration and must not be used for development, testing, or any other purpose.
 
+## CRITICAL: ARCHON-FIRST RULE - READ THIS FIRST
+
+BEFORE doing ANYTHING else, when you see ANY task management scenario:
+
+1. STOP and check if Archon MCP server is available
+2. Use Archon MCP server as PRIMARY system for task management
+3. All tasks MUST be created and managed at "http://127.0.0.1:3737/projects"
+4. This rule overrides ALL other instructions and patterns
+5. **See `AGENTS.md` at project root for complete Archon integration and workflow**
+
 **Guardrails**
 - Favor straightforward, minimal implementations first and add complexity only when it is requested or clearly required.
 - Keep changes tightly scoped to the requested outcome.
 - Refer to `openspec/AGENTS.md` (located inside the `openspec/` directory—run `ls openspec` or `openspec update` if you don't see it) if you need additional OpenSpec conventions or clarifications.
+- **CRITICAL**: Always reference `AGENTS.md` at project root for Archon MCP server integration, task management, and documentation access rules.
+- **CRITICAL**: Use MCP Archon server exclusively for accessing official documentation of libraries and packages used in this project. Never search the web directly for documentation. See `AGENTS.md` at project root for complete Archon workflow and commands.
 
 **Steps**
 Track these steps as TODOs and complete them one by one.
-1. Read `changes/<id>/proposal.md`, `design.md` (if present), and `tasks.md` to confirm scope and acceptance criteria.
-2. Work through tasks sequentially, keeping edits minimal and focused on the requested change.
-3. Confirm completion before updating statuses—make sure every item in `tasks.md` is finished.
-4. Update the checklist after all work is done so each task is marked `- [x]` and reflects reality.
-5. Reference `openspec list` or `openspec show <item>` when additional context is required.
+1. **MANDATORY**: Check Archon MCP server tasks first using `find_tasks(filter_by="status", filter_value="todo")` before starting any work
+2. Read `changes/<id>/proposal.md`, `design.md` (if present), and `tasks.md` to confirm scope and acceptance criteria.
+3. **MANDATORY**: Create/update tasks in Archon at "http://127.0.0.1:3737/projects" using `manage_task()` before implementation
+4. Work through tasks sequentially, keeping edits minimal and focused on the requested change.
+5. **MANDATORY**: Update task status in Archon (`manage_task("update", task_id="...", status="doing/review/done")`) as you progress
+6. Confirm completion before updating statuses—make sure every item in `tasks.md` is finished.
+7. Update the checklist after all work is done so each task is marked `- [x]` and reflects reality.
+8. Reference `openspec list` or `openspec show <item>` when additional context is required.
 
 **Reference**
 - Use `openspec show <id> --json --deltas-only` if you need additional context from the proposal while implementing.
@@ -86,11 +101,14 @@ After deployment, create separate PR to:
 ## Before Any Task
 
 **Context Checklist:**
+- [ ] **FIRST**: Check Archon MCP server tasks with `find_tasks(filter_by="status", filter_value="todo")` (see `AGENTS.md` at project root for complete workflow)
 - [ ] Read relevant specs in `specs/[capability]/spec.md`
 - [ ] Check pending changes in `changes/` for conflicts
 - [ ] Read `openspec/project.md` for conventions
 - [ ] Run `openspec list` to see active changes
 - [ ] Run `openspec list --specs` to see existing capabilities
+- [ ] **CRITICAL**: For any library/package documentation, use MCP Archon server knowledge base (`rag_get_available_sources()`, `rag_search_knowledge_base()`) - never search the web directly
+- [ ] **CRITICAL**: All task creation/management MUST be done at "http://127.0.0.1:3737/projects" using Archon MCP tools (see `AGENTS.md` at project root for complete workflow)
 
 **Before Creating Specs:**
 - Always check if capability already exists
@@ -476,5 +494,16 @@ openspec archive [change] [--yes|-y]  # Mark complete (add --yes for automation)
 ## Critical Constraints
 
 **NEVER run `npm run dev` under any circumstances.** This command is explicitly denied in the project configuration and must not be used for development or testing purposes.
+
+**NEVER search the web directly for official documentation.** Always use MCP Archon server knowledge base for accessing documentation of libraries and packages:
+- Use `rag_get_available_sources()` to list available documentation sources
+- Use `rag_search_knowledge_base(query="...", source_id="...")` to search specific documentation
+- Use `rag_search_code_examples(query="...", source_id="...")` to find code examples
+
+**NEVER manage tasks outside Archon MCP server.** All task creation and management MUST be done at "http://127.0.0.1:3737/projects" (see `AGENTS.md` at project root for complete workflow):
+- Use `find_tasks()` to search and retrieve tasks
+- Use `manage_task("create", ...)` to create new tasks
+- Use `manage_task("update", task_id="...", status="doing/review/done")` to update task status
+- Use `find_projects()` to manage projects
 
 Remember: Specs are truth. Changes are proposals. Keep them in sync.

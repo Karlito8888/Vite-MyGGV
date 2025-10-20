@@ -1,5 +1,4 @@
 import { supabase } from '../utils/supabase'
-import { getCurrentUserWithClaims } from '../utils/authHelpers'
 
 /**
  * Base service utilities for common CRUD patterns
@@ -37,26 +36,17 @@ export async function executeQuery(queryPromise) {
 }
 
 /**
- * Get the current authenticated user using getClaims() for better security
- * @returns {Promise<{user: Object|null, error: Error|null}>}
- */
-export async function getCurrentUser() {
-  const { user, error } = await getCurrentUserWithClaims()
-  return { user, error }
-}
-
-/**
  * Check if current user is admin
+ * @param {string} userId - User ID to check
  * @returns {Promise<boolean>}
  */
-export async function isAdmin() {
-  const { user } = await getCurrentUser()
-  if (!user) return false
+export async function isAdmin(userId) {
+  if (!userId) return false
   
   const { data } = await supabase
     .from('profiles')
     .select('is_admin')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single()
   
   return data?.is_admin || false

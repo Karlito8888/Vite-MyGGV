@@ -1,32 +1,22 @@
 /**
- * Centralized hooks directory for authentication and onboarding logic.
+ * Centralized hooks directory for authentication and data preloading.
  * 
  * This directory contains custom hooks that extract and consolidate
  * logic from components, services, and contexts to improve maintainability
  * and reusability across the application.
  */
 
-// Authentication and onboarding hooks
-export { useProtectedRoute, useProtectedRouteWithOnboarding } from './useProtectedRoute'
+// Authentication hooks
+export { useUser } from '../contexts/UserContext'
 
 /**
  * Available hooks:
  * 
- * useProtectedRoute():
- * - Extracts route protection logic from ProtectedRoute component
- * - Provides authentication verification
- * - Returns loading states and redirect decisions
+ * useUser():
+ * - Provides access to UserContext authentication state
+ * - Returns user object, loading state, and authentication status
+ * - Must be used within UserProvider
  * 
- * useProtectedRouteWithOnboarding():
- * - Enhanced version that includes onboarding status checking
- * - Provides complete route protection logic with async onboarding verification
- * - Used by ProtectedRoute component
- * 
- * Usage patterns:
- * 
- * // Basic auth only
- * const auth = useAuth()
- * 
- * // Route protection
- * const protection = useProtectedRouteWithOnboarding()
+ * Usage:
+ * const { user, loading, initialized } = useUser()
  */

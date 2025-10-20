@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './utils/AuthContext'
 import Layout from './components/Layout'
-import Login from './pages/Login'
+import Login from './components/Login'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
@@ -14,92 +13,34 @@ import Marketplace from './pages/Marketplace'
 import LocationRequests from './pages/LocationRequests'
 import ProtectedRoute from './components/ProtectedRoute'
 
+const protectedRoutes = [
+  { path: 'home', element: Home },
+  { path: 'profile', element: Profile },
+  { path: 'messages', element: Messages },
+  { path: 'games', element: Games },
+  { path: 'infos', element: Infos },
+  { path: 'money', element: Money },
+  { path: 'weather', element: Weather },
+  { path: 'marketplace', element: Marketplace },
+  { path: 'location-requests', element: LocationRequests }
+]
+
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Login />} />
-          <Route path="login" element={<Login />} />
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Login />} />
+        <Route path="login" element={<Login />} />
+        <Route path="onboarding" element={<Onboarding />} />
+        {protectedRoutes.map(({ path, element: Element }) => (
           <Route 
-            path="onboarding" 
-            element={<Onboarding />} 
+            key={path}
+            path={path} 
+            element={<ProtectedRoute><Element /></ProtectedRoute>} 
           />
-          <Route 
-            path="home" 
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="messages" 
-            element={
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="games" 
-            element={
-              <ProtectedRoute>
-                <Games />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="infos" 
-            element={
-              <ProtectedRoute>
-                <Infos />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="money" 
-            element={
-              <ProtectedRoute>
-                <Money />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="weather" 
-            element={
-              <ProtectedRoute>
-                <Weather />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="marketplace" 
-            element={
-              <ProtectedRoute>
-                <Marketplace />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="location-requests" 
-            element={
-              <ProtectedRoute>
-                <LocationRequests />
-              </ProtectedRoute>
-            } 
-          />
-        </Route>
-      </Routes>
-    </AuthProvider>
+        ))}
+      </Route>
+    </Routes>
   )
 }
 

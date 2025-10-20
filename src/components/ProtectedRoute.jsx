@@ -1,11 +1,11 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../utils/useAuth'
+import { useUser } from '../contexts/UserContext'
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, initialized } = useUser()
 
-  // Show loading during auth check
-  if (loading) {
+  // Show loading during initial auth check
+  if (!initialized) {
     return (
       <div className="container text-center mt-6">
         <div>Loading...</div>
@@ -16,11 +16,6 @@ function ProtectedRoute({ children }) {
   // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" replace />
-  }
-
-  // Redirect to onboarding if not completed
-  if (!user.onboarding_completed) {
-    return <Navigate to="/onboarding" replace />
   }
 
   // Render children if access is granted

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../utils/useAuth";
 import { getCurrentUserProfile } from "../services/profilesService";
+import { useUser } from "../contexts/UserContext";
 import Avatar from "../components/Avatar";
 import "../styles/Profile.css";
 
 function Profile() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,6 @@ function Profile() {
       const { data, error } = await getCurrentUserProfile();
 
       if (error) {
-         
         console.error("Error loading profile:", error);
         setError(error.message);
       } else {

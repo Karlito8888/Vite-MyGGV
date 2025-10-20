@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useAuth } from '../utils/useAuth'
+import { useUser } from '../contexts/UserContext'
 import '../styles/Footer.css'
 
 function HamburgerButton({ onToggle, isOpen = false }) {
-  const { user } = useAuth()
   const location = useLocation()
+  const { user } = useUser()
   const [theme, setTheme] = useState(() => {
     // Get initial theme from localStorage or default to dark
     return localStorage.getItem('theme') || 'light'
@@ -16,6 +16,8 @@ function HamburgerButton({ onToggle, isOpen = false }) {
   
   // Check if current route is protected
   const isProtectedRoute = protectedRoutes.includes(location.pathname)
+
+
 
   // Listen for theme changes
   useEffect(() => {

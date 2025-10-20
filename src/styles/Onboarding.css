@@ -1,7 +1,9 @@
 .onboarding-page {
-  min-height: auto;
-  overflow-y: auto;
+  min-height: 100%;
   padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .onboarding-content {
@@ -239,5 +241,90 @@
   color: var(--color-text-secondary);
   font-size: 1.125rem;
   margin-bottom: 3rem;
+}
+
+/* Loader Styles */
+.loader-wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background: var(--color-surface);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  min-height: 200px;
+  position: relative;
+  z-index: 1;
+}
+
+.loader-text {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: 500;
+  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  letter-spacing: 1px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Animation for the loader text */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced loader container with theme support */
+.loader-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(80, 170, 97, 0.08) 0%, transparent 70%);
+  border-radius: 0.5rem;
+  z-index: -1;
+}
+
+/* Dark mode adjustments */
+:root.dark .loader-wrapper {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  background: var(--color-surface);
+}
+
+:root.dark .loader-container::before {
+  background: radial-gradient(circle, rgba(91, 196, 109, 0.06) 0%, transparent 70%);
+}
+
+/* Pulse animation for the loader */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.loader-wrapper {
+  animation: pulse 2s ease-in-out infinite;
 }
 

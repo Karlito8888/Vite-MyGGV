@@ -3,175 +3,106 @@
 ## Purpose
 Provide consistent authentication state management across all components using the modern `useAuth` hook pattern.
 ## Requirements
-### Requirement: Authentication Hook Usage
-All components SHALL use the `useAuth` hook for authentication state management instead of importing `AuthContext` directly.
-
-#### Scenario: Component authentication access
-- **WHEN** a component needs authentication state
-- **THEN** it SHALL import `useAuth` from `../utils/useAuth`
-- **AND** call `useAuth()` to get auth context
-- **AND** NOT import `AuthContext` directly
-
-#### Scenario: Consistent authentication pattern
-- **WHEN** reviewing component authentication code
-- **THEN** all components SHALL follow the same `useAuth` pattern
-- **AND** no components shall use `useContext(AuthContext)`
-
 ### Requirement: User Authentication State
-The system SHALL provide user authentication state management through Supabase authentication using the modern `getClaims()` method with asymmetric JWT verification for optimal performance and security.
+The system SHALL provide user authentication state management through Supabase authentication using the modern `getClaims()` method with asymmetric JWT verification for optimal performance and security, with comprehensive logging for debugging authentication issues.
 
 #### Scenario: User login with email and password
 - **WHEN** a user provides valid email and password
 - **THEN** the system SHALL authenticate the user using signInWithPassword
+- **AND** log authentication attempt details to console for debugging
 - **AND** verify authentication using `supabase.auth.getClaims()` instead of getUser()
 - **AND** extract user data from `data.claims` structure (sub, email, role, etc.)
+- **AND** log extracted user data to console
 - **AND** provide claims-based user state to components without visual flashes
-- **AND** redirect to appropriate page based on onboarding status seamlessly
+- **AND** redirect to onboarding page after successful authentication
 - **AND** display loading states during authentication processing
+- **AND** log any authentication errors to console
 
 #### Scenario: Authentication state transitions
 - **WHEN** authentication state changes (login/logout)
 - **THEN** the system SHALL maintain loading states during transition
+- **AND** log state transition details to console
 - **AND** use `getClaims()` for fast local JWT verification
 - **AND** prevent intermediate UI flashes
 - **AND** ensure smooth visual transitions between auth states
+- **AND** log successful state transitions
 
 #### Scenario: OAuth authentication flow
 - **WHEN** a user authenticates via OAuth provider
 - **THEN** the system SHALL handle callback without showing login page flash
+- **AND** log OAuth authentication attempt to console
 - **AND** verify authentication using `getClaims()` method
 - **AND** maintain loading state during OAuth processing
-- **AND** redirect to appropriate destination after successful auth
-
-### Requirement: Email Password Authentication Form
-The login form SHALL collect both email address and password from users for authentication.
-
-#### Scenario: Form validation
-- **WHEN** user submits login form
-- **THEN** email field SHALL be validated for proper format
-- **AND** password field SHALL be required
-- **AND** appropriate error messages SHALL be displayed for invalid inputs
-
-#### Scenario: Password input security
-- **WHEN** user enters password
-- **THEN** password field SHALL use type="password"
-- **AND** password SHALL be masked during input
-- **AND** password SHALL not be displayed in error messages
-
-#### Scenario: Form submission
-- **WHEN** user submits valid email and password
-- **THEN** form SHALL call signInWithPassword with provided credentials
-- **AND** display loading state during authentication
-- **AND** handle success and error responses appropriately
+- **AND** redirect to onboarding page after successful auth
+- **AND** log OAuth completion details
 
 ### Requirement: Real-time User Presence
-The system SHALL provide real-time user presence tracking using Supabase Presence functionality.
+The system SHALL provide real-time user presence tracking using Supabase Presence functionality integrated with Supabase UI authentication.
 
-#### Scenario: User comes online
-- **WHEN** a user authenticates and connects to the application
-- **THEN** the system SHALL subscribe to a presence channel for that user
-- **AND** the user's presence state SHALL be updated to "online"
+#### Scenario: User presence with Supabase UI
+- **WHEN** a user authenticates using Supabase UI
+- **THEN** the system SHALL subscribe to presence channels using Supabase UI user ID
+- **AND** maintain presence state using Supabase UI auth state
+- **AND** automatically handle presence cleanup on logout
 
-#### Scenario: User goes offline
-- **WHEN** a user disconnects or closes the application
-- **THEN** the system SHALL automatically clean up the presence state
-- **AND** the user's presence state SHALL be updated to "offline"
+### Requirement: Supabase UI Authentication Integration
+The system SHALL use official Supabase UI components for all authentication functionality.
 
-#### Scenario: Presence state synchronization
-- **WHEN** multiple users are connected to the same presence channel
-- **THEN** the system SHALL broadcast presence changes to all connected clients
-- **AND** each client SHALL maintain an up-to-date presence state for all users
+#### Scenario: Password-based authentication
+- **WHEN** user accesses login page
+- **THEN** the system SHALL display Supabase UI password authentication form
+- **AND** handle email/password login using Supabase UI components
+- **AND** provide built-in validation and error handling
 
-### Requirement: Authentication Context
-The authentication context SHALL manage user authentication state using claims-based data structure from Supabase's `getClaims()` method.
+#### Scenario: Social authentication
+- **WHEN** user clicks social login button
+- **THEN** the system SHALL use Supabase UI social auth components
+- **AND** support Google and Facebook OAuth providers
+- **AND** handle OAuth flow using Supabase UI patterns
 
-#### Scenario: Claims-based authentication
-- **WHEN** a user successfully authenticates
-- **THEN** the system SHALL call `supabase.auth.getClaims()` to verify JWT
-- **AND** extract user information from `data.claims` (sub for user ID, email, role, etc.)
-- **AND** the authentication context SHALL provide claims-based state to child components
-- **AND** initialize presence tracking using claims.sub as user identifier
+#### Scenario: Authentication state management
+- **WHEN** authentication state changes
+- **THEN** the system SHALL use Supabase UI auth hooks
+- **AND** provide consistent user state across components
+- **AND** handle loading states automatically
 
-#### Scenario: Authentication cleanup
-- **WHEN** a user logs out or authentication expires
-- **THEN** the system SHALL clear claims-based authentication state
-- **AND** unsubscribe from presence channels
-- **AND** release all authentication-related resources
+### Requirement: Protected Route Integration
+The system SHALL integrate Supabase UI authentication with protected route system.
 
-### Requirement: OAuth Provider Support
-The system SHALL support multiple OAuth providers for user authentication including Google, Facebook, and Microsoft Azure.
+#### Scenario: Route protection
+- **WHEN** accessing protected routes
+- **THEN** the system SHALL use Supabase UI auth state
+- **AND** redirect unauthenticated users to login
+- **AND** maintain smooth transitions during auth changes
 
-#### Scenario: Azure OAuth authentication
-- **WHEN** a user clicks "Continue with Microsoft" button
-- **THEN** the system SHALL initiate Azure OAuth flow via Supabase
-- **AND** redirect user to Microsoft authentication
-- **AND** handle authentication callback appropriately
+#### Scenario: User data access
+- **WHEN** components need user information
+- **THEN** the system SHALL use Supabase UI user object
+- **AND** provide user metadata and authentication status
+- **AND** integrate with onboarding flow requirements
 
-#### Scenario: OAuth provider loading states
-- **WHEN** any OAuth authentication is in progress
-- **THEN** the system SHALL display "Connecting..." text
-- **AND** disable the respective provider button
-- **AND** maintain consistent loading behavior across all providers
+### Requirement: Simple Post-Authentication Redirection
+The system SHALL always redirect users to the onboarding page after successful authentication, regardless of their onboarding completion status, with proper logging to verify redirection behavior.
 
-#### Scenario: OAuth error handling
-- **WHEN** OAuth authentication fails for any provider
-- **THEN** the system SHALL display appropriate error message
-- **AND** clear loading state
-- **AND** allow user to retry authentication
+#### Scenario: Successful login redirection
+- **WHEN** a user successfully authenticates (email/password or social login)
+- **THEN** the system SHALL log successful authentication event
+- **AND** redirect to `/onboarding`
+- **AND** log redirection attempt to console
+- **AND** not check any completion flags before redirection
+- **AND** verify redirection was successful
 
-#### Scenario: Visual consistency across providers
-- **WHEN** displaying OAuth provider buttons
-- **THEN** all buttons SHALL follow consistent structure and styling
-- **AND** each provider SHALL use appropriate brand colors and logos
-- **AND** maintain responsive design across all viewport sizes
+#### Scenario: Redirection failure handling
+- **WHEN** redirection to onboarding fails
+- **THEN** the system SHALL log redirection failure details
+- **AND** provide fallback navigation options
+- **AND** display appropriate error messages to user
 
-### Requirement: Authentication Loading States
-The system SHALL provide consistent loading states during all authentication operations using the faster `getClaims()` method for JWT verification.
+### Requirement: Authentication Helper Utilities
+Helper utilities SHALL be created to abstract claims extraction and provide compatibility during migration.
+#### Scenario:
+When multiple components need similar authentication patterns, provide helper functions to abstract claims extraction.
 
-#### Scenario: Claims verification in progress
-- **WHEN** verifying JWT claims using `getClaims()`
-- **THEN** the system SHALL display appropriate loading indicator
-- **AND** prevent navigation away from current view
-- **AND** maintain UI stability until verification completes
-
-#### Scenario: Authentication verification
-- **WHEN** verifying authentication state or onboarding status
-- **THEN** the system SHALL use `getClaims()` for fast local verification
-- **AND** show loading state during claims processing
-- **AND** prevent route changes during verification
-- **AND** only redirect after verification is complete
-
-### Requirement: Seamless Route Transitions
-The system SHALL handle route transitions during authentication using claims-based verification without visual artifacts.
-
-#### Scenario: Post-authentication redirect
-- **WHEN** user successfully authenticates
-- **THEN** the system SHALL verify JWT using `getClaims()` locally
-- **AND** redirect directly to destination page
-- **AND** bypass intermediate login page display
-- **AND** maintain loading state during redirect
-
-#### Scenario: Protected route access
-- **WHEN** accessing protected routes during auth state changes
-- **THEN** the system SHALL use claims-based authentication verification
-- **AND** handle transitions smoothly
-- **AND** prevent flashing between login and protected content
-- **AND** show appropriate loading states
-
-### Requirement: Claims-Based User Data Structure
-The system SHALL use the claims structure from `getClaims()` as the primary source of user authentication data.
-
-#### Scenario: User data extraction from claims
-- **WHEN** extracting user information from JWT claims
-- **THEN** the system SHALL use `data.claims.sub` for user ID
-- **AND** use `data.claims.email` for user email
-- **AND** use `data.claims.role` for user role
-- **AND** use `data.claims.user_metadata` for custom metadata
-- **AND** use `data.claims.app_metadata` for application metadata
-
-#### Scenario: Claims verification fallback
-- **WHEN** `getClaims()` fails or returns no claims
-- **THEN** the system SHALL handle authentication as unauthenticated
-- **AND** set user state to null
-- **AND** clear any existing authentication data
+#### Scenario:
+When components need user metadata not in claims, provide utility to safely call getUser() with proper error handling.
 

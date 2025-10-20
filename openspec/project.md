@@ -43,11 +43,12 @@ Non-professional PWA project for Philippine audience with simple CRUD functional
 
 ## Important Constraints
 - NO TypeScript under any circumstances
-- NO Tailwind CSS
+- NO Tailwind CSS (EXCEPTION: Tailwind can be used ONLY for shadcn/ui components)
 - No complex tech stack
 - No over-engineering
 - Non-professional project - keep it simple
 - Must use Vite.js optimization tools intelligently
+- NO manual caching systems - use only Vite.js native caching and Supabase built-in caching
 
 ## External Dependencies
 - Supabase (database, auth, RLS)

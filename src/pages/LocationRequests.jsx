@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '../utils/useAuth'
 import { onboardingService } from '../services/onboardingService'
+import { useUser } from '../contexts/UserContext'
 import '../styles/LocationRequests.css'
 
 function LocationRequests() {
-  const { user } = useAuth()
+  const { user } = useUser()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState({})
+
+
 
   useEffect(() => {
     if (!user) return

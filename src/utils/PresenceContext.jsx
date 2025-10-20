@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { supabase } from "./supabase";
-import { useAuth } from "./useAuth";
+import { useUser } from "../contexts/UserContext";
 
 const PresenceContext = createContext();
 
@@ -9,7 +9,7 @@ export { PresenceContext };
 export function PresenceProvider({ children }) {
   const [isOnline, setIsOnline] = useState(false);
   const [presenceChannel, setPresenceChannel] = useState(null);
-  const { user } = useAuth();
+  const { user } = useUser()
 
   useEffect(() => {
     let channel = null;
@@ -24,10 +24,8 @@ export function PresenceProvider({ children }) {
     if (!user) {
       // Clean up presence when user logs out
       cleanup();
-      setTimeout(() => {
-        setIsOnline(false);
-        setPresenceChannel(null);
-      }, 0);
+      setIsOnline(false);
+      setPresenceChannel(null);
       return;
     }
 
@@ -49,10 +47,7 @@ export function PresenceProvider({ children }) {
               return presences.some((presence) => presence.user_id === user.id);
             });
 
-            // Use setTimeout to avoid synchronous setState
-            setTimeout(() => {
-              setIsOnline(isUserOnline);
-            }, 0);
+            setIsOnline(isUserOnline);
           })
           .on("presence", { event: "join" }, ({ newPresences }) => {
             // Check if the joined presence belongs to our user
@@ -60,9 +55,7 @@ export function PresenceProvider({ children }) {
               (presence) => presence.user_id === user.id
             );
             if (isUserJoin) {
-              setTimeout(() => {
-                setIsOnline(true);
-              }, 0);
+              setIsOnline(true);
             }
           })
           .on("presence", { event: "leave" }, ({ leftPresences }) => {
@@ -71,20 +64,7 @@ export function PresenceProvider({ children }) {
               (presence) => presence.user_id === user.id
             );
             if (isUserLeave) {
-              setTimeout(() => {
-                setIsOnline(false);
-              }, 0);
-            }
-          })
-          .on("presence", { event: "leave" }, ({ leftPresences }) => {
-            // Check if the left presence belongs to our user
-            const isUserLeave = leftPresences.some(
-              (presence) => presence.user_id === user.id
-            );
-            if (isUserLeave) {
-              setTimeout(() => {
-                setIsOnline(false);
-              }, 0);
+              setIsOnline(false);
             }
           })
           .subscribe(async (status) => {
@@ -98,21 +78,15 @@ export function PresenceProvider({ children }) {
 
               try {
                 await channel.track(trackData);
-                setTimeout(() => {
-                  setPresenceChannel(channel);
-                }, 0);
+                setPresenceChannel(channel);
               } catch (error) {
-                // Keep error logging for debugging
-
                 console.error("Error tracking presence:", error);
               }
             }
           });
       } catch (error) {
         console.error("Error initializing presence:", error);
-        setTimeout(() => {
-          setIsOnline(false);
-        }, 0);
+        setIsOnline(false);
       }
     };
 

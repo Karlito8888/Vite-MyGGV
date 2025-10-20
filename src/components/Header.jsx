@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import "../styles/Header.css";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
-import { useAuth } from "../utils/useAuth";
+import { useUser } from '../contexts/UserContext'
 import {
   listActiveHeaderMessages,
   subscribeToHeaderMessages,
@@ -10,7 +10,7 @@ import {
 } from "../services/messagesHeaderService";
 
 function Header() {
-  const { user } = useAuth();
+  const { user } = useUser()
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +32,8 @@ function Header() {
     }
     return false;
   }, []);
+
+
 
   const fetchMessages = useCallback(async () => {
     setLoading(true);
