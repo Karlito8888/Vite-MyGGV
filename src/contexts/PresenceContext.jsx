@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { supabase } from "./supabase";
-import { useUser } from "../contexts/UserContext";
+import { supabase } from "../utils/supabase";
+import { useUser } from "./UserContext";
 
 const PresenceContext = createContext();
 
@@ -19,13 +19,13 @@ export function PresenceProvider({ children }) {
         channel.untrack();
         supabase.removeChannel(channel);
       }
+      setIsOnline(false);
+      setPresenceChannel(null);
     };
 
     if (!user) {
       // Clean up presence when user logs out
       cleanup();
-      setIsOnline(false);
-      setPresenceChannel(null);
       return;
     }
 

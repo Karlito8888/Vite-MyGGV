@@ -1,67 +1,138 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { supabase } from '../utils/supabase'
-import { Button } from './ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from './ui/card'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
+import { signUpUser, signInUser, resetPasswordForEmail } from '../utils/authHelpers'
 import { useUser } from '../contexts/UserContext'
+import Card, { CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card'
+import Input from './ui/Input'
+import '../styles/login.css'
+
+// Conditional logging for development only
+const log = import.meta.env.DEV ? console.log : () => { }
+
+// Validation schemas
+const authSchema = z.object({
+  email: z.email({ message: 'Please enter a valid email address' }),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+})
+
+const resetSchema = z.object({
+  email: z.email({ message: 'Please enter a valid email address' }),
+})
+
+// Error message mapping
+const ERROR_MESSAGES = {
+  'Invalid login credentials': 'Invalid email or password',
+  'Email not confirmed': 'Please confirm your email address',
+  'Too many requests': 'Too many attempts. Please try again later',
+  'User not found': 'No account found with this email',
+  'User already registered': 'An account with this email already exists',
+  'Password should be at least 6 characters': 'Password must be at least 6 characters long',
+  'Signup requires a valid password': 'Please enter a valid password',
+}
+
+const getErrorMessage = (error) => {
+  return ERROR_MESSAGES[error] || error || 'An unexpected error occurred'
+}
 
 export default function Login() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useUser()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [resetSent, setResetSent] = useState(false)
+  const [showResetForm, setShowResetForm] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
+
+  // Form for auth (login/signup)
+  const {
+    register: registerAuth,
+    handleSubmit: handleSubmitAuth,
+    formState: { errors: authErrors },
+    reset: resetAuth,
+    getValues: getAuthValues,
+  } = useForm({
+    resolver: zodResolver(authSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  // Form for password reset
+  const {
+    register: registerReset,
+    handleSubmit: handleSubmitReset,
+    formState: { errors: resetErrors },
+    reset: resetResetForm,
+    setValue: setResetValue,
+  } = useForm({
+    resolver: zodResolver(resetSchema),
+    defaultValues: {
+      email: '',
+    },
+  })
 
   // Redirect to onboarding if user is already authenticated
   useEffect(() => {
-    console.log('Login: Checking authentication state...', { user, authLoading })
+    log('Login: Checking authentication state...', { user, authLoading })
     if (user && !authLoading) {
-      console.log('Login: User already authenticated, redirecting to onboarding')
+      log('Login: User already authenticated, redirecting to onboarding')
       navigate('/onboarding', { replace: true })
     }
   }, [user, authLoading, navigate])
 
-  const handleEmailSignIn = async (e) => {
-    e.preventDefault()
-    console.log('Login: Starting email sign in for:', email)
+  const handleAuth = async (data) => {
+    const action = isSignUp ? 'sign up' : 'sign in'
+    log(`Login: Starting email ${action} for:`, data.email)
     setLoading(true)
     setError(null)
+    setSuccess(null)
+    setResetSent(false)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      
-      console.log('Login: Email sign in result:', { data, error })
-      
-      if (error) {
-        console.error('Login: Email sign in error:', error)
-        setError(error.message)
+      let result
+      if (isSignUp) {
+        result = await signUpUser(data.email, data.password)
       } else {
-        console.log('Login: Email sign in successful, waiting for UserContext to update and redirect')
-        // The redirection will be handled by the useEffect hook above when UserContext updates
+        result = await signInUser(data.email, data.password)
+      }
+
+      log(`Login: Email ${action} result:`, result)
+
+      if (result.error) {
+        log(`Login: Email ${action} error:`, result.error)
+        setError(getErrorMessage(result.error.message))
+      } else {
+        if (isSignUp) {
+          // For signup, show success message about email confirmation
+          setSuccess('Account created! Please check your email to confirm your account.')
+          log('Login: Sign up successful, email confirmation required')
+        } else {
+          log('Login: Sign in successful, waiting for UserContext to update and redirect')
+          // The redirection will be handled by the useEffect hook above when UserContext updates
+        }
       }
     } catch (err) {
-      console.error('Login: Unexpected error during email sign in:', err)
+      log(`Login: Unexpected error during email ${action}:`, err)
       setError('An unexpected error occurred')
     }
-    
+
     setLoading(false)
   }
 
   const handleSocialSignIn = async (provider) => {
-    console.log('Login: Starting OAuth sign in with provider:', provider)
-    
+    log('Login: Starting OAuth sign in with provider:', provider)
+    setError(null)
+    setResetSent(false)
+
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -69,102 +140,265 @@ export default function Login() {
           redirectTo: `${window.location.origin}/onboarding`,
         },
       })
-      
-      console.log('Login: OAuth sign in initiated:', { provider, data, error })
-      
+
+      log('Login: OAuth sign in initiated:', { provider, data, error })
+
       if (error) {
-        console.error('Login: OAuth sign in error:', error)
-        setError(error.message)
+        log('Login: OAuth sign in error:', error)
+        setError(getErrorMessage(error.message))
       } else {
-        console.log('Login: OAuth sign in initiated successfully, redirecting to provider')
+        log('Login: OAuth sign in initiated successfully, redirecting to provider')
       }
     } catch (err) {
-      console.error('Login: Unexpected error during OAuth sign in:', err)
+      log('Login: Unexpected error during OAuth sign in:', err)
       setError('An unexpected error occurred during OAuth sign in')
     }
   }
 
+  const handleForgotPassword = async (data) => {
+    log('Login: Starting password reset for:', data.email)
+    setLoading(true)
+    setError(null)
+    setResetSent(false)
+
+    try {
+      const result = await resetPasswordForEmail(data.email)
+
+      log('Login: Password reset result:', result)
+
+      if (result.error) {
+        log('Login: Password reset error:', result.error)
+        setError(getErrorMessage(result.error.message))
+      } else {
+        log('Login: Password reset email sent successfully')
+        setResetSent(true)
+        setShowResetForm(false)
+      }
+    } catch (err) {
+      log('Login: Unexpected error during password reset:', err)
+      setError('An unexpected error occurred')
+    }
+
+    setLoading(false)
+  }
+
   return (
     <div className="login-container">
-      <div className="login-form">
+      <div className="login-wrapper">
         <div className="login-header">
-          <img src="/src/assets/logos/ggv-100.png" alt="GGV" className="login-logo" />
-          <h2>Welcome to GGV</h2>
-          <p>Sign in to your account</p>
+          <div className="login-logo">
+            <img
+              src="/src/assets/logos/ggv-100.png"
+              alt="GGV"
+            />
+          </div>
+          <div className="login-title-section">
+            <h2 className="login-title">
+              Welcome to MyGGV
+            </h2>
+          </div>
         </div>
-        
-        <Card className="w-full max-w-md">
+
+        <Card hover={true}>
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle>
+              {showResetForm ? 'Reset Password' : ''}
+            </CardTitle>
             <CardDescription>
-              Enter your email and password to sign in to your account
+              {showResetForm
+                ? 'Enter your email to receive a password reset link'
+                : ''
+              }
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleEmailSignIn} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+            {showResetForm ? (
+              <form onSubmit={handleSubmitReset(handleForgotPassword)} className="login-reset-form">
                 <Input
-                  id="email"
+                  id="reset-email"
                   type="email"
+                  label="Email"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  error={resetErrors.email?.message}
+                  {...registerReset('email')}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <div className="text-red-500 text-sm">{error}</div>
-              )}
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={loading}
-              >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
-            
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+                {error && (
+                  <div className="login-message login-message-error">
+                    {error}
+                  </div>
+                )}
+                {resetSent && (
+                  <div className="login-message login-message-success">
+                    Password reset email sent! Check your inbox.
+                  </div>
+                )}
+                <div className="login-button-flex">
+                  <button
+                    type="submit"
+                    className="login-button login-button-primary"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="login-spinner" />
+                        Sending...
+                      </>
+                    ) : (
+                      'Send Reset Link'
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowResetForm(false)
+                      setError(null)
+                      setResetSent(false)
+                      resetResetForm()
+                    }}
+                    disabled={loading}
+                    className="login-button login-button-outline"
+                  >
+                    Cancel
+                  </button>
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
+              </form>
+            ) : (
+              <div className="login-form-section">
+                {/* Social Authentication - Priority */}
+                <div className="login-social-section">
+                  <div className="login-social-buttons">
+                    <button
+                      onClick={() => handleSocialSignIn('google')}
+                      type="button"
+                      className="login-social-button"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                      </svg>
+                      Continue with Google
+                    </button>
+                    <button
+                      onClick={() => handleSocialSignIn('facebook')}
+                      type="button"
+                      className="login-social-button"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                      Continue with Facebook
+                    </button>
+                  </div>
                 </div>
+
+                {/* Divider */}
+                <div className="login-divider">
+                  <div className="login-divider-text">
+                    Or {isSignUp ? 'sign up' : 'sign in'} with email
+                  </div>
+                </div>
+
+                {/* Email/Password Form */}
+                <form onSubmit={handleSubmitAuth(handleAuth)} className="login-form">
+                  {/* Auth Mode Toggle - Inside Form */}
+                  <div className="login-toggle-section">
+                    <div className="login-toggle-container">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsSignUp(false)
+                          setError(null)
+                          setSuccess(null)
+                          resetAuth()
+                        }}
+                        className={`login-toggle-button ${!isSignUp ? 'active' : ''}`}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsSignUp(true)
+                          setError(null)
+                          setSuccess(null)
+                          resetAuth()
+                        }}
+                        className={`login-toggle-button ${isSignUp ? 'active' : ''}`}
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                  </div>
+
+                  <Input
+                    id="email"
+                    type="email"
+                    label="Email"
+                    placeholder="Enter your email"
+                    error={authErrors.email?.message}
+                    {...registerAuth('email')}
+                  />
+                  <Input
+                    id="password"
+                    type="password"
+                    label="Password"
+                    placeholder="Enter your password"
+                    error={authErrors.password?.message}
+                    {...registerAuth('password')}
+                  />
+                  {error && (
+                    <div className="login-message login-message-error">
+                      {error}
+                    </div>
+                  )}
+                  {success && (
+                    <div className="login-message login-message-success">
+                      {success}
+                    </div>
+                  )}
+                  {resetSent && (
+                    <div className="login-message login-message-success">
+                      Password reset email sent! Check your inbox.
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    className="login-button login-button-primary login-button-full"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="login-spinner" />
+                        {isSignUp ? 'Creating account...' : 'Signing in...'}
+                      </>
+                    ) : (
+                      isSignUp ? 'Create Account' : 'Sign In'
+                    )}
+                  </button>
+                  {!isSignUp && (
+                    <div className="login-forgot-password">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowResetForm(true)
+                          setError(null)
+                          setSuccess(null)
+                          setResetSent(false)
+                          // Copy email from auth form to reset form
+                          const currentEmail = getAuthValues('email') || ''
+                          setResetValue('email', currentEmail)
+                        }}
+                        className="login-forgot-link"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                  )}
+                </form>
               </div>
-              
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => handleSocialSignIn('google')}
-                  type="button"
-                >
-                  Google
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => handleSocialSignIn('facebook')}
-                  type="button"
-                >
-                  Facebook
-                </Button>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

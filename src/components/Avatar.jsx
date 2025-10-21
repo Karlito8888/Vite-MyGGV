@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import ImageCropper from './ImageCropper'
 import { avatarService } from '../services/avatarService'
-import { usePresence } from '../utils/PresenceContext'
+import { usePresence } from '../contexts/PresenceContext'
 import '../styles/Avatar.css'
 
 /**

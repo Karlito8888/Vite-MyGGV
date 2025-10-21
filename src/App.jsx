@@ -1,17 +1,22 @@
-import { Routes, Route } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Routes, Route } from 'react-router'
 import Layout from './components/Layout'
 import Login from './components/Login'
-import Onboarding from './pages/Onboarding'
-import Home from './pages/Home'
-import Profile from './pages/Profile'
-import Messages from './pages/Messages'
-import Games from './pages/Games'
-import Infos from './pages/Infos'
-import Money from './pages/Money'
-import Weather from './pages/Weather'
-import Marketplace from './pages/Marketplace'
-import LocationRequests from './pages/LocationRequests'
 import ProtectedRoute from './components/ProtectedRoute'
+
+// Lazy loading des pages
+const Onboarding = lazy(() => import('./pages/Onboarding'))
+const UpdatePassword = lazy(() => import('./pages/UpdatePassword'))
+const Home = lazy(() => import('./pages/Home'))
+const Profile = lazy(() => import('./pages/Profile'))
+const Messages = lazy(() => import('./pages/Messages'))
+const Games = lazy(() => import('./pages/Games'))
+const Infos = lazy(() => import('./pages/Infos'))
+const Money = lazy(() => import('./pages/Money'))
+const Weather = lazy(() => import('./pages/Weather'))
+const Marketplace = lazy(() => import('./pages/Marketplace'))
+const LocationRequests = lazy(() => import('./pages/LocationRequests'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 const protectedRoutes = [
   { path: 'home', element: Home },
@@ -27,20 +32,24 @@ const protectedRoutes = [
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Login />} />
-        <Route path="login" element={<Login />} />
-        <Route path="onboarding" element={<Onboarding />} />
-        {protectedRoutes.map(({ path, element: Element }) => (
-          <Route 
-            key={path}
-            path={path} 
-            element={<ProtectedRoute><Element /></ProtectedRoute>} 
-          />
-        ))}
-      </Route>
-    </Routes>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Login />} />
+          <Route path="login" element={<Login />} />
+          <Route path="onboarding" element={<Onboarding />} />
+          <Route path="update-password" element={<UpdatePassword />} />
+          {protectedRoutes.map(({ path, element: Element }) => (
+            <Route
+              key={path}
+              path={path}
+              element={<ProtectedRoute><Element /></ProtectedRoute>}
+            />
+          ))}
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
   )
 }
 

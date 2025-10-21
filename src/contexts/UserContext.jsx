@@ -20,19 +20,13 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('UserContext: Initializing authentication...')
       try {
-        const { user: authUser, method, error } = await getCurrentUserWithClaims()
-        console.log('UserContext: Initial auth check result:', { user: authUser, method, error })
-        if (authUser) {
-          console.log('UserContext: User found during initialization:', authUser)
-        }
+        const { user: authUser } = await getCurrentUserWithClaims()
         setUser(authUser)
       } catch (error) {
         console.error('UserContext: Error initializing auth:', error)
         setUser(null)
       } finally {
-        console.log('UserContext: Initialization complete, loading set to false')
         setLoading(false)
         setInitialized(true)
       }
@@ -41,37 +35,86 @@ export function UserProvider({ children }) {
     initializeAuth()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('UserContext: Auth state changed:', { event, hasSession: !!session, sessionUser: session?.user })
+      console.log('UserContext: Auth state change:', { event, hasSession: !!session })
       
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('UserContext: Processing SIGNED_IN event for user:', session.user.id)
-        try {
-          const { user: authUser, method, error } = await getCurrentUserWithClaims()
-          console.log('UserContext: User data retrieved at login:', { user: authUser, method, error })
-          
-          if (authUser) {
-            console.log('UserContext: Setting authenticated user:', authUser)
-            setUser(authUser)
+      switch (event) {
+        case 'INITIAL_SESSION':
+          // Gérer la session initiale au chargement de l'app
+          if (session?.user) {
+            try {
+              const { user: authUser } = await getCurrentUserWithClaims()
+              setUser(authUser || null)
+            } catch (error) {
+              console.error('UserContext: Error processing INITIAL_SESSION event:', error)
+              setUser(null)
+            }
           } else {
-            console.error('UserContext: No user data retrieved after SIGNED_IN event')
             setUser(null)
           }
-        } catch (error) {
-          console.error('UserContext: Error processing SIGNED_IN event:', error)
+          break
+
+        case 'SIGNED_IN':
+          // Gérer la connexion utilisateur
+          if (session?.user) {
+            try {
+              const { user: authUser } = await getCurrentUserWithClaims()
+              setUser(authUser || null)
+            } catch (error) {
+              console.error('UserContext: Error processing SIGNED_IN event:', error)
+              setUser(null)
+            }
+          }
+          break
+
+        case 'SIGNED_OUT':
+          // Gérer la déconnexion utilisateur
           setUser(null)
-        }
-      } else if (event === 'SIGNED_OUT') {
-        console.log('UserContext: Processing SIGNED_OUT event')
-        setUser(null)
-      } else if (event === 'INITIAL_SESSION') {
-        // Skip - already handled in initializeAuth
+          // Optionnel : nettoyer le localStorage/sessionStorage
+          localStorage.removeItem('user-preferences')
+          break
+
+        case 'PASSWORD_RECOVERY':
+          // Gérer la récupération de mot de passe
+          console.log('UserContext: Password recovery initiated')
+          // Vous pourriez rediriger vers la page de mise à jour du mot de passe
+          // ou afficher une notification
+          break
+
+        case 'TOKEN_REFRESHED':
+          // Gérer le rafraîchissement du token
+          console.log('UserContext: Token refreshed successfully')
+          // Optionnel : mettre à jour les données utilisateur si nécessaire
+          if (session?.user) {
+            try {
+              const { user: authUser } = await getCurrentUserWithClaims()
+              setUser(authUser || null)
+            } catch (error) {
+              console.error('UserContext: Error processing TOKEN_REFRESHED event:', error)
+            }
+          }
+          break
+
+        case 'USER_UPDATED':
+          // Gérer la mise à jour des informations utilisateur
+          console.log('UserContext: User information updated')
+          if (session?.user) {
+            try {
+              const { user: authUser } = await getCurrentUserWithClaims()
+              setUser(authUser || null)
+            } catch (error) {
+              console.error('UserContext: Error processing USER_UPDATED event:', error)
+            }
+          }
+          break
+
+        default:
+          console.log('UserContext: Unhandled auth event:', event)
       }
       
       setLoading(false)
     })
 
     return () => {
-      console.log('UserContext: Cleaning up auth subscription')
       subscription.unsubscribe()
     }
   }, [])

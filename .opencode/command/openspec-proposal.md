@@ -14,6 +14,7 @@ The user has requested the following change proposal. Use the openspec instructi
 - **CRITICAL**: Always reference `AGENTS.md` at project root for Archon MCP server integration, task management, and documentation access rules.
 - Identify any vague or ambiguous details and ask the necessary follow-up questions before editing files.
 - **CRITICAL**: Use MCP Archon server exclusively for accessing official documentation of libraries and packages used in this project. Never search the web directly for documentation. See `AGENTS.md` at project root for complete Archon workflow and commands.
+- **CRITICAL**: BEFORE planning anything, ALWAYS analyze `src/main.jsx`, `src/App.jsx`, and `src/components/Layout.jsx` (along with their imports and associated `.md` documentation) to avoid duplicating code, reinventing the wheel, and to ensure optimal evolution of this PWA.
 
 **Steps**
 1. Review `openspec/project.md`, run `openspec list` and `openspec list --specs`, and inspect related code or docs (e.g., via `rg`/`ls`) to ground the proposal in current behaviour; note any gaps that require clarification.

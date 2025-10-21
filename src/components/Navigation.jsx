@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router'
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts/UserContext'

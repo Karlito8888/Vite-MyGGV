@@ -19,11 +19,10 @@ function Header() {
   const subscriptionRef = useRef(null);
   const [subscriptionError, setSubscriptionError] = useState(null);
 
-  // Avatar state management
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+  // Avatar refs and state
+  const avatarElementRef = useRef(null);
   const avatarTransitionRef = useRef(null);
-  const avatarTimerRef = useRef(null);
+  const messageTimerRef = useRef(null);
 
   // Check for reduced motion preference
   const prefersReducedMotion = useMemo(() => {
@@ -98,11 +97,6 @@ function Header() {
         // Start fade-out transition
         setTransitionState("fading-out");
 
-        // Clear avatar timer when message changes
-        if (avatarTimerRef.current) {
-          clearTimeout(avatarTimerRef.current);
-        }
-
         // After fade-out completes, change message and start fade-in
         setTimeout(() => {
           setCurrentMessageIndex(
@@ -117,12 +111,7 @@ function Header() {
         }, 300); // fade-out duration
       }, 4000); // 4 seconds per message
 
-      return () => {
-        clearInterval(interval);
-        if (avatarTimerRef.current) {
-          clearTimeout(avatarTimerRef.current);
-        }
-      };
+      return () => clearInterval(interval);
     }
   }, [messages.length]);
 
@@ -131,143 +120,66 @@ function Header() {
     return messages[currentMessageIndex];
   }, [messages, currentMessageIndex]);
 
-  // JavaScript-only transition functions
-  const fadeInAvatar = useCallback(() => {
-    if (isTransitioning || isAvatarVisible) return;
+  // JavaScript-only transition functions with ref instead of querySelector
+  const animateAvatarOpacity = useCallback((targetOpacity) => {
+    if (!avatarElementRef.current) return;
 
-    setIsTransitioning(true);
-    setIsAvatarVisible(true);
+    // Cancel any ongoing animation
+    if (avatarTransitionRef.current) {
+      cancelAnimationFrame(avatarTransitionRef.current);
+    }
 
-    const avatarElement = document.querySelector(".header-avatar");
-
-    // Skip animation if reduced motion is preferred or element not found
-    if (prefersReducedMotion || !avatarElement) {
-      if (avatarElement) {
-        avatarElement.style.opacity = 1;
-      }
-      setIsTransitioning(false);
+    // Skip animation if reduced motion is preferred
+    if (prefersReducedMotion) {
+      avatarElementRef.current.style.opacity = targetOpacity;
       return;
     }
 
+    const startOpacity = parseFloat(avatarElementRef.current.style.opacity) || 0;
     const startTime = performance.now();
-    const duration = 300; // 300ms duration
+    const duration = 300;
 
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
+      const opacity = startOpacity + (targetOpacity - startOpacity) * progress;
 
-      // Linear easing for simplicity
-      const opacity = progress;
-
-      avatarElement.style.opacity = opacity;
+      avatarElementRef.current.style.opacity = opacity;
 
       if (progress < 1) {
         avatarTransitionRef.current = requestAnimationFrame(animate);
-      } else {
-        setIsTransitioning(false);
       }
     };
 
     avatarTransitionRef.current = requestAnimationFrame(animate);
-  }, [isTransitioning, isAvatarVisible, prefersReducedMotion]);
-
-  const fadeOutAvatar = useCallback(() => {
-    if (isTransitioning || !isAvatarVisible) return;
-
-    setIsTransitioning(true);
-    setIsAvatarVisible(false);
-
-    const avatarElement = document.querySelector(".header-avatar");
-
-    // Skip animation if reduced motion is preferred or element not found
-    if (prefersReducedMotion || !avatarElement) {
-      if (avatarElement) {
-        avatarElement.style.opacity = 0;
-      }
-      setIsTransitioning(false);
-      return;
-    }
-
-    const startTime = performance.now();
-    const duration = 300; // 300ms duration
-
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // Linear easing for simplicity
-      const opacity = 1 - progress;
-
-      avatarElement.style.opacity = opacity;
-
-      if (progress < 1) {
-        avatarTransitionRef.current = requestAnimationFrame(animate);
-      } else {
-        setIsTransitioning(false);
-      }
-    };
-
-    avatarTransitionRef.current = requestAnimationFrame(animate);
-  }, [isTransitioning, isAvatarVisible, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
 
   // Cleanup transitions and timers on unmount
   useEffect(() => {
+    const timer = messageTimerRef.current;
     return () => {
       if (avatarTransitionRef.current) {
         cancelAnimationFrame(avatarTransitionRef.current);
       }
-      if (avatarTimerRef.current) {
-        clearTimeout(avatarTimerRef.current);
+      if (timer) {
+        clearInterval(timer);
       }
     };
   }, []);
 
   // Handle avatar visibility synchronized with message display
   useEffect(() => {
-    // Check if current message has a user (from the join with profiles)
-    const messageHasUser =
-      currentMessage && currentMessage.user && currentMessage.user.id;
+    const messageHasUser = currentMessage?.user?.id;
+    const shouldShowAvatar = user && messages.length > 0 && messageHasUser;
 
-    if (
-      user &&
-      messages.length > 0 &&
-      transitionState === "idle" &&
-      messageHasUser
-    ) {
-      // Clear any existing timer
-      if (avatarTimerRef.current) {
-        clearTimeout(avatarTimerRef.current);
-      }
-
-      // Show avatar when message is displayed
-      fadeInAvatar();
-
-      // Hide avatar after 4000ms (message duration)
-      avatarTimerRef.current = setTimeout(() => {
-        fadeOutAvatar();
-      }, 4000);
-
-      return () => {
-        if (avatarTimerRef.current) {
-          clearTimeout(avatarTimerRef.current);
-        }
-      };
-    } else {
-      // Hide avatar when no user, no messages, or message has no user
-      fadeOutAvatar();
-      if (avatarTimerRef.current) {
-        clearTimeout(avatarTimerRef.current);
-      }
+    if (shouldShowAvatar && transitionState === "idle") {
+      // Show avatar immediately when message appears
+      animateAvatarOpacity(1);
+    } else if (!shouldShowAvatar) {
+      // Hide avatar when conditions not met
+      animateAvatarOpacity(0);
     }
-  }, [
-    user,
-    messages.length,
-    currentMessageIndex,
-    transitionState,
-    currentMessage,
-    fadeInAvatar,
-    fadeOutAvatar,
-  ]);
+  }, [user, messages.length, currentMessage, transitionState, animateAvatarOpacity]);
 
   return (
     <header className="header">
@@ -276,24 +188,23 @@ function Header() {
           {/* Avatar positioned absolutely on the left */}
           {user &&
             messages.length > 0 &&
-            currentMessage?.user &&
-            currentMessage.user.id && (
+            currentMessage?.user?.id && (
               <div
+                ref={avatarElementRef}
                 className="header-avatar"
+                style={{ opacity: 0 }}
                 role="img"
-                aria-label={`${
-                  currentMessage.user.full_name ||
+                aria-label={`${currentMessage.user.full_name ||
                   currentMessage.user.email ||
                   "User"
-                } profile avatar`}
+                  } profile avatar`}
               >
                 <Avatar
                   src={currentMessage.user.avatar_url}
-                  alt={`${
-                    currentMessage.user.full_name ||
+                  alt={`${currentMessage.user.full_name ||
                     currentMessage.user.email ||
                     "User"
-                  } avatar`}
+                    } avatar`}
                   size="small"
                   fallback={
                     currentMessage.user.full_name ||

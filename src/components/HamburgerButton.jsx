@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 import { useUser } from '../contexts/UserContext'
 import '../styles/Footer.css'
 
