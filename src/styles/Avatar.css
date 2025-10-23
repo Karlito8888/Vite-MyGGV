@@ -114,7 +114,7 @@
     height: 60px;
     font-size: 22px;
   }
-  
+
   .avatar--large {
     width: 88px;
     height: 88px;
@@ -130,19 +130,19 @@
     min-width: 32px;
     min-height: 32px;
   }
-  
+
   .avatar--medium {
     width: 64px;
     height: 64px;
     font-size: 24px;
   }
-  
+
   .avatar--large {
     width: 96px;
     height: 96px;
     font-size: 36px;
   }
-  
+
   .avatar {
     min-width: auto;
     min-height: auto;
@@ -235,23 +235,23 @@
   .avatar {
     transition: none;
   }
-  
+
   .avatar:hover {
     transform: none;
   }
-  
+
   .avatar--online {
     transition: none;
   }
-  
+
   .avatar--upload-mode {
     transition: none;
   }
-  
+
   .avatar--upload-mode:hover {
     transform: none;
   }
-  
+
   .avatar__upload-overlay {
     transition: none;
   }

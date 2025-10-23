@@ -1,58 +1,6 @@
 import { useEffect } from 'react'
-import { getProfileById } from '../services/profilesService'
-import { listLocations } from '../services/locationsService'
-import { useUser } from '../contexts'
 
-
-/**
- * Preload critical data for better UX
- * This hook runs in the background after the user lands on home to improve perceived performance
- * 
- * @returns {void} - This hook doesn't return anything, it performs data preloading as a side effect
- * 
- * @example
- * ```jsx
- * function Home() {
- *   usePreloadData(); // Preloads user profile and locations
- *   return <div>Home content</div>;
- * }
- * ```
- */
-export function usePreloadData() {
-  const { user } = useUser()
-  
-  useEffect(() => {
-    const preloadData = async () => {
-      try {
-        if (!user) return
-
-        // Preload user profile data
-        const profilePromise = getProfileById(user.id).catch(() => null)
-        
-        // Preload available locations for potential future use
-        const locationsPromise = listLocations().catch(() => null)
-        
-        // Note: getUserLocationRequests removed due to SQL query issues
-        // Location requests will be loaded when needed, not preloaded
-
-        // Wait for all to complete (but don't block UI)
-        await Promise.allSettled([
-          profilePromise,
-          locationsPromise
-        ])
-        
-        console.debug('Data preloading completed for user:', user.id)
-      } catch (error) {
-        // Silent fail - preloading is optional
-        console.debug('Preload data error:', error)
-      }
-    }
-
-    // Delay preload slightly to prioritize initial render
-    const timer = setTimeout(preloadData, 500)
-    return () => clearTimeout(timer)
-  }, [user])
-}
+// usePreloadData hook removed - profile data is now loaded directly in UserContext
 
 /**
  * Preload icon images for better UX
@@ -90,7 +38,7 @@ export function usePreloadIcons() {
         const img = new Image()
         img.src = path
       })
-      
+
       console.debug('Icon preloading completed')
     }
 

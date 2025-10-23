@@ -8,7 +8,7 @@ Ce dossier contient tous les hooks personnalisés de l'application pour la logiq
 src/hooks/
 ├── index.js              # Point d'entrée centralisé pour tous les hooks
 ├── README.md             # Documentation du dossier
-└── usePreloadData.js     # Hooks de préchargement de données
+└── usePreloadData.js     # Hooks de préchargement (icônes)
 ```
 
 ## Utilisation
@@ -16,26 +16,26 @@ src/hooks/
 ### Import centralisé
 ```jsx
 // Recommandé : import depuis le point d'entrée centralisé
-import { useUser, usePresence, usePreloadData, usePreloadIcons } from '../hooks'
+import { useUser, usePresence, usePreloadIcons } from '../hooks'
 
 // Au lieu de :
 import { useUser } from '../contexts/UserContext'
-import { usePreloadData } from './usePreloadData'
+import { usePreloadIcons } from './usePreloadData'
 ```
 
 ### Utilisation dans les composants
 ```jsx
-import { useUser, usePreloadData } from '../hooks'
+import { useUser, usePreloadIcons } from '../hooks'
 
 function MyComponent() {
-  const { user, loading, isAuthenticated } = useUser()
+  const { user, profile, loading, isAuthenticated } = useUser()
   
-  // Précharger les données en arrière-plan
-  usePreloadData()
+  // Précharger les icônes en arrière-plan
+  usePreloadIcons()
   
   if (loading) return <div>Loading...</div>
   
-  return <div>Hello {user?.email}</div>
+  return <div>Hello {user?.email} - {profile?.full_name}</div>
 }
 ```
 
@@ -48,7 +48,6 @@ function MyComponent() {
 - **usePresence()** : Statut de présence en temps réel (depuis PresenceContext)
 
 ### Hooks de préchargement
-- **usePreloadData()** : Précharge les données utilisateur et locations
 - **usePreloadIcons()** : Précharge les icônes communes de l'app
 
 ## Types de hooks

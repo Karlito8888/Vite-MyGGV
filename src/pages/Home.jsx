@@ -1,13 +1,12 @@
 import { supabase } from '../utils/supabase'
-import { usePreloadData, usePreloadIcons } from '../hooks'
+import { usePreloadIcons } from '../hooks'
 import { useUser } from '../contexts'
 import '../styles/Home.css'
 
 function Home() {
   const { user } = useUser()
   
-  // Preload critical data and icons for better UX
-  usePreloadData()
+  // Preload icons for better UX (profile data is now loaded in UserContext)
   usePreloadIcons()
 
 

@@ -87,6 +87,17 @@
   text-align: center;
 }
 
+.footer .hamburger-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.footer .hamburger-btn:hover svg {
+  transform: scale(1.1);
+}
+
 .footer .theme-toggle svg {
   width: 1.5rem;
   height: 1.5rem;

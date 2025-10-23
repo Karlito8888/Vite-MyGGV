@@ -2,12 +2,13 @@
 
 .card {
     width: 100%;
-    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     transition: box-shadow 0.3s ease;
-    border-radius: var(--radius);
+    border-radius: 1rem;
     backdrop-filter: blur(8px);
-    background-color: color-mix(in srgb, var(--card) 95%, transparent);
+    background-color: color-mix(in srgb, var(--color-background) 95%, transparent);
+    z-index: 1;
 }
 
 .card-hover:hover {
@@ -38,7 +39,7 @@
 .card-description {
     text-align: center;
     font-size: 0.875rem;
-    color: var(--muted-foreground);
+    color: var(--color-text-secondary);
     margin: 0;
 }
 

@@ -23,14 +23,17 @@ Context React pour gérer l'authentification et l'état utilisateur de l'applica
 ### Hook
 
 ```jsx
-const { user, loading, initialized, isAuthenticated } = useUser()
+const { user, profile, loading, profileLoading, initialized, isAuthenticated, refreshProfile } = useUser()
 ```
 
 **Valeurs retournées :**
 - `user` (object | null) : Objet utilisateur avec claims personnalisés, ou null si non connecté
+- `profile` (object | null) : Données complètes du profil utilisateur depuis la table profiles
 - `loading` (boolean) : Indique si l'authentification est en cours de chargement
+- `profileLoading` (boolean) : Indique si les données du profil sont en cours de chargement
 - `initialized` (boolean) : Indique si l'initialisation de l'auth est terminée
 - `isAuthenticated` (boolean) : Raccourci pour vérifier si un utilisateur est connecté (`!!user`)
+- `refreshProfile` (function) : Fonction pour recharger manuellement les données du profil
 
 ## Fonctionnement
 
