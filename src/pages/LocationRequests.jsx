@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { onboardingService } from '../services/onboardingService'
-import { useUser } from '../contexts/UserContext'
+import { useUser } from '../contexts'
 import '../styles/LocationRequests.css'
 
 function LocationRequests() {

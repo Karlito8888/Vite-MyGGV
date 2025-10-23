@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router'
-import { useUser } from '../contexts/UserContext'
+import { ClimbingBoxLoader } from 'react-spinners'
+import { useUser } from '../contexts'
 
 function ProtectedRoute({ children }) {
   const { user, initialized } = useUser()
@@ -7,8 +8,13 @@ function ProtectedRoute({ children }) {
   // Show loading during initial auth check
   if (!initialized) {
     return (
-      <div className="container text-center mt-6">
-        <div>Loading...</div>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
+      }}>
+        <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
       </div>
     )
   }

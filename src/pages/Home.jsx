@@ -1,6 +1,6 @@
 import { supabase } from '../utils/supabase'
-import { usePreloadData, usePreloadIcons } from '../hooks/usePreloadData'
-import { useUser } from '../contexts/UserContext'
+import { usePreloadData, usePreloadIcons } from '../hooks'
+import { useUser } from '../contexts'
 import '../styles/Home.css'
 
 function Home() {

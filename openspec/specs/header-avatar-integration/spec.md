@@ -107,3 +107,27 @@ Header message Realtime subscriptions SHALL be managed through the messagesHeade
 - AND cleanup SHALL be handled by unsubscribeFromHeaderMessages() function
 - AND no direct Supabase channel management SHALL exist in UI components
 
+### Requirement: Enhanced Loading Indicator
+The header loading state SHALL display a BeatLoader component instead of static text for improved visual feedback.
+
+#### Scenario:
+- WHEN messages are being loaded in the header carousel
+- THEN a BeatLoader component SHALL be displayed instead of "Loading messages..." text
+- AND the BeatLoader SHALL be imported from react-spinners package
+- AND the loading indicator SHALL be properly styled and positioned within the carousel
+
+### Requirement: Minimum Loading Duration
+The header loading state SHALL have a minimum duration of 2 seconds to prevent flash effects and ensure proper message loading.
+
+#### Scenario:
+- WHEN the fetchMessages function completes in less than 2 seconds
+- THEN the loading state SHALL remain visible for the full 2-second duration
+- AND the loading state SHALL transition to loaded state only after both the API call completes AND 2 seconds have elapsed
+- AND this prevents jarring flash effects for fast API responses
+
+#### Scenario:
+- WHEN the fetchMessages function takes longer than 2 seconds to complete
+- THEN the loading state SHALL remain visible until the API call completes
+- AND the loading state SHALL transition immediately to loaded state upon API completion
+- AND this ensures responsive behavior for slow API responses
+

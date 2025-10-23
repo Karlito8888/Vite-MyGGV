@@ -3,8 +3,7 @@ import { Outlet } from 'react-router'
 import Header from './Header'
 import Footer from './Footer'
 import Sidebar from './Sidebar'
-import { UserProvider } from '../contexts/UserContext'
-import { PresenceProvider } from '../contexts/PresenceContext'
+import { UserProvider, PresenceProvider } from '../contexts'
 
 function Layout() {
   return (

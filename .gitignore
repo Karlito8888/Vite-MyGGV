@@ -118,3 +118,10 @@ pids
 
 # DynamoDB Local files
 .dynamodb/
+
+# SQL files
+*.sql
+
+# Markdown files (except README.md)
+*.md
+!README.md

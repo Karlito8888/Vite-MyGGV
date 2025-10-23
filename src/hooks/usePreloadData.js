@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { getProfileById } from '../services/profilesService'
 import { listLocations } from '../services/locationsService'
-import { useUser } from '../contexts/UserContext'
+import { useUser } from '../contexts'
 
 
 /**

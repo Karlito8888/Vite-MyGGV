@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router'
 import { useRef, useEffect, useCallback, useState } from 'react'
 import { supabase } from '../utils/supabase'
-import { useUser } from '../contexts/UserContext'
+import { useUser } from '../contexts'
 import { 
   HomeIcon, 
   ChatBubbleLeftRightIcon,

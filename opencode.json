@@ -76,5 +76,17 @@
         "Authorization": "a658fdcc71e545d4b99eb83537a7182e.1HMfx0E47HCLUUGd"
       }
     }
+  },
+  "lsp": {
+    "typescript": {
+      "disabled": false,
+      "command": ["typescript-language-server", "--stdio"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    },
+    "css": {
+      "disabled": false,
+      "command": ["vscode-css-language-server", "--stdio"],
+      "extensions": [".css", ".scss"]
+    }
   }
 }

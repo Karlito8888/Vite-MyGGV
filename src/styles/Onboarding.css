@@ -256,19 +256,6 @@
   overflow: hidden;
 }
 
-.loader-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5rem;
-  padding: 2rem 1rem;
-  text-align: center;
-  min-height: 200px;
-  position: relative;
-  z-index: 1;
-}
-
 .loader-text {
   font-size: 1.125rem;
   color: var(--color-text-secondary);
@@ -291,27 +278,10 @@
   }
 }
 
-/* Enhanced loader container with theme support */
-.loader-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle, rgba(80, 170, 97, 0.08) 0%, transparent 70%);
-  border-radius: 0.5rem;
-  z-index: -1;
-}
-
 /* Dark mode adjustments */
 :root.dark .loader-wrapper {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   background: var(--color-surface);
-}
-
-:root.dark .loader-container::before {
-  background: radial-gradient(circle, rgba(91, 196, 109, 0.06) 0%, transparent 70%);
 }
 
 /* Pulse animation for the loader */

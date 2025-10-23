@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import "../styles/Header.css";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
-import { useUser } from '../contexts/UserContext'
+import { useUser } from '../contexts'
+import { BeatLoader } from "react-spinners";
 import {
   listActiveHeaderMessages,
   subscribeToHeaderMessages,
   unsubscribeFromHeaderMessages,
 } from "../services/messagesHeaderService";
+import "../styles/Header.css";
 
 function Header() {
   const { user } = useUser()
@@ -18,6 +19,7 @@ function Header() {
   const [transitionState, setTransitionState] = useState("idle"); // 'idle', 'fading-out', 'fading-in'
   const subscriptionRef = useRef(null);
   const [subscriptionError, setSubscriptionError] = useState(null);
+  const loadingStartTimeRef = useRef(null);
 
   // Avatar refs and state
   const avatarElementRef = useRef(null);
@@ -37,6 +39,7 @@ function Header() {
   const fetchMessages = useCallback(async () => {
     setLoading(true);
     setError(null);
+    loadingStartTimeRef.current = Date.now();
 
     try {
       const { data, error } = await listActiveHeaderMessages();
@@ -50,7 +53,17 @@ function Header() {
       setError(err);
       setMessages([]);
     } finally {
-      setLoading(false);
+      // Ensure minimum 2-second loading duration
+      const loadingDuration = Date.now() - loadingStartTimeRef.current;
+      const remainingTime = Math.max(0, 2000 - loadingDuration);
+      
+      if (remainingTime > 0) {
+        setTimeout(() => {
+          setLoading(false);
+        }, remainingTime);
+      } else {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -221,8 +234,9 @@ function Header() {
             {user ? (
               loading ? (
                 <div className="header-carousel">
-                  <div className="carousel-message carousel-loading">
-                    Loading messages...
+                  <div className="carousel-message carousel-loading" role="status" aria-live="polite">
+                    <span className="sr-only">Loading messages...</span>
+                    <BeatLoader color="#ffffff" size={8} margin={2} aria-hidden="true" />
                   </div>
                 </div>
               ) : error || subscriptionError ? (

@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { BeatLoader } from 'react-spinners'
 import ImageCropper from './ImageCropper'
 import { avatarService } from '../services/avatarService'
-import { usePresence } from '../contexts/PresenceContext'
+import { usePresence } from '../contexts'
 import '../styles/Avatar.css'
 
 /**
@@ -12,9 +13,10 @@ import '../styles/Avatar.css'
  * @param {string} props.size - Size variant: 'small', 'medium', 'large'
  * @param {string} props.fallback - Fallback text/initial when no image
  * @param {string} props.className - Additional CSS classes
-
+ * @param {string} props.userId - User ID for avatar upload (required when uploadMode is true)
  * @param {boolean} props.uploadMode - Enable upload functionality
- * @param {Function} props.onUpload - Callback when avatar is uploaded
+ * @param {Function} props.onUpload - Callback when avatar is uploaded (optional, for external handling)
+ * @param {Function} props.onUploadSuccess - Callback when upload succeeds with new URL
  * @param {boolean} props.defaultAvatar - Use default GGV avatar as fallback
  */
 function Avatar({
@@ -23,8 +25,10 @@ function Avatar({
   size = 'medium',
   fallback = 'U',
   className = '',
+  userId,
   uploadMode = false,
   onUpload,
+  onUploadSuccess,
   defaultAvatar = false
 }) {
   const { isOnline } = usePresence()
@@ -73,11 +77,30 @@ function Avatar({
     setShowCropper(false)
 
     try {
+      // Convert base64 to blob
+      const response = await fetch(croppedImageData)
+      const blob = await response.blob()
+
       if (onUpload) {
-        // Convert base64 to blob for compatibility with existing upload logic
-        const response = await fetch(croppedImageData)
-        const blob = await response.blob()
-        await onUpload(blob)
+        // Use external upload handler (legacy support)
+        const result = await onUpload(blob)
+        if (result) {
+          setImageError(false)
+          setImageLoaded(true)
+        }
+      } else if (userId) {
+        // Handle upload internally
+        const result = await avatarService.uploadAvatar(userId, blob)
+        if (result.success) {
+          setImageError(false)
+          setImageLoaded(true)
+          // Notify parent of successful upload
+          if (onUploadSuccess) {
+            onUploadSuccess(result.data.url)
+          }
+        } else {
+          throw new Error(result.error)
+        }
       }
     } catch (error) {
       console.error('Upload error:', error)
@@ -138,7 +161,7 @@ function Avatar({
             />
             <div className="avatar__upload-button">
               {isUploading ? (
-                <span>Uploading...</span>
+                <BeatLoader color="#ffffff" size={6} margin={2} />
               ) : (
                 <>
                   <span className="avatar__upload-icon">📷</span>

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router'
+import { ClimbingBoxLoader } from 'react-spinners'
 import Layout from './components/Layout'
 import Login from './components/Login'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -32,7 +33,16 @@ const protectedRoutes = [
 
 function App() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
+      }}>
+        <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+      </div>
+    }>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Login />} />

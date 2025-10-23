@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCurrentUserProfile } from "../services/profilesService";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../contexts";
 import Avatar from "../components/Avatar";
 import "../styles/Profile.css";
 
@@ -35,7 +35,7 @@ function Profile() {
   if (loading) {
     return (
       <div className="container">
-        <div className="text-center mt-6">
+        <div className="profile-loading">
           <p>Loading profile...</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ function Profile() {
   if (error) {
     return (
       <div className="container">
-        <div className="text-center mt-6">
+        <div className="profile-error">
           <h2>Error</h2>
           <p className="error">{error}</p>
         </div>
@@ -56,7 +56,7 @@ function Profile() {
   if (!profile) {
     return (
       <div className="container">
-        <div className="text-center mt-6">
+        <div className="profile-not-found">
           <h2>Profile Not Found</h2>
           <p>No profile data available.</p>
         </div>

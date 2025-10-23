@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ClimbingBoxLoader } from "react-spinners";
 import { supabase } from "../utils/supabase";
 import { onboardingService } from "../services/onboardingService";
-import { avatarService } from "../services/avatarService";
+
 import { onboardingSchema } from "../schemas/onboardingSchema";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../contexts";
 import Avatar from "../components/Avatar";
 import Picker from "react-mobile-picker";
 import "../styles/Onboarding.css";
@@ -16,13 +16,11 @@ function Onboarding() {
   const navigate = useNavigate();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
-  const [showInitialLoader, setShowInitialLoader] = useState(true);
   const [availableBlocks, setAvailableBlocks] = useState([]);
   const [availableLots, setAvailableLots] = useState([]);
   const [loadingBlocks, setLoadingBlocks] = useState(false);
   const [loadingLots, setLoadingLots] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null);
 
   const {
     control,
@@ -99,13 +97,14 @@ function Onboarding() {
 
     const checkOnboardingStatus = async () => {
       try {
+        // Force minimum 3-second loading time
+        const startTime = Date.now();
+
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_completed")
           .eq("id", user.id)
           .single();
-
-        setShowInitialLoader(false);
 
         if (profile?.onboarding_completed) {
           navigate("/home");
@@ -118,40 +117,40 @@ function Onboarding() {
           reset(result.data);
           setCurrentAvatar(result.data.avatar_url || "");
         }
+
+        // Ensure minimum 3-second loading time
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 3000 - elapsedTime);
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, remainingTime);
+
       } catch (error) {
         console.error("Error checking onboarding status:", error);
-        setShowInitialLoader(false);
-      } finally {
-        setIsLoading(false);
+        // Still respect 3-second minimum on error
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 3000 - elapsedTime);
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, remainingTime);
       }
     };
 
     checkOnboardingStatus();
   }, [user, navigate, reset]);
 
-  const handleAvatarUpload = async (imageBlob) => {
-    try {
-      const result = await avatarService.uploadAvatar(user.id, imageBlob);
-      if (result.success) {
-        setCurrentAvatar(result.data.url);
-        setAvatarFile(imageBlob);
-        setValue("avatar_url", result.data.url);
-        return result.data.url;
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      console.error("Avatar upload error:", error);
-      throw error;
-    }
+  const handleAvatarUploadSuccess = (avatarUrl) => {
+    setCurrentAvatar(avatarUrl);
+    setValue("avatar_url", avatarUrl);
   };
 
   const onSubmit = async (data) => {
     try {
-      // Include avatar file in submission if available
+      // Include avatar URL in submission if available
       const submissionData = { ...data };
-      if (avatarFile && currentAvatar) {
-        submissionData.avatar_file = avatarFile;
+      if (currentAvatar) {
         submissionData.avatar_url = currentAvatar;
       }
 
@@ -190,29 +189,20 @@ function Onboarding() {
     }
   };
 
-  // Show initial loader for 3 seconds
-  if (showInitialLoader) {
-    return (
-      <div className="onboarding-page">
-        <div className="container-centered">
-          <div className="loader-wrapper">
-            <div className="loader-container">
-              <ClimbingBoxLoader color="var(--color-primary)" size={35} loading={true} />
-              <p className="loader-text">Preparing your experience...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading state while fetching profile data
+  // Show loader while fetching profile data (minimum 3 seconds)
   if (isLoading) {
     return (
       <div className="onboarding-page">
         <div className="container-centered">
-          <div className="onboarding-content">
-            <p>Loading your profile...</p>
+          <div className="loader-wrapper">
+            <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
+      }}>
+        <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+      </div>
           </div>
         </div>
       </div>
@@ -270,8 +260,9 @@ function Onboarding() {
                   src={currentAvatar}
                   size="large"
                   fallback={watch("username") || "U"}
+                  userId={user.id}
                   uploadMode={true}
-                  onUpload={handleAvatarUpload}
+                  onUploadSuccess={handleAvatarUploadSuccess}
                   defaultAvatar={true}
                 />
                 <div className="avatar-upload-info">

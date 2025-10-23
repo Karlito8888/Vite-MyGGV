@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router'
-import { useUser } from '../contexts/UserContext'
+import { useUser } from '../contexts'
 import '../styles/Footer.css'
 
 function HamburgerButton({ onToggle, isOpen = false }) {
