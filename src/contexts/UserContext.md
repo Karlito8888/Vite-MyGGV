@@ -23,23 +23,26 @@ Context React pour gérer l'authentification et l'état utilisateur de l'applica
 ### Hook
 
 ```jsx
-const { user, profile, loading, profileLoading, initialized, isAuthenticated, refreshProfile } = useUser()
+const { user, profile, locationAssociations, loading, profileLoading, initialized, isAuthenticated, refreshProfile } = useUser()
 ```
 
 **Valeurs retournées :**
 - `user` (object | null) : Objet utilisateur avec claims personnalisés, ou null si non connecté
 - `profile` (object | null) : Données complètes du profil utilisateur depuis la table profiles
+- `locationAssociations` (array) : Associations de location de l'utilisateur (block/lot) avec les détails de location
 - `loading` (boolean) : Indique si l'authentification est en cours de chargement
-- `profileLoading` (boolean) : Indique si les données du profil sont en cours de chargement
+- `profileLoading` (boolean) : Indique si les données du profil et des associations sont en cours de chargement
 - `initialized` (boolean) : Indique si l'initialisation de l'auth est terminée
 - `isAuthenticated` (boolean) : Raccourci pour vérifier si un utilisateur est connecté (`!!user`)
-- `refreshProfile` (function) : Fonction pour recharger manuellement les données du profil
+- `refreshProfile` (function) : Fonction pour recharger manuellement les données du profil et des associations
 
 ## Fonctionnement
 
-1. **Initialisation** : Au montage, récupère l'utilisateur actuel via `getCurrentUserWithClaims()`
+1. **Initialisation** : Au montage, récupère l'utilisateur actuel via `getCurrentUserWithClaims()` et charge le profil avec ses associations de location
 
-2. **Écoute des événements** : S'abonne aux changements d'état d'authentification Supabase :
+2. **Chargement optimisé** : Le profil et les associations de location sont chargés en parallèle via `Promise.all()` pour minimiser le temps de chargement
+
+3. **Écoute des événements** : S'abonne aux changements d'état d'authentification Supabase :
    - `INITIAL_SESSION` : Gère la session initiale au chargement
    - `SIGNED_IN` : Récupère les données utilisateur enrichies
    - `SIGNED_OUT` : Réinitialise l'état utilisateur et nettoie le localStorage
@@ -79,6 +82,8 @@ const { user, profile, loading, profileLoading, initialized, isAuthenticated, re
 
 - `supabase` : Client Supabase pour l'authentification
 - `getCurrentUserWithClaims` : Helper pour récupérer l'utilisateur avec ses claims personnalisés
+- `getCurrentUserProfile` : Service pour récupérer le profil utilisateur
+- `getProfileAssociations` : Service pour récupérer les associations de location (optimisé avec index sur profile_id)
 
 ## Utilisation
 
@@ -86,13 +91,28 @@ const { user, profile, loading, profileLoading, initialized, isAuthenticated, re
 import { useUser } from '../contexts/UserContext'
 
 function MyComponent() {
-  const { user, loading, isAuthenticated } = useUser()
+  const { user, profile, locationAssociations, loading, profileLoading, isAuthenticated } = useUser()
   
   if (loading) return <div>Chargement...</div>
   
   if (!isAuthenticated) return <div>Non connecté</div>
   
-  return <div>Bonjour {user.email}</div>
+  return (
+    <div>
+      <h1>Bonjour {profile?.full_name || user.email}</h1>
+      {profileLoading ? (
+        <p>Chargement du profil...</p>
+      ) : (
+        <div>
+          {locationAssociations.map(assoc => (
+            <p key={assoc.id}>
+              Block: {assoc.location?.block}, Lot: {assoc.location?.lot}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 ```
 

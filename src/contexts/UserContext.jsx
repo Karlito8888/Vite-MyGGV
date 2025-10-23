@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useContext } from 'react'
 import { supabase } from '../utils/supabase'
 import { getCurrentUserWithClaims } from '../utils/authHelpers'
 import { getCurrentUserProfile } from '../services/profilesService'
+import { getProfileAssociations } from '../services/profileLocationAssociationsService'
 
 /* eslint-disable react-refresh/only-export-components */
 export const UserContext = createContext()
@@ -17,29 +18,44 @@ export function useUser() {
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [locationAssociations, setLocationAssociations] = useState([])
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
   const [initialized, setInitialized] = useState(false)
 
-  // Fonction pour charger le profil utilisateur
+  // Fonction pour charger le profil utilisateur et ses associations de location
   const loadUserProfile = async (authUser) => {
     if (!authUser) {
       setProfile(null)
+      setLocationAssociations([])
       return
     }
 
     setProfileLoading(true)
     try {
-      const { data: profileData, error } = await getCurrentUserProfile()
-      if (error) {
-        console.error('UserContext: Error loading profile:', error)
+      // Charger le profil et les associations en parallèle pour optimiser
+      const [profileResult, associationsResult] = await Promise.all([
+        getCurrentUserProfile(),
+        getProfileAssociations(authUser.id)
+      ])
+
+      if (profileResult.error) {
+        console.error('UserContext: Error loading profile:', profileResult.error)
         setProfile(null)
       } else {
-        setProfile(profileData)
+        setProfile(profileResult.data)
+      }
+
+      if (associationsResult.error) {
+        console.error('UserContext: Error loading location associations:', associationsResult.error)
+        setLocationAssociations([])
+      } else {
+        setLocationAssociations(associationsResult.data || [])
       }
     } catch (error) {
       console.error('UserContext: Exception loading profile:', error)
       setProfile(null)
+      setLocationAssociations([])
     } finally {
       setProfileLoading(false)
     }
@@ -108,6 +124,7 @@ export function UserProvider({ children }) {
           // Gérer la déconnexion utilisateur
           setUser(null)
           setProfile(null)
+          setLocationAssociations([])
           // Optionnel : nettoyer le localStorage/sessionStorage
           localStorage.removeItem('user-preferences')
           break
@@ -161,6 +178,7 @@ export function UserProvider({ children }) {
   const value = {
     user,
     profile,
+    locationAssociations,
     loading,
     profileLoading,
     initialized,

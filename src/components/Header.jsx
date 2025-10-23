@@ -153,6 +153,12 @@ function Header() {
     const duration = 300;
 
     const animate = (currentTime) => {
+      // Check if element still exists before animating
+      if (!avatarElementRef.current) {
+        avatarTransitionRef.current = null;
+        return;
+      }
+
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const opacity = startOpacity + (targetOpacity - startOpacity) * progress;

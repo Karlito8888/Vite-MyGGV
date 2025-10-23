@@ -72,10 +72,7 @@ export async function createBusinessInsideCategory(categoryData) {
   return executeQuery(
     supabase
       .from('business_inside_categories')
-      .insert({
-        ...categoryData,
-        created_by: userId
-      })
+      .insert(categoryData)
       .select()
       .single()
   )

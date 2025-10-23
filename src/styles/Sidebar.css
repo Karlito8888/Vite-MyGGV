@@ -24,7 +24,7 @@ SIDEBAR NAVIGATION - UNIFIÉE ET OPTIMISÉE
   position: fixed;
   top: 0;
   left: 0;
-  width: 320px;
+  width: var(--sidebar-width);
   max-width: 85vw;
   height: 100%;
   background-color: var(--color-background);
@@ -34,10 +34,6 @@ SIDEBAR NAVIGATION - UNIFIÉE ET OPTIMISÉE
   transition: transform 0.3s ease-out;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
-  letter-spacing: 1px !important;
 }
 
 .sidebar.open {
@@ -84,10 +80,6 @@ SIDEBAR NAVIGATION - UNIFIÉE ET OPTIMISÉE
   padding: 1rem;
   height: 100%;
   background-color: var(--color-background);
-  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
-  letter-spacing: 1px !important;
 }
 
 .sidebar-navigation .navigation {
@@ -274,7 +266,7 @@ SIDEBAR NAVIGATION - UNIFIÉE ET OPTIMISÉE
 /* Desktop - Adjust sidebar width */
 @media (min-width: 768px) {
   .sidebar {
-    width: 410px;
+    width: 320px;
   }
 }
 

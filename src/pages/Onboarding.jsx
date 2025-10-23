@@ -96,10 +96,10 @@ function Onboarding() {
     }
 
     const checkOnboardingStatus = async () => {
+      // Force minimum 3-second loading time
+      const startTime = Date.now();
+      
       try {
-        // Force minimum 3-second loading time
-        const startTime = Date.now();
-
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_completed")

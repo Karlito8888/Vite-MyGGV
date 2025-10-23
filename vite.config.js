@@ -17,6 +17,48 @@ export default defineConfig({
       ],
       workbox: {
         runtimeCaching: [
+          // Cache des tiles OpenStreetMap
+          {
+            urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'map-tiles-osm',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 60 * 24 * 60 * 60 // 60 jours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // Cache des tiles satellite
+          {
+            urlPattern: /^https:\/\/server\.arcgisonline\.com\/ArcGIS\/rest\/services\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'map-tiles-satellite',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 60 * 24 * 60 * 60 // 60 jours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // Cache des fonts MapLibre
+          {
+            urlPattern: /^https:\/\/demotiles\.maplibre\.org\/font\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'map-fonts',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 365 * 24 * 60 * 60 // 1 an
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif)$/,
             handler: 'CacheFirst',

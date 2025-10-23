@@ -71,10 +71,7 @@ export async function createServiceCategory(categoryData) {
   return executeQuery(
     supabase
       .from('service_categories')
-      .insert({
-        ...categoryData,
-        created_by: userId
-      })
+      .insert(categoryData)
       .select()
       .single()
   )

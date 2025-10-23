@@ -3,8 +3,8 @@
 
 /* Theme Variables */
 :root.light {
-  --color-primary: #50aa61;
-  --color-secondary: #f3c549;
+  --color-primary: #5bc46d;
+  --color-secondary: #ffd666;
   --color-background: #ffffff;
   --color-surface: #f5f5f5;
   --color-text-primary: #1a1a1a;
@@ -21,14 +21,14 @@
   --color-error-border: #fecaca;
   --color-error-text: #dc2626;
   /* Sidebar variables */
-  --sidebar-width: 280px;
+  --sidebar-width: 320px;
   --sidebar-z-index: 1001;
   --overlay-z-index: 1000;
 }
 
 :root.dark {
-  --color-primary: #5bc46d;
-  --color-secondary: #f5d165;
+  --color-primary: #4a9959;
+  --color-secondary: #d4b84f;
   --color-background: #1a1a1a;
   --color-surface: #2d2d2d;
   --color-text-primary: #f5f5f5;
@@ -45,7 +45,7 @@
   --color-error-border: #5c2626;
   --color-error-text: #f87171;
   /* Sidebar variables */
-  --sidebar-width: 280px;
+  --sidebar-width: 320px;
   --sidebar-z-index: 1001;
   --overlay-z-index: 1000;
 }
@@ -128,7 +128,11 @@ body {
   grid-area: main;
   height: 100%;
   overflow-y: auto;
-  background: linear-gradient(to bottom right, var(--color-background), var(--color-surface));
+  background: linear-gradient(
+    to bottom right,
+    var(--color-background),
+    var(--color-surface)
+  );
 }
 
 /* Mobile-first responsive design */
@@ -330,8 +334,6 @@ body.sidebar-open {
 .z-sidebar {
   z-index: var(--sidebar-z-index);
 }
-
-
 
 .sr-only {
   position: absolute !important;

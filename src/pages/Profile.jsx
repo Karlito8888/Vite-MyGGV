@@ -1,10 +1,15 @@
 import { useUser } from "../contexts";
 import Avatar from "../components/Avatar";
-import Card, { CardHeader, CardTitle, CardContent } from "../components/ui/Card";
+import Card, {
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../components/ui/Card";
 import "../styles/Profile.css";
+import { BeatLoader } from "react-spinners";
 
 function Profile() {
-  const { profile } = useUser();
+  const { profile, locationAssociations, profileLoading } = useUser();
 
   // Si pas de profil, afficher un message (pas de loading car géré par ProtectedRoute + UserContext)
   if (!profile) {
@@ -22,22 +27,63 @@ function Profile() {
     <div className="container">
       <div className="profile-container">
         <h2>My Profile</h2>
-        
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Avatar</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="profile-avatar">
-                      <Avatar
-                        src={profile.avatar_url}
-                        alt="Profile avatar"
-                        size="large"
-                        fallback={profile.full_name || profile.username || "User"}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Avatar</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="profile-avatar">
+              <Avatar
+                src={profile.avatar_url}
+                alt="Profile avatar"
+                size="large"
+                fallback={profile.full_name || profile.username || "User"}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Location Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {profileLoading ? (
+              <div className="profile-field">
+                <span className="sr-only">Loading location information...</span>
+                <BeatLoader
+                  color="#ffffff"
+                  size={8}
+                  margin={2}
+                  aria-hidden="true"
+                />
+              </div>
+            ) : locationAssociations && locationAssociations.length > 0 ? (
+              locationAssociations.map((association, index) => (
+                <div key={association.id} className="location-association">
+                  <div className="profile-field">
+                    <label>Block:</label>
+                    <span>
+                      {association.location?.block || "Not specified"}
+                    </span>
+                  </div>
+                  <div className="profile-field">
+                    <label>Lot:</label>
+                    <span>{association.location?.lot || "Not specified"}</span>
+                  </div>
+                  {locationAssociations.length > 1 &&
+                    index < locationAssociations.length - 1 && (
+                      <hr className="location-divider" />
+                    )}
+                </div>
+              ))
+            ) : (
+              <div className="profile-field">
+                <span>No location associations found</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -107,7 +153,6 @@ function Profile() {
             </div>
           </CardContent>
         </Card>
-
 
         <Card>
           <CardHeader>
