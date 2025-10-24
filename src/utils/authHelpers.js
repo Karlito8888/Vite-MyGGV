@@ -39,7 +39,6 @@ export function extractUserFromClaims(claims) {
  * @returns {Promise<{user: Object|null, error: Error|null, method: string}>}
  */
 export async function getCurrentUserWithClaims() {
-  console.log('AuthHelpers: getCurrentUserWithClaims() called')
   try {
     // getUser() validates the JWT and fetches fresh user data
     const { data, error } = await supabase.auth.getUser()
@@ -58,7 +57,6 @@ export async function getCurrentUserWithClaims() {
 
     // If no user, not authenticated
     if (!data?.user) {
-      console.log('AuthHelpers: No user found')
       return { user: null, error: null, method: 'getUser' }
     }
 
@@ -78,7 +76,6 @@ export async function getCurrentUserWithClaims() {
       phone: data.user.phone || null
     }
 
-    console.log('AuthHelpers: User authenticated:', { id: user.id, email: user.email })
     return { user, error: null, method: 'getUser' }
   } catch (err) {
     console.error('AuthHelpers: Exception in getCurrentUserWithClaims():', err)

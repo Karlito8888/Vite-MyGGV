@@ -3,3 +3,4 @@ export { usePreloadIcons } from './usePreloadData'
 
 // Map configuration hook
 export { useMapConfig } from './useMapConfig'
+export { useUserLocations } from './useUserLocations'

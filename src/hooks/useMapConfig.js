@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { blocks } from '../data/blocks'
+import { getDeviceZoom } from '../utils/deviceDetection'
 
 const DEFAULT_COORDS = {
   latitude: 14.347872973134175,
@@ -13,9 +14,10 @@ export function useMapConfig(userLocation, mapType = 'osm') {
         userLocation?.longitude || DEFAULT_COORDS.longitude,
         userLocation?.latitude || DEFAULT_COORDS.latitude,
       ],
-      zoom: 15,
+      zoom: getDeviceZoom(),
       pitch: 0,
       bearing: 0,
+      minZoom: 2,
     }),
     [userLocation]
   )
@@ -47,9 +49,13 @@ export function useMapConfig(userLocation, mapType = 'osm') {
       sources: {
         osm: {
           type: 'raster',
-          tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tiles: [
+            "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+          ],
           tileSize: 256,
-          attribution: '© OpenStreetMap contributors',
+          attribution: '© OpenStreetMap contributors, © CARTO',
         },
         satellite: {
           type: 'raster',
@@ -58,7 +64,6 @@ export function useMapConfig(userLocation, mapType = 'osm') {
           ],
           tileSize: 256,
           attribution: '© Esri',
-          maxzoom: 18,
         },
       },
       layers: [

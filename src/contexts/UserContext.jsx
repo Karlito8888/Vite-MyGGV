@@ -62,30 +62,8 @@ export function UserProvider({ children }) {
   }
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const { user: authUser } = await getCurrentUserWithClaims()
-        setUser(authUser)
-
-        // Charger le profil si l'utilisateur est authentifié
-        if (authUser) {
-          await loadUserProfile(authUser)
-        }
-      } catch (error) {
-        console.error('UserContext: Error initializing auth:', error)
-        setUser(null)
-        setProfile(null)
-      } finally {
-        setLoading(false)
-        setInitialized(true)
-      }
-    }
-
-    initializeAuth()
-
+    // Laisser onAuthStateChange gérer INITIAL_SESSION au lieu de doubler l'initialisation
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('UserContext: Auth state change:', { event, hasSession: !!session })
-
       switch (event) {
         case 'INITIAL_SESSION':
           // Gérer la session initiale au chargement de l'app
@@ -93,6 +71,9 @@ export function UserProvider({ children }) {
             try {
               const { user: authUser } = await getCurrentUserWithClaims()
               setUser(authUser || null)
+              if (authUser) {
+                await loadUserProfile(authUser)
+              }
             } catch (error) {
               console.error('UserContext: Error processing INITIAL_SESSION event:', error)
               setUser(null)
@@ -100,6 +81,8 @@ export function UserProvider({ children }) {
           } else {
             setUser(null)
           }
+          setLoading(false)
+          setInitialized(true)
           break
 
         case 'SIGNED_IN':
@@ -137,26 +120,18 @@ export function UserProvider({ children }) {
           break
 
         case 'TOKEN_REFRESHED':
-          // Gérer le rafraîchissement du token
-          console.log('UserContext: Token refreshed successfully')
-          // Optionnel : mettre à jour les données utilisateur si nécessaire
-          if (session?.user) {
-            try {
-              const { user: authUser } = await getCurrentUserWithClaims()
-              setUser(authUser || null)
-            } catch (error) {
-              console.error('UserContext: Error processing TOKEN_REFRESHED event:', error)
-            }
-          }
+          // Token refresh est silencieux, pas besoin de recharger
           break
 
         case 'USER_UPDATED':
-          // Gérer la mise à jour des informations utilisateur
-          console.log('UserContext: User information updated')
+          // Recharger seulement si vraiment nécessaire
           if (session?.user) {
             try {
               const { user: authUser } = await getCurrentUserWithClaims()
               setUser(authUser || null)
+              if (authUser) {
+                await loadUserProfile(authUser)
+              }
             } catch (error) {
               console.error('UserContext: Error processing USER_UPDATED event:', error)
             }

@@ -75,7 +75,9 @@ supabase/.temp
 .windsurf/cache
 
 # OpenSpec
+openspec
 .openspec/cache
+.opencode
 
 # Runtime data
 pids

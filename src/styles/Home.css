@@ -62,7 +62,7 @@
 .recenter-button {
   position: absolute;
   bottom: 10px;
-  left: 10px;
+  right: 10px;
   z-index: 3;
   background-color: var(--color-background);
   border: 2px solid var(--color-border);
@@ -108,4 +108,39 @@
 /* Hide attribution for cleaner look */
 .mapboxgl-ctrl-attrib {
   display: none !important;
+}
+
+/* Styles pour les popups MapLibre */
+.maplibregl-popup-content {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  border: 1px solid var(--color-border);
+}
+
+.maplibregl-popup-content strong {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.maplibregl-popup-content small {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: var(--color-background);
+}
+
+.maplibregl-popup-close-button {
+  color: var(--color-text-secondary);
+  font-size: 20px;
+  padding: 4px 8px;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
 }

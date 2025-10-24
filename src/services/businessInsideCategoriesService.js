@@ -64,7 +64,7 @@ export async function getBusinessInsideCategoryById(id) {
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createBusinessInsideCategory(categoryData) {
-  const { userId, error } = await getAuthenticatedUserId()
+  const { error } = await getAuthenticatedUserId()
   if (error) {
     return { data: null, error }
   }
