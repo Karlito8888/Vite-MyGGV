@@ -5,7 +5,6 @@ import "../styles/Footer.css";
 function Footer({ onMenuToggle, isSidebarOpen = false }) {
   return (
     <footer className="footer">
-      <div className="container">
         <div className="footer-content">
           <HamburgerButton 
             onToggle={onMenuToggle}
@@ -14,7 +13,6 @@ function Footer({ onMenuToggle, isSidebarOpen = false }) {
           <p>&copy; {new Date().getFullYear()} - MyGGV -  Garden Grove Village</p>
           <ThemeToggle />
         </div>
-      </div>
     </footer>
   );
 }

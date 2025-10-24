@@ -6,10 +6,12 @@ const Input = forwardRef(({
     id,
     className = '',
     error,
+    as = 'input',
     ...props
 }, ref) => {
     const generatedId = useId()
     const inputId = id || generatedId
+    const Component = as
 
     return (
         <div className={`input-field ${className}`}>
@@ -18,7 +20,7 @@ const Input = forwardRef(({
                     {label}
                 </label>
             )}
-            <input
+            <Component
                 id={inputId}
                 ref={ref}
                 className="input"

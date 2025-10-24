@@ -114,7 +114,6 @@ export function UserProvider({ children }) {
 
         case 'PASSWORD_RECOVERY':
           // Gérer la récupération de mot de passe
-          console.log('UserContext: Password recovery initiated')
           // Vous pourriez rediriger vers la page de mise à jour du mot de passe
           // ou afficher une notification
           break
@@ -139,7 +138,7 @@ export function UserProvider({ children }) {
           break
 
         default:
-          console.log('UserContext: Unhandled auth event:', event)
+          // Unhandled auth event
       }
 
       setLoading(false)
@@ -158,7 +157,8 @@ export function UserProvider({ children }) {
     profileLoading,
     initialized,
     isAuthenticated: !!user,
-    refreshProfile: () => loadUserProfile(user)
+    refreshProfile: () => loadUserProfile(user),
+    profileKey: profile?.updated_at || Date.now() // Force re-render when profile changes
   }
 
   return (

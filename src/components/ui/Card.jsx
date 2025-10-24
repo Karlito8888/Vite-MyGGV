@@ -1,13 +1,13 @@
 import './Card.css'
 
-export default function Card({ 
-  children, 
-  className = '', 
+export default function Card({
+  children,
+  className = '',
   hover = false,
-  ...props 
+  ...props
 }) {
   return (
-    <div 
+    <div
       className={`card ${hover ? 'card-hover' : ''} ${className}`}
       {...props}
     >

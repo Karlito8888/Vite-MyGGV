@@ -27,6 +27,7 @@
     "react-mobile-picker": "1.2.0",
     "react-router-dom": "^7.9.4",
     "react-spinners": "^0.17.0",
+    "react-toastify": "^11.0.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
 import { useUser } from '../contexts'
+import { supabase } from '../utils/supabase'
 import { BeatLoader } from "react-spinners";
 import {
   listActiveHeaderMessages,
@@ -56,7 +57,7 @@ function Header() {
       // Ensure minimum 2-second loading duration
       const loadingDuration = Date.now() - loadingStartTimeRef.current;
       const remainingTime = Math.max(0, 2000 - loadingDuration);
-      
+
       if (remainingTime > 0) {
         setTimeout(() => {
           setLoading(false);
@@ -71,7 +72,7 @@ function Header() {
     if (user) {
       fetchMessages();
 
-      // Setup realtime subscription through service
+      // Setup realtime subscription for messages
       const subscription = subscribeToHeaderMessages(
         fetchMessages, // onMessageChange callback
         (status) => {
@@ -84,10 +85,43 @@ function Header() {
         }
       );
 
+      // Setup realtime subscription for profile changes
+      const profileChannel = supabase
+        .channel('profile-avatar-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+          },
+          (payload) => {
+            // When a profile changes, update messages in memory
+            setMessages(prevMessages =>
+              prevMessages.map(msg => {
+                if (msg.user?.id === payload.new.id) {
+                  return {
+                    ...msg,
+                    user: {
+                      ...msg.user,
+                      avatar_url: payload.new.avatar_url,
+                      username: payload.new.username,
+                      full_name: payload.new.full_name
+                    }
+                  }
+                }
+                return msg
+              })
+            )
+          }
+        )
+        .subscribe()
+
       subscriptionRef.current = subscription;
 
       return () => {
         unsubscribeFromHeaderMessages(subscription);
+        supabase.removeChannel(profileChannel);
       };
     } else {
       // Cleanup when user logs out
@@ -202,77 +236,77 @@ function Header() {
 
   return (
     <header className="header">
-      <div className="container">
-        <div className="header-content df wh100">
-          {/* Avatar positioned absolutely on the left */}
-          {user &&
-            messages.length > 0 &&
-            currentMessage?.user?.id && (
-              <div
-                ref={avatarElementRef}
-                className="header-avatar"
-                style={{ opacity: 0 }}
-                role="img"
-                aria-label={`${currentMessage.user.full_name ||
-                  currentMessage.user.email ||
+      <div className="header-content df wh100">
+        {/* Avatar positioned absolutely on the left */}
+        {user &&
+          messages.length > 0 &&
+          currentMessage?.user?.id && (
+            <div
+              ref={avatarElementRef}
+              className="header-avatar"
+              style={{ opacity: 0 }}
+              role="img"
+              aria-label={`${currentMessage.user.full_name ||
+                currentMessage.user.email ||
+                "User"
+                } profile avatar`}
+            >
+              <Avatar
+                src={currentMessage?.user?.avatar_url || null}
+                userId={currentMessage?.user?.id}
+                alt={`${currentMessage?.user?.full_name ||
+                  currentMessage?.user?.email ||
                   "User"
-                  } profile avatar`}
-              >
-                <Avatar
-                  src={currentMessage.user.avatar_url}
-                  alt={`${currentMessage.user.full_name ||
-                    currentMessage.user.email ||
-                    "User"
-                    } avatar`}
-                  size="small"
-                  fallback={
-                    currentMessage.user.full_name ||
-                    currentMessage.user.email ||
-                    "User"
-                  }
-                  defaultAvatar={true}
-                  className="header-avatar-component"
-                />
-              </div>
-            )}
+                  } avatar`}
+                size="small"
+                fallback={
+                  currentMessage?.user?.full_name ||
+                  currentMessage?.user?.username ||
+                  currentMessage?.user?.email ||
+                  "U"
+                }
+                showPresence={true}
+                className="header-avatar-component"
+              />
+            </div>
+          )}
 
-          <div className="header-main">
-            {user ? (
-              loading ? (
-                <div className="header-carousel">
-                  <div className="carousel-message carousel-loading" role="status" aria-live="polite">
-                    <span className="sr-only">Loading messages...</span>
-                    <BeatLoader color="#ffffff" size={8} margin={2} aria-hidden="true" />
-                  </div>
+        <div className="header-main">
+          {user ? (
+            loading ? (
+              <div className="header-carousel">
+                <div className="carousel-message carousel-loading" role="status" aria-live="polite">
+                  <span className="sr-only">Loading messages...</span>
+                  <BeatLoader color="#ffffff" size={8} margin={2} aria-hidden="true" />
                 </div>
-              ) : error || subscriptionError ? (
-                <div className="header-carousel">
-                  <div className="carousel-message carousel-error">
-                    {subscriptionError || "Unable to load messages"}
-                  </div>
+              </div>
+            ) : error || subscriptionError ? (
+              <div className="header-carousel">
+                <div className="carousel-message carousel-error">
+                  {subscriptionError || "Unable to load messages"}
                 </div>
-              ) : messages.length === 0 ? (
-                <div className="header-carousel">
-                  <div className="carousel-message carousel-empty sr-only">
-                    Welcome to MyGGV!
-                  </div>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="header-carousel">
+                <div className="carousel-message carousel-empty sr-only">
+                  Welcome to MyGGV!
                 </div>
-              ) : (
-                <div className="header-carousel">
-                  <div
-                    className={`carousel-message carousel-active ${transitionState}`}
-                  >
-                    {currentMessage.message}
-                  </div>
-                </div>
-              )
+              </div>
             ) : (
-              <>
-                <img src={ggvLogo} alt="MyGGV" className="header-logo" />
-                <h1 className="sr-only">MyGGV</h1>
-              </>
-            )}
-          </div>
+              <div className="header-carousel">
+                <div
+                  className={`carousel-message carousel-active ${transitionState}`}
+                >
+                  {currentMessage.message}
+                </div>
+              </div>
+            )
+          ) : (
+            <>
+              <img src={ggvLogo} alt="MyGGV" className="header-logo" />
+              <h1 className="sr-only">MyGGV</h1>
+            </>
+          )}
         </div>
       </div>
     </header>

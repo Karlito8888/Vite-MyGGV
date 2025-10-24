@@ -6,10 +6,10 @@ import { supabase } from './supabase'
  * @returns {Object|null} User object or null if invalid claims
  */
 export function extractUserFromClaims(claims) {
-  console.log('AuthHelpers: extractUserFromClaims() called with:', claims)
+
 
   if (!claims || !claims.sub) {
-    console.log('AuthHelpers: Invalid claims - missing claims or sub:', { hasClaims: !!claims, hasSub: !!claims?.sub })
+
     return null
   }
 
@@ -28,7 +28,7 @@ export function extractUserFromClaims(claims) {
     phone: claims.phone || null
   }
 
-  console.log('AuthHelpers: Extracted user object:', user)
+
   return user
 }
 
@@ -46,12 +46,12 @@ export async function getCurrentUserWithClaims() {
     if (error) {
       // AuthSessionMissingError is expected when user is not logged in
       if (error.name === 'AuthSessionMissingError' || error.message?.includes('Auth session missing')) {
-        console.log('AuthHelpers: No active session (user not logged in)')
+
         return { user: null, error: null, method: 'getUser' }
       }
       
       // Log other errors as they might be real issues
-      console.error('AuthHelpers: getUser() failed:', error)
+
       return { user: null, error, method: 'getUser' }
     }
 
@@ -78,7 +78,7 @@ export async function getCurrentUserWithClaims() {
 
     return { user, error: null, method: 'getUser' }
   } catch (err) {
-    console.error('AuthHelpers: Exception in getCurrentUserWithClaims():', err)
+
     return { user: null, error: err, method: 'getUser' }
   }
 }
@@ -146,7 +146,6 @@ export async function getUserClaims() {
       error 
     }
   } catch (error) {
-    console.error('Error getting user:', error)
     return { data: { claims: null }, error }
   }
 }
@@ -161,7 +160,6 @@ export async function getUser() {
     const { data, error } = await supabase.auth.getUser()
     return { data, error }
   } catch (error) {
-    console.error('Error getting user:', error)
     return { data: { user: null }, error }
   }
 }
@@ -214,14 +212,14 @@ export async function signUpUser(email, password, options = {}) {
     })
 
     if (error) {
-      console.error('AuthHelpers: Sign up error:', error)
+
       return { data: null, error }
     }
 
-    console.log('AuthHelpers: Sign up successful:', { userId: data?.user?.id, email })
+
     return { data, error: null }
   } catch (err) {
-    console.error('AuthHelpers: Exception in signUpUser():', err)
+
     return { data: null, error: err }
   }
 }
@@ -240,14 +238,14 @@ export async function signInUser(email, password) {
     })
 
     if (error) {
-      console.error('AuthHelpers: Sign in error:', error)
+
       return { data: null, error }
     }
 
-    console.log('AuthHelpers: Sign in successful:', { userId: data?.user?.id, email })
+
     return { data, error: null }
   } catch (err) {
-    console.error('AuthHelpers: Exception in signInUser():', err)
+
     return { data: null, error: err }
   }
 }
@@ -266,14 +264,14 @@ export async function resetPasswordForEmail(email, options = {}) {
     })
 
     if (error) {
-      console.error('AuthHelpers: Reset password error:', error)
+
       return { data: null, error }
     }
 
-    console.log('AuthHelpers: Reset password email sent successfully')
+
     return { data, error: null }
   } catch (err) {
-    console.error('AuthHelpers: Exception in resetPasswordForEmail():', err)
+
     return { data: null, error: err }
   }
 }
@@ -290,14 +288,14 @@ export async function updateUserPassword(password) {
     })
 
     if (error) {
-      console.error('AuthHelpers: Update password error:', error)
+
       return { data: null, error }
     }
 
-    console.log('AuthHelpers: Password updated successfully')
+
     return { data, error: null }
   } catch (err) {
-    console.error('AuthHelpers: Exception in updateUserPassword():', err)
+
     return { data: null, error: err }
   }
 }

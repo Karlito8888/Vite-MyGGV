@@ -1,135 +1,279 @@
 import { useEffect, useState } from 'react'
-import { onboardingService } from '../services/onboardingService'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { useUser } from '../contexts'
+import { locationRequestsService } from '../services/locationRequestsService'
+import Card, { CardHeader, CardContent } from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import Avatar from '../components/Avatar'
+import { ClimbingBoxLoader } from 'react-spinners'
 import '../styles/LocationRequests.css'
 
 function LocationRequests() {
   const { user } = useUser()
   const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [processing, setProcessing] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [filter, setFilter] = useState('pending') // 'pending', 'approved', 'rejected', 'all'
+  const [processingId, setProcessingId] = useState(null)
 
+  // Fetch requests
+  const fetchRequests = async () => {
+    if (!user) return
 
+    setIsLoading(true)
+    try {
+      const statusFilter = filter === 'all' ? null : filter
+      const result = await locationRequestsService.getAllRequests(user.id, statusFilter)
+      
+      if (result.success) {
+        setRequests(result.data)
+      } else {
+        toast.error(result.error || 'Failed to load requests')
+      }
+    } catch (error) {
+      console.error('Error fetching requests:', error)
+      toast.error('An error occurred while loading requests')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
+  useEffect(() => {
+    fetchRequests()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, filter])
+
+  // Real-time subscription
   useEffect(() => {
     if (!user) return
 
-    const fetchRequests = async () => {
-      try {
-        const result = await onboardingService.getOwnerPendingRequests(user.id)
-        if (result.success) {
-          setRequests(result.data)
-        }
-      } catch (error) {
-        console.error('Error fetching requests:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    const subscription = locationRequestsService.subscribeToRequests(
+      user.id,
+      (payload) => {
 
-    fetchRequests()
+        // Refresh requests when there's a change
+        fetchRequests()
+        
+        // Show notification for new requests
+        if (payload.eventType === 'INSERT') {
+          toast.info('📬 New location request received!')
+        }
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  const handleResponse = async (requestId, approve) => {
-    setProcessing(prev => ({ ...prev, [requestId]: true }))
-    
+  const handleApprove = async (requestId) => {
+    setIsProcessing(true)
+    setProcessingId(requestId)
     try {
-      const result = await onboardingService.respondToLocationRequest(requestId, approve)
+      const result = await locationRequestsService.approveRequest(requestId, user.id)
+      
       if (result.success) {
-        // Remove the request from the list
-        setRequests(prev => prev.filter(req => req.id !== requestId))
-        
-        // Show success message
-        alert(result.data.message || `Request ${approve ? 'approved' : 'denied'} successfully!`)
+        toast.success('✅ Request approved! User has been added to the location.')
+        // Refresh the list
+        await fetchRequests()
       } else {
-        alert(`Error: ${result.error}`)
+        toast.error(result.error || 'Failed to approve request')
       }
     } catch (error) {
-      console.error('Error responding to request:', error)
-      alert('An error occurred while processing your request')
+      console.error('Error approving request:', error)
+      toast.error('An error occurred while approving the request')
     } finally {
-      setProcessing(prev => ({ ...prev, [requestId]: false }))
+      setIsProcessing(false)
+      setProcessingId(null)
     }
   }
 
-  if (loading) {
-    return (
-      <div className="location-requests-container">
-        <div className="loading">Loading location requests...</div>
-      </div>
-    )
+  const handleReject = async (requestId) => {
+    setIsProcessing(true)
+    setProcessingId(requestId)
+    try {
+      const result = await locationRequestsService.rejectRequest(requestId, user.id)
+      
+      if (result.success) {
+        toast.success('❌ Request rejected.')
+        // Refresh the list
+        await fetchRequests()
+      } else {
+        toast.error(result.error || 'Failed to reject request')
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error)
+      toast.error('An error occurred while rejecting the request')
+    } finally {
+      setIsProcessing(false)
+      setProcessingId(null)
+    }
   }
 
-  if (requests.length === 0) {
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now - date
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+    
+    return date.toLocaleDateString()
+  }
+
+  const pendingCount = requests.filter(r => r.status === 'pending').length
+
+  if (isLoading) {
     return (
-      <div className="location-requests-container">
-        <div className="no-requests">
-          <h2>🏠 Location Requests</h2>
-          <p>You don't have any pending location requests.</p>
+      <div className="location-requests-page">
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        <div className="container-centered">
+          <div className="loader-wrapper">
+            <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="location-requests-container">
-      <h2>🏠 Pending Location Requests</h2>
-      <p className="subtitle">Review requests from users who want to be associated with your locations</p>
+    <div className="location-requests-page">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       
-      <div className="requests-list">
-        {requests.map((request) => (
-          <div key={request.id} className="request-card">
-            <div className="request-header">
-              <div className="location-info">
-                <h3>📍 {request.locations.block} {request.locations.lot}</h3>
-                <p className="request-date">Requested on {new Date(request.created_at).toLocaleDateString()}</p>
-              </div>
+      <div className="container">
+        <div className="requests-header">
+          <h1>Location Requests</h1>
+          {pendingCount > 0 && (
+            <span className="pending-badge">{pendingCount} pending</span>
+          )}
+        </div>
+
+        <div className="filter-tabs">
+          <button
+            className={`filter-tab ${filter === 'pending' ? 'active' : ''}`}
+            onClick={() => setFilter('pending')}
+          >
+            Pending
+            {pendingCount > 0 && <span className="tab-count">{pendingCount}</span>}
+          </button>
+          <button
+            className={`filter-tab ${filter === 'approved' ? 'active' : ''}`}
+            onClick={() => setFilter('approved')}
+          >
+            Approved
+          </button>
+          <button
+            className={`filter-tab ${filter === 'rejected' ? 'active' : ''}`}
+            onClick={() => setFilter('rejected')}
+          >
+            Rejected
+          </button>
+          <button
+            className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+        </div>
+
+        <div className="requests-list">
+          {requests.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📭</div>
+              <h3>No {filter !== 'all' ? filter : ''} requests</h3>
+              <p>
+                {filter === 'pending' 
+                  ? "You don't have any pending location requests at the moment."
+                  : `No ${filter} requests found.`}
+              </p>
             </div>
-            
-            <div className="requester-info">
-              <div className="requester-avatar">
-                {request.requester.avatar_url ? (
-                  <img src={request.requester.avatar_url} alt="Avatar" />
-                ) : (
-                  <div className="avatar-placeholder">
-                    {request.requester.username?.charAt(0).toUpperCase() || '?'}
-                  </div>
-                )}
-              </div>
-              <div className="requester-details">
-                <h4>{request.requester.username || 'Unknown User'}</h4>
-                <p>{request.requester.full_name || ''}</p>
-              </div>
-            </div>
-            
-            <div className="request-actions">
-              <button
-                className="btn btn-deny"
-                onClick={() => handleResponse(request.id, false)}
-                disabled={processing[request.id]}
-              >
-                {processing[request.id] ? 'Processing...' : '❌ Deny'}
-              </button>
-              <button
-                className="btn btn-approve"
-                onClick={() => handleResponse(request.id, true)}
-                disabled={processing[request.id]}
-              >
-                {processing[request.id] ? 'Processing...' : '✅ Approve'}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="info-section">
-        <h3>ℹ️ What happens when you approve?</h3>
-        <ul>
-          <li>The user will be associated with your location</li>
-          <li>The user's onboarding will be completed</li>
-          <li>Both of you will receive notifications</li>
-          <li>You remain the primary owner of the location</li>
-        </ul>
+          ) : (
+            requests.map((request) => {
+              const isRequestProcessing = processingId === request.request_id
+              const isDisabled = isProcessing || isRequestProcessing
+
+              return (
+                <Card key={request.request_id} hover className="location-request-card">
+                  <CardHeader className="request-header">
+                    <div className="requester-info">
+                      <Avatar
+                        src={request.requester_avatar_url}
+                        fallback={request.requester_username?.[0] || 'U'}
+                        size="medium"
+                      />
+                      <div className="requester-details">
+                        <h3>{request.requester_full_name || request.requester_username}</h3>
+                        <p className="username">@{request.requester_username}</p>
+                      </div>
+                    </div>
+                    <div className="request-time">
+                      {formatDate(request.created_at)}
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="request-body">
+                      <div className="location-info">
+                        <span className="location-label">Requesting access to:</span>
+                        <span className="location-value">
+                          Block {request.location_block}, Lot {request.location_lot}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="request-actions">
+                      <Button
+                        variant="danger"
+                        onClick={() => handleReject(request.request_id)}
+                        disabled={isDisabled}
+                        loading={isRequestProcessing}
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={() => handleApprove(request.request_id)}
+                        disabled={isDisabled}
+                        loading={isRequestProcessing}
+                      >
+                        Approve
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })
+          )}
+        </div>
       </div>
     </div>
   )

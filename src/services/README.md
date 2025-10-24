@@ -31,9 +31,9 @@ import { listProfiles, getProfileById, updateProfile } from './services/profiles
 // List all profiles
 const { data: profiles, error } = await listProfiles()
 if (error) {
-  console.error('Error fetching profiles:', error)
+  // Handle error
 } else {
-  console.log('Profiles:', profiles)
+  // Use profiles data
 }
 
 // Get specific profile
@@ -156,7 +156,7 @@ await markMessageAsRead(messageId)
 
 // Real-time subscription
 const subscription = subscribeToPrivateMessages(userId, (newMessage) => {
-  console.log('New message:', newMessage)
+  // Handle new message
 })
 
 // Cleanup
@@ -219,13 +219,11 @@ const { data: thread } = await createThread({
 const { data, error } = await someServiceFunction()
 
 if (error) {
-  console.error('Operation failed:', error.message)
   // Handle error (show toast, etc.)
   return
 }
 
 // Use data
-console.log('Success:', data)
 ```
 
 ### Try-Catch for Additional Safety
@@ -239,7 +237,6 @@ try {
   // Use data
   return data
 } catch (err) {
-  console.error('Unexpected error:', err)
   // Handle error
 }
 ```

@@ -1,86 +1,139 @@
-import { supabase } from '../utils/supabase'
+import { supabase, executeQuery } from './baseService'
+import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 export const locationRequestsService = {
-  // Get all pending requests for a location owner
-  async getOwnerPendingRequests(userId) {
+  /**
+   * Get all pending location requests for the current owner
+   * Uses RPC function for optimized query
+   * @param {string} ownerId - The owner's user ID (optional, uses auth.uid() if not provided)
+   * @returns {Promise<{success: boolean, data: Array, error?: string}>}
+   */
+  async getPendingRequests(ownerId = null) {
     try {
+      let userId = ownerId
+      
+      if (!userId) {
+        const { userId: authUserId, error: authError } = await getAuthenticatedUserId()
+        if (authError) throw authError
+        userId = authUserId
+      }
+
       const { data, error } = await supabase
+        .rpc('get_pending_location_requests', {
+          p_owner_id: userId
+        })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+
+      return {
+        success: false,
+        error: error.message,
+        data: []
+      }
+    }
+  },
+
+  /**
+   * List pending requests using direct query (alternative to RPC)
+   * @returns {Promise<{data: Array|null, error: Error|null}>}
+   */
+  async listMyPendingRequests() {
+    const { userId, error } = await getAuthenticatedUserId()
+    if (error) {
+      return { data: null, error }
+    }
+
+    return executeQuery(
+      supabase
         .from('location_association_requests')
         .select(`
-          id,
-          status,
-          created_at,
-          locations:block, lot,
-          requester:profiles!location_association_requests_requester_id_fkey(
-            id,
-            username,
-            full_name,
-            avatar_url
-          )
+          *,
+          requester:profiles!location_association_requests_requester_id_fkey(*),
+          location:locations(*)
         `)
         .eq('approver_id', userId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
+    )
+  },
+
+  /**
+   * Get all location requests (with optional status filter)
+   * @param {string} ownerId - The owner's user ID
+   * @param {string} status - Optional status filter ('pending', 'approved', 'rejected')
+   * @returns {Promise<{success: boolean, data: Array, error?: string}>}
+   */
+  async getAllRequests(ownerId, status = null) {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_all_location_requests', {
+          p_owner_id: ownerId,
+          p_status: status
+        })
 
       if (error) throw error
 
       return {
         success: true,
-        data: data
+        data: data || []
       }
     } catch (error) {
-      console.error('Error fetching pending requests:', error)
+
       return {
         success: false,
-        error: error.message
+        error: error.message,
+        data: []
       }
     }
   },
 
-  // Get user's own location requests
-  async getUserLocationRequests(userId) {
+  /**
+   * Get all location requests made by the current user
+   * @param {string} requesterId - The requester's user ID
+   * @returns {Promise<{success: boolean, data: Array, error?: string}>}
+   */
+  async getMyRequests(requesterId) {
     try {
       const { data, error } = await supabase
-        .from('location_association_requests')
-        .select(`
-          id,
-          status,
-          created_at,
-          approved_at,
-          rejected_at,
-          locations:block, lot,
-          approver:profiles!location_association_requests_approver_id_fkey(
-            username,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq('requester_id', userId)
-        .order('created_at', { ascending: false })
+        .rpc('get_my_location_requests', {
+          p_requester_id: requesterId
+        })
 
       if (error) throw error
 
       return {
         success: true,
-        data: data
+        data: data || []
       }
     } catch (error) {
-      console.error('Error fetching user requests:', error)
+
       return {
         success: false,
-        error: error.message
+        error: error.message,
+        data: []
       }
     }
   },
 
-  // Respond to a location request (approve/deny)
-  async respondToRequest(requestId, approve, responseMessage = null) {
+  /**
+   * Approve a location request
+   * @param {number} requestId - The request ID
+   * @param {string} approverId - The approver's user ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async approveRequest(requestId, approverId) {
     try {
       const { data, error } = await supabase
-        .rpc('respond_to_location_request', {
+        .rpc('handle_location_request_response', {
           p_request_id: requestId,
-          p_approve: approve,
-          p_response_message: responseMessage
+          p_approver_id: approverId,
+          p_approve: true
         })
 
       if (error) throw error
@@ -90,7 +143,7 @@ export const locationRequestsService = {
         data: data
       }
     } catch (error) {
-      console.error('Error responding to request:', error)
+
       return {
         success: false,
         error: error.message
@@ -98,59 +151,63 @@ export const locationRequestsService = {
     }
   },
 
-  // Check if user has any pending requests
-  async hasPendingRequests(userId) {
+  /**
+   * Reject a location request
+   * @param {number} requestId - The request ID
+   * @param {string} approverId - The approver's user ID
+   * @returns {Promise<{success: boolean, data?: object, error?: string}>}
+   */
+  async rejectRequest(requestId, approverId) {
     try {
       const { data, error } = await supabase
-        .from('location_association_requests')
-        .select('id')
-        .eq('requester_id', userId)
-        .eq('status', 'pending')
-        .limit(1)
+        .rpc('handle_location_request_response', {
+          p_request_id: requestId,
+          p_approver_id: approverId,
+          p_approve: false
+        })
 
       if (error) throw error
 
       return {
         success: true,
-        hasPending: data.length > 0,
-        count: data.length
+        data: data
       }
     } catch (error) {
-      console.error('Error checking pending requests:', error)
+
       return {
         success: false,
-        error: error.message,
-        hasPending: false
+        error: error.message
       }
     }
   },
 
-  // Get request statistics for an owner
-  async getOwnerRequestStats(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('location_association_requests')
-        .select('status')
-        .eq('approver_id', userId)
+  /**
+   * Subscribe to real-time changes on location_association_requests
+   * @param {string} ownerId - The owner's user ID
+   * @param {Function} callback - Callback function to handle changes
+   * @returns {Object} Subscription object with unsubscribe method
+   */
+  subscribeToRequests(ownerId, callback) {
+    const subscription = supabase
+      .channel('location_requests_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'location_association_requests',
+          filter: `approver_id=eq.${ownerId}`
+        },
+        (payload) => {
 
-      if (error) throw error
+          callback(payload)
+        }
+      )
+      .subscribe()
 
-      const stats = {
-        total: data.length,
-        pending: data.filter(r => r.status === 'pending').length,
-        approved: data.filter(r => r.status === 'approved').length,
-        rejected: data.filter(r => r.status === 'rejected').length
-      }
-
-      return {
-        success: true,
-        data: stats
-      }
-    } catch (error) {
-      console.error('Error fetching request stats:', error)
-      return {
-        success: false,
-        error: error.message
+    return {
+      unsubscribe: () => {
+        subscription.unsubscribe()
       }
     }
   }

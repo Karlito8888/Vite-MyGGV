@@ -16,12 +16,26 @@ export const onboardingService = {
       // Get unique blocks
       const uniqueBlocks = [...new Set(data?.map(item => item.block) || [])]
       
+      // Sort blocks numerically if they are numbers, otherwise alphabetically
+      const sortedBlocks = uniqueBlocks.sort((a, b) => {
+        const numA = parseInt(a, 10)
+        const numB = parseInt(b, 10)
+        
+        // If both are valid numbers, sort numerically
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB
+        }
+        
+        // Otherwise, sort alphabetically
+        return String(a).localeCompare(String(b))
+      })
+      
       return {
         success: true,
-        data: uniqueBlocks
+        data: sortedBlocks
       }
     } catch (error) {
-      console.error('Error fetching available blocks:', error)
+
       return {
         success: false,
         error: error.message,
@@ -43,12 +57,26 @@ export const onboardingService = {
       
       const lots = data?.map(item => item.lot) || []
       
+      // Sort lots numerically if they are numbers, otherwise alphabetically
+      const sortedLots = lots.sort((a, b) => {
+        const numA = parseInt(a, 10)
+        const numB = parseInt(b, 10)
+        
+        // If both are valid numbers, sort numerically
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB
+        }
+        
+        // Otherwise, sort alphabetically
+        return String(a).localeCompare(String(b))
+      })
+      
       return {
         success: true,
-        data: lots
+        data: sortedLots
       }
     } catch (error) {
-      console.error('Error fetching lots for block:', error)
+
       return {
         success: false,
         error: error.message,
@@ -83,9 +111,8 @@ export const onboardingService = {
             lot = locationData.lot || ''
           }
         }
-      } catch (err) {
+      } catch {
         // Silently handle errors - location data is optional for onboarding
-        console.warn('Error fetching location data:', err)
       }
 
       const result = {
@@ -100,7 +127,7 @@ export const onboardingService = {
         data: result
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error)
+
       return {
         success: false,
         error: error.message,
@@ -144,13 +171,12 @@ export const onboardingService = {
           const uploadResult = await avatarService.uploadAvatar(userId, avatar_file)
           if (uploadResult.success) {
             finalAvatarUrl = uploadResult.data.url
-            console.log('Avatar uploaded successfully for user:', userId)
+
           } else {
-            console.warn('Avatar upload failed, continuing with onboarding:', uploadResult.error)
+
             // Continue with onboarding even if avatar upload fails
           }
-        } catch (avatarError) {
-          console.warn('Avatar upload error, continuing with onboarding:', avatarError.message)
+        } catch {
           // Continue with onboarding even if avatar upload fails
         }
       }
@@ -162,7 +188,7 @@ export const onboardingService = {
         updated_at: new Date().toISOString()
       }
 
-      console.log('Updating profile for user:', userId, profileUpdateData)
+
 
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
@@ -172,14 +198,14 @@ export const onboardingService = {
         .single()
 
       if (profileError) {
-        console.error('Profile update error:', profileError)
+  
         throw new Error(`Failed to update profile: ${profileError.message}`)
       }
 
-      console.log('Profile updated successfully for user:', userId)
+
 
       // Handle location assignment using the optimized workflow
-      console.log('Handling location assignment for user:', userId, 'block:', block.trim(), 'lot:', lot.trim())
+
 
       const { data: locationResult, error: locationError } = await supabase
         .rpc('handle_onboarding_location_assignment', {
@@ -190,11 +216,11 @@ export const onboardingService = {
         })
 
       if (locationError) {
-        console.error('Location assignment error:', locationError)
+  
         throw new Error(`Failed to assign location: ${locationError.message}`)
       }
 
-      console.log('Location assignment result for user:', userId, locationResult)
+
 
       // Determine if onboarding should be completed now or later
       const assignmentType = locationResult.assignment_type
@@ -203,21 +229,21 @@ export const onboardingService = {
       if (assignmentType === 'direct') {
         // Direct assignment - complete onboarding now
         shouldCompleteOnboarding = true
-        console.log('Direct location assignment for user:', userId)
+
       } else if (assignmentType === 'request') {
         // Request sent - ALSO complete onboarding to allow app access
         // The trigger will handle the rest when approved
         shouldCompleteOnboarding = true
-        console.log('Location request sent for user:', userId, 'completing onboarding anyway')
+
       } else {
-        console.warn('Unknown assignment type for user:', userId, assignmentType)
+
         // Default to completing onboarding for safety
         shouldCompleteOnboarding = true
       }
 
       if (shouldCompleteOnboarding) {
         // Complete onboarding
-        console.log('Completing onboarding for user:', userId)
+
 
         const { error: finalUpdateError } = await supabase
           .from('profiles')
@@ -225,11 +251,11 @@ export const onboardingService = {
           .eq('id', userId)
 
         if (finalUpdateError) {
-          console.error('Final onboarding update error:', finalUpdateError)
+
           throw new Error(`Failed to complete onboarding: ${finalUpdateError.message}`)
         }
 
-        console.log('Onboarding completed successfully for user:', userId)
+
 
         return {
           success: true,
@@ -244,7 +270,7 @@ export const onboardingService = {
         }
       } else {
         // This shouldn't happen anymore, but keep as fallback
-        console.warn('Unexpected: shouldCompleteOnboarding is false for user:', userId)
+
         return {
           success: true,
           data: updatedProfile,
@@ -256,7 +282,7 @@ export const onboardingService = {
         }
       }
     } catch (error) {
-      console.error('Error completing onboarding for user:', userId, error)
+
       return {
         success: false,
         error: error.message || 'An unknown error occurred during onboarding'
@@ -280,7 +306,7 @@ export const onboardingService = {
         data: data
       }
     } catch (error) {
-      console.error('Error checking location availability:', error)
+
       return {
         success: false,
         error: error.message
@@ -316,7 +342,7 @@ export const onboardingService = {
         data: data
       }
     } catch (error) {
-      console.error('Error fetching location requests:', error)
+
       return {
         success: false,
         error: error.message
@@ -352,7 +378,7 @@ export const onboardingService = {
         data: data
       }
     } catch (error) {
-      console.error('Error fetching pending requests:', error)
+
       return {
         success: false,
         error: error.message
@@ -377,7 +403,7 @@ export const onboardingService = {
         data: data
       }
     } catch (error) {
-      console.error('Error responding to location request:', error)
+
       return {
         success: false,
         error: error.message

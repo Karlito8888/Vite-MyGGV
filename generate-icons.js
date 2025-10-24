@@ -16,7 +16,7 @@ async function generatePlaceholderIcon(size, filename) {
   // For now, we'll create a note
   // In production, you'd use a proper image conversion library
    
-  console.log(`✓ Generated ${filename} (${size}x${size})`);
+
 
   // Create a placeholder file that indicates the icon should be generated
   const note = `# PWA Icon Placeholder
@@ -44,7 +44,7 @@ const icons = [
 ];
 
  
-console.log("Generating PWA icon placeholders...\n");
+
 
 icons.forEach((icon) => {
   generatePlaceholderIcon(icon.size, icon.name);
@@ -56,13 +56,13 @@ fs.copyFileSync(
   path.join(publicDir, "favicon.svg")
 );
  
-console.log("✓ Created favicon.svg");
+
 
  
-console.log("\n✅ Icon placeholders created!");
+
  
-console.log("\nNote: For production, generate actual PNG files using:");
+
  
-console.log("  - Online tools: realfavicongenerator.net");
+
  
-console.log("  - CLI tools: npm install sharp && node generate-icons-sharp.js");
+

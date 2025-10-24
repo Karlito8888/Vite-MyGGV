@@ -10,6 +10,7 @@ const Onboarding = lazy(() => import('./pages/Onboarding'))
 const UpdatePassword = lazy(() => import('./pages/UpdatePassword'))
 const Home = lazy(() => import('./pages/Home'))
 const Profile = lazy(() => import('./pages/Profile'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Messages = lazy(() => import('./pages/Messages'))
 const Games = lazy(() => import('./pages/Games'))
 const Infos = lazy(() => import('./pages/Infos'))
@@ -22,6 +23,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const protectedRoutes = [
   { path: 'home', element: Home },
   { path: 'profile', element: Profile },
+  { path: 'dashboard', element: Dashboard },
   { path: 'messages', element: Messages },
   { path: 'games', element: Games },
   { path: 'infos', element: Infos },

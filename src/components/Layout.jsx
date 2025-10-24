@@ -3,14 +3,15 @@ import { Outlet } from 'react-router'
 import Header from './Header'
 import Footer from './Footer'
 import Sidebar from './Sidebar'
-import { UserProvider, PresenceProvider } from '../contexts'
+import { UserProvider } from '../contexts'
+import { GlobalPresenceProvider } from '../contexts/GlobalPresenceContext'
 
 function Layout() {
   return (
     <UserProvider>
-      <PresenceProvider>
+      <GlobalPresenceProvider>
         <LayoutContent />
-      </PresenceProvider>
+      </GlobalPresenceProvider>
     </UserProvider>
   )
 }

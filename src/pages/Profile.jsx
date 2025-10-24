@@ -1,15 +1,24 @@
 import { useUser } from "../contexts";
+import { useNavigate } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Card, {
   CardHeader,
   CardTitle,
   CardContent,
 } from "../components/ui/Card";
+import { LayoutDashboard } from "lucide-react";
 import "../styles/Profile.css";
 import { BeatLoader } from "react-spinners";
+import viberLogo from "../assets/logos/viber.png";
+import whatsappLogo from "../assets/logos/whatsapp.png";
+import facebookLogo from "../assets/logos/facebook.png";
+import messengerLogo from "../assets/logos/messenger.png";
+import tiktokLogo from "../assets/logos/tiktok.png";
+import instagramLogo from "../assets/logos/instagram.png";
 
 function Profile() {
   const { profile, locationAssociations, profileLoading } = useUser();
+  const navigate = useNavigate();
 
   // Si pas de profil, afficher un message (pas de loading car géré par ProtectedRoute + UserContext)
   if (!profile) {
@@ -26,7 +35,17 @@ function Profile() {
   return (
     <div className="container">
       <div className="profile-container">
-        <h2>My Profile</h2>
+        <div className="profile-header">
+          <h2>My Profile</h2>
+          <button
+            className="btn-dashboard"
+            onClick={() => navigate("/dashboard")}
+            aria-label="Go to Dashboard"
+          >
+            <LayoutDashboard size={20} />
+            Dashboard
+          </button>
+        </div>
 
         <Card>
           <CardHeader>
@@ -112,45 +131,110 @@ function Profile() {
             <CardTitle>Contact Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="profile-field">
-              <label>Phone Number:</label>
-              <span>{profile.phone_number || "Not provided"}</span>
-            </div>
+            <div className="contact-links">
+              {profile.viber_number && (
+                <a
+                  href={`viber://chat?number=${encodeURIComponent(profile.viber_number)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Contact via Viber"
+                >
+                  <img src={viberLogo} alt="Viber" className="contact-logo" />
+                </a>
+              )}
 
-            <div className="profile-field">
-              <label>Viber Number:</label>
-              <span>{profile.viber_number || "Not provided"}</span>
-            </div>
+              {profile.whatsapp_number && (
+                <a
+                  href={`https://wa.me/${profile.whatsapp_number.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Contact via WhatsApp"
+                >
+                  <img
+                    src={whatsappLogo}
+                    alt="WhatsApp"
+                    className="contact-logo"
+                  />
+                </a>
+              )}
 
-            <div className="profile-field">
-              <label>Facebook URL:</label>
-              {profile.facebook_url ? (
+              {profile.facebook_url && (
                 <a
                   href={profile.facebook_url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Visit Facebook profile"
                 >
-                  {profile.facebook_url}
+                  <img
+                    src={facebookLogo}
+                    alt="Facebook"
+                    className="contact-logo"
+                  />
                 </a>
-              ) : (
-                <span>Not provided</span>
               )}
-            </div>
 
-            <div className="profile-field">
-              <label>Messenger URL:</label>
-              {profile.messenger_url ? (
+              {profile.messenger_url && (
                 <a
                   href={profile.messenger_url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Contact via Messenger"
                 >
-                  {profile.messenger_url}
+                  <img
+                    src={messengerLogo}
+                    alt="Messenger"
+                    className="contact-logo"
+                  />
                 </a>
-              ) : (
-                <span>Not provided</span>
+              )}
+
+              {profile.instagram_url && (
+                <a
+                  href={profile.instagram_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Visit Instagram profile"
+                >
+                  <img
+                    src={instagramLogo}
+                    alt="Instagram"
+                    className="contact-logo"
+                  />
+                </a>
+              )}
+
+              {profile.tiktok_url && (
+                <a
+                  href={profile.tiktok_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                  title="Visit TikTok profile"
+                >
+                  <img
+                    src={tiktokLogo}
+                    alt="TikTok"
+                    className="contact-logo"
+                  />
+                </a>
               )}
             </div>
+
+            {!profile.viber_number &&
+              !profile.whatsapp_number &&
+              !profile.facebook_url &&
+              !profile.messenger_url &&
+              !profile.instagram_url &&
+              !profile.tiktok_url && (
+                <div className="profile-field">
+                  <span>No contact information provided</span>
+                </div>
+              )}
           </CardContent>
         </Card>
 

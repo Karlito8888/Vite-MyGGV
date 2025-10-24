@@ -20,10 +20,17 @@
   --color-error-bg: #fef2f2;
   --color-error-border: #fecaca;
   --color-error-text: #dc2626;
+  /* Z-index variables */
+  --z-sidebar: 1001;
+  --z-overlay: 1000;
+  --z-dropdown: 100;
+  --z-sticky: 10;
+  --z-header: 2;
+  --z-content: 1;
   /* Sidebar variables */
   --sidebar-width: 320px;
-  --sidebar-z-index: 1001;
-  --overlay-z-index: 1000;
+  --sidebar-z-index: var(--z-sidebar);
+  --overlay-z-index: var(--z-overlay);
 }
 
 :root.dark {
@@ -44,10 +51,17 @@
   --color-error-bg: #3d1a1a;
   --color-error-border: #5c2626;
   --color-error-text: #f87171;
+  /* Z-index variables */
+  --z-sidebar: 1001;
+  --z-overlay: 1000;
+  --z-dropdown: 100;
+  --z-sticky: 10;
+  --z-header: 2;
+  --z-content: 1;
   /* Sidebar variables */
   --sidebar-width: 320px;
-  --sidebar-z-index: 1001;
-  --overlay-z-index: 1000;
+  --sidebar-z-index: var(--z-sidebar);
+  --overlay-z-index: var(--z-overlay);
 }
 
 /* Reset and base styles */
@@ -128,58 +142,9 @@ body {
   grid-area: main;
   height: 100%;
   overflow-y: auto;
-  background: linear-gradient(
-    to bottom right,
-    var(--color-background),
-    var(--color-surface)
-  );
-}
-
-/* Mobile-first responsive design */
-.container {
-  width: 100%;
-  height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Special container for centered content (login, onboarding, etc.) */
-.container-centered {
-  width: 100%;
-  height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Footer containers - Mobile First */
-.footer .container {
-  max-width: none;
-  width: 100%;
-  padding: 0 0.5rem;
-}
-
-/* Ensure footer takes full width - Mobile First base styles */
-.footer {
-  width: 100%;
-}
-
-/* Small tablets and larger phones (481px+) */
-@media (min-width: 481px) {
-  .footer .container {
-    padding: 0 0.75rem;
-  }
-}
-
-/* Tablets and larger (769px+) */
-@media (min-width: 769px) {
-  .footer .container {
-    padding: 0 1rem;
-  }
+  background: linear-gradient(to bottom right,
+      var(--color-background),
+      var(--color-surface));
 }
 
 .df {
@@ -198,39 +163,6 @@ h2 {
 }
 
 /* Mobile-specific optimizations - Base styles for 320px+ */
-
-.btn {
-  display: inline-block;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: center;
-  text-decoration: none;
-  border: none;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 48px;
-  /* Touch target size */
-}
-
-.btn-primary {
-  background-color: var(--color-button-primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--color-button-primary-hover);
-}
-
-.btn-secondary {
-  background-color: var(--color-button-secondary);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-button-secondary-hover);
-}
 
 .form-group {
   margin-bottom: 1rem;
@@ -263,34 +195,17 @@ h2 {
   box-shadow: 0 0 0 3px rgba(80, 170, 97, 0.1);
 }
 
-/* Touch-friendly interactions */
-@media (hover: none) and (pointer: coarse) {
-  .btn:hover {
-    transform: scale(1.02);
-  }
 
-  .btn:active {
-    transform: scale(0.98);
-  }
-}
 
 /* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
   html {
     font-size: 15px;
   }
-
-  .container {
-    padding: 0 1.5rem;
-  }
 }
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
-  .container {
-    padding: 0 2rem;
-  }
-
   html {
     font-size: 16px;
   }
@@ -328,11 +243,27 @@ body.sidebar-open {
 
 /* Z-index layering for proper stacking */
 .z-overlay {
-  z-index: var(--overlay-z-index);
+  z-index: var(--z-overlay);
 }
 
 .z-sidebar {
-  z-index: var(--sidebar-z-index);
+  z-index: var(--z-sidebar);
+}
+
+.z-dropdown {
+  z-index: var(--z-dropdown);
+}
+
+.z-sticky {
+  z-index: var(--z-sticky);
+}
+
+.z-header {
+  z-index: var(--z-header);
+}
+
+.z-content {
+  z-index: var(--z-content);
 }
 
 .sr-only {
@@ -358,4 +289,53 @@ body.sidebar-open {
   clip: auto !important;
   white-space: normal !important;
   border: 2px solid var(--color-primary) !important;
+}
+
+/* Global Animations */
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse-subtle {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

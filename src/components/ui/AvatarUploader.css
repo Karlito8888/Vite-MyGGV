@@ -1,0 +1,266 @@
+/* Avatar Uploader Styles */
+
+.avatar-uploader {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-uploader__container {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 3px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.avatar-uploader__container:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.avatar-uploader__container.dragging {
+  border-color: var(--color-primary);
+  border-style: dashed;
+  border-width: 3px;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+.avatar-uploader__container.uploading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Size Variants */
+.avatar-uploader--small .avatar-uploader__container {
+  width: 80px;
+  height: 80px;
+}
+
+.avatar-uploader--medium .avatar-uploader__container {
+  width: 120px;
+  height: 120px;
+}
+
+.avatar-uploader--large .avatar-uploader__container {
+  width: 160px;
+  height: 160px;
+}
+
+/* Preview */
+.avatar-uploader__preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-uploader__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-uploader__fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.avatar-uploader__fallback-text {
+  font-size: 3rem;
+  font-weight: 600;
+  color: white;
+  user-select: none;
+}
+
+.avatar-uploader--small .avatar-uploader__fallback-text {
+  font-size: 1.5rem;
+}
+
+.avatar-uploader--medium .avatar-uploader__fallback-text {
+  font-size: 2.5rem;
+}
+
+/* Overlay */
+.avatar-uploader__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.avatar-uploader__container:hover .avatar-uploader__overlay {
+  opacity: 1;
+}
+
+.avatar-uploader__container.uploading .avatar-uploader__overlay {
+  opacity: 1;
+}
+
+.avatar-uploader__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+}
+
+.avatar-uploader__icon {
+  flex-shrink: 0;
+}
+
+.avatar-uploader--small .avatar-uploader__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.avatar-uploader--medium .avatar-uploader__icon {
+  width: 28px;
+  height: 28px;
+}
+
+.avatar-uploader--large .avatar-uploader__icon {
+  width: 32px;
+  height: 32px;
+}
+
+.avatar-uploader__text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.avatar-uploader--small .avatar-uploader__text {
+  font-size: 0.75rem;
+}
+
+.avatar-uploader__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: white;
+}
+
+.avatar-uploader__loading span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Drag Indicator */
+.avatar-uploader__drag-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(91, 196, 109, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: white;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+}
+
+.avatar-uploader__drag-icon {
+  animation: bounce 1s infinite;
+  flex-shrink: 0;
+}
+
+.avatar-uploader__drag-indicator span {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Add consistent font family */
+.avatar-uploader__fallback-text,
+.avatar-uploader__text,
+.avatar-uploader__loading span,
+.avatar-uploader__drag-indicator span {
+  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+/* Hidden Input */
+.avatar-uploader__input {
+  display: none;
+}
+
+/* Remove Button */
+.avatar-uploader__remove {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-uploader__remove:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+.avatar-uploader__remove svg {
+  color: white;
+  flex-shrink: 0;
+}
+
+.avatar-uploader--small .avatar-uploader__remove {
+  width: 28px;
+  height: 28px;
+}
+
+.avatar-uploader--small .avatar-uploader__remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .avatar-uploader--large .avatar-uploader__container {
+    width: 140px;
+    height: 140px;
+  }
+
+  .avatar-uploader--medium .avatar-uploader__container {
+    width: 100px;
+    height: 100px;
+  }
+}

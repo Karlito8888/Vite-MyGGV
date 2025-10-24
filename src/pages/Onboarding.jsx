@@ -3,12 +3,15 @@ import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ClimbingBoxLoader } from "react-spinners";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { supabase } from "../utils/supabase";
 import { onboardingService } from "../services/onboardingService";
 
 import { onboardingSchema } from "../schemas/onboardingSchema";
 import { useUser } from "../contexts";
-import Avatar from "../components/Avatar";
+import AvatarUploader from "../components/ui/AvatarUploader";
+import Button from "../components/ui/Button";
 import Picker from "react-mobile-picker";
 import "../styles/Onboarding.css";
 
@@ -21,6 +24,8 @@ function Onboarding() {
   const [loadingBlocks, setLoadingBlocks] = useState(false);
   const [loadingLots, setLoadingLots] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("");
+  const [blocksError, setBlocksError] = useState(null);
+  const [lotsError, setLotsError] = useState(null);
 
   const {
     control,
@@ -48,13 +53,26 @@ function Onboarding() {
   useEffect(() => {
     const fetchBlocks = async () => {
       setLoadingBlocks(true);
+      setBlocksError(null);
       try {
         const result = await onboardingService.getAvailableBlocks();
         if (result.success) {
           setAvailableBlocks(result.data);
+          if (result.data.length === 0) {
+            const errorMsg = "No blocks available. Please contact support.";
+            setBlocksError(errorMsg);
+            toast.error(errorMsg);
+          }
+        } else {
+          const errorMsg = result.error || "Failed to load blocks";
+          setBlocksError(errorMsg);
+          toast.error(errorMsg);
         }
       } catch (error) {
         console.error("Error fetching blocks:", error);
+        const errorMsg = "Failed to load blocks. Please refresh the page.";
+        setBlocksError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setLoadingBlocks(false);
       }
@@ -68,19 +86,33 @@ function Onboarding() {
     if (!selectedBlock) {
       setAvailableLots([]);
       setValue("lot", "");
+      setLotsError(null);
       return;
     }
 
     const fetchLots = async () => {
       setLoadingLots(true);
+      setLotsError(null);
       try {
         const result = await onboardingService.getLotsByBlock(selectedBlock);
         if (result.success) {
           setAvailableLots(result.data);
           setValue("lot", ""); // Reset lot when block changes
+          if (result.data.length === 0) {
+            const errorMsg = `No lots available for block ${selectedBlock}`;
+            setLotsError(errorMsg);
+            toast.warning(errorMsg);
+          }
+        } else {
+          const errorMsg = result.error || "Failed to load lots";
+          setLotsError(errorMsg);
+          toast.error(errorMsg);
         }
       } catch (error) {
         console.error("Error fetching lots:", error);
+        const errorMsg = "Failed to load lots. Please try selecting another block.";
+        setLotsError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setLoadingLots(false);
       }
@@ -89,6 +121,13 @@ function Onboarding() {
     fetchLots();
   }, [selectedBlock, setValue]);
 
+  // Helper function to ensure minimum loading time
+  const ensureMinimumLoadingTime = (startTime, minTime = 3000) => {
+    const elapsedTime = Date.now() - startTime;
+    const remainingTime = Math.max(0, minTime - elapsedTime);
+    return new Promise(resolve => setTimeout(resolve, remainingTime));
+  };
+
   useEffect(() => {
     if (!user) {
       navigate("/login");
@@ -96,9 +135,8 @@ function Onboarding() {
     }
 
     const checkOnboardingStatus = async () => {
-      // Force minimum 3-second loading time
       const startTime = Date.now();
-      
+
       try {
         const { data: profile } = await supabase
           .from("profiles")
@@ -119,22 +157,16 @@ function Onboarding() {
         }
 
         // Ensure minimum 3-second loading time
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, 3000 - elapsedTime);
-
-        setTimeout(() => {
-          setIsLoading(false);
-        }, remainingTime);
+        await ensureMinimumLoadingTime(startTime);
+        setIsLoading(false);
 
       } catch (error) {
         console.error("Error checking onboarding status:", error);
+        toast.error("Failed to load onboarding data. Please refresh the page.");
+        
         // Still respect 3-second minimum on error
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, 3000 - elapsedTime);
-
-        setTimeout(() => {
-          setIsLoading(false);
-        }, remainingTime);
+        await ensureMinimumLoadingTime(startTime);
+        setIsLoading(false);
       }
     };
 
@@ -144,15 +176,17 @@ function Onboarding() {
   const handleAvatarUploadSuccess = (avatarUrl) => {
     setCurrentAvatar(avatarUrl);
     setValue("avatar_url", avatarUrl);
+    clearErrors("avatar_url");
+    toast.success("Profile picture uploaded successfully!");
   };
 
   const onSubmit = async (data) => {
     try {
-      // Include avatar URL in submission if available
-      const submissionData = { ...data };
-      if (currentAvatar) {
-        submissionData.avatar_url = currentAvatar;
-      }
+      // Include avatar URL in submission
+      const submissionData = {
+        ...data,
+        avatar_url: currentAvatar
+      };
 
       // Use completeOnboarding which properly handles onboarding_completed flag
       const result = await onboardingService.completeOnboarding(
@@ -165,27 +199,36 @@ function Onboarding() {
 
         if (locationType === "direct_assignment") {
           // Location was assigned directly and onboarding completed
-          alert("🎉 Onboarding completed successfully! Welcome to your app!");
-          navigate("/home", { replace: true });
+          toast.success("🎉 Onboarding completed successfully! Welcome to your app!");
+          setTimeout(() => navigate("/home", { replace: true }), 1500);
         } else if (locationType === "pending_approval") {
-          // Location request sent - allow access but show notification
-          alert(
-            "🎉 Onboarding completed! Your location request has been sent. You can start using the app while waiting for approval."
+          // Location request sent - MUST WAIT for owner approval
+          toast.info(
+            "📬 Your location request has been sent to the owner. You will be able to access the app once the owner approves your request. Please check back later.",
+            { autoClose: 6000 }
           );
-          navigate("/home", { replace: true });
+          // Redirect to a waiting page or logout
+          setTimeout(() => {
+            // Log out the user since they can't access the app yet
+            supabase.auth.signOut()
+            navigate("/login", { replace: true })
+          }, 6000);
         } else {
           // Fallback - onboarding completed
-          alert("🎉 Onboarding completed successfully! Welcome to your app!");
-          navigate("/home", { replace: true });
+          toast.success("🎉 Onboarding completed successfully! Welcome to your app!");
+          setTimeout(() => navigate("/home", { replace: true }), 1500);
         }
       } else {
+        toast.error(result.error || "Failed to complete onboarding");
         setFormError("root", {
           message: result.error || "Failed to complete onboarding",
         });
       }
     } catch (error) {
       console.error("Onboarding error:", error);
-      setFormError("root", { message: "An error occurred during onboarding" });
+      const errorMessage = "An error occurred during onboarding";
+      toast.error(errorMessage);
+      setFormError("root", { message: errorMessage });
     }
   };
 
@@ -196,13 +239,13 @@ function Onboarding() {
         <div className="container-centered">
           <div className="loader-wrapper">
             <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%'
-      }}>
-        <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
-      </div>
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%'
+            }}>
+              <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+            </div>
           </div>
         </div>
       </div>
@@ -211,6 +254,18 @@ function Onboarding() {
 
   return (
     <div className="onboarding-page">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="container-centered">
         <div className="onboarding-content">
           <h2>Welcome to Your PWA App!</h2>
@@ -224,7 +279,7 @@ function Onboarding() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Username *</label>
               <Controller
                 name="username"
                 control={control}
@@ -249,27 +304,28 @@ function Onboarding() {
                 <span className="error-text">{errors.username.message}</span>
               )}
               <small>
-                Letters, numbers, and underscores only (min 3 characters)
+                Required: Letters, numbers, underscores, spaces, and hyphens (min 3 characters)
               </small>
             </div>
 
             <div className="form-group">
-              <label>Profile Picture</label>
+              <label>Profile Picture *</label>
               <div className="avatar-upload-container">
-                <Avatar
-                  src={currentAvatar}
-                  size="large"
-                  fallback={watch("username") || "U"}
+                <AvatarUploader
+                  currentAvatar={currentAvatar}
                   userId={user.id}
-                  uploadMode={true}
                   onUploadSuccess={handleAvatarUploadSuccess}
-                  defaultAvatar={true}
+                  fallback={watch("username") || "U"}
+                  size="large"
                 />
                 <div className="avatar-upload-info">
-                  <p>Click to upload or change your profile picture</p>
-                  <small>Recommended: Square image, at least 200x200px</small>
+                  <p>Drag & drop or click to upload your profile picture</p>
+                  <small>Required: Square image, at least 200x200px, max 5MB</small>
                 </div>
               </div>
+              {errors.avatar_url && (
+                <span className="error-text">{errors.avatar_url.message}</span>
+              )}
               <Controller
                 name="avatar_url"
                 control={control}
@@ -326,6 +382,9 @@ function Onboarding() {
               />
               {errors.block && (
                 <span className="error-text">{errors.block.message}</span>
+              )}
+              {blocksError && (
+                <span className="error-text">{blocksError}</span>
               )}
               <small>Select your block number from available locations</small>
             </div>
@@ -386,13 +445,16 @@ function Onboarding() {
               {errors.lot && (
                 <span className="error-text">{errors.lot.message}</span>
               )}
+              {lotsError && (
+                <span className="error-text">{lotsError}</span>
+              )}
               <small>Select your lot number from available locations</small>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting}
+              variant="primary"
+              loading={isSubmitting}
               style={{
                 width: "100%",
                 maxWidth: "300px",
@@ -400,8 +462,8 @@ function Onboarding() {
                 display: "block",
               }}
             >
-              {isSubmitting ? "Completing Setup..." : "Complete Setup"}
-            </button>
+              Complete Setup
+            </Button>
           </form>
         </div>
       </div>

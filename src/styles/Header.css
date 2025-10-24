@@ -16,7 +16,7 @@
   padding: 0.1rem 0;
   transition: background-color 0.2s ease, border-color 0.2s ease;
   overflow: visible;
-  z-index: 2;
+  z-index: var(--z-header);
 }
 
 :root.dark .header {
@@ -120,7 +120,7 @@
   position: absolute;
   left: 5px;
   bottom: -26px;
-  z-index: 99999;
+  z-index: var(--z-dropdown);
   opacity: 0;
   transform: translateZ(0);
   isolation: isolate;

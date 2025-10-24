@@ -12,9 +12,9 @@ class AvatarService {
    */
   async uploadAvatar(userId, imageBlob) {
     try {
-      // Generate unique filename
+      // Generate unique filename with folder structure
       const timestamp = Date.now()
-      const filename = `${userId}_${timestamp}.jpg`
+      const filename = `${userId}/${timestamp}.jpg`
       
       // Upload to avatars bucket
       const { data, error } = await supabase.storage

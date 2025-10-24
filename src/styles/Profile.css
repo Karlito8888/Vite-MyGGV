@@ -8,10 +8,52 @@
   gap: 2rem;
 }
 
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .profile-container h2 {
   text-align: center;
-  /* margin-bottom: 2rem; */
   color: var(--color-text-primary);
+  flex: 1;
+  margin: 0;
+}
+
+.btn-dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-button-primary-hover));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
+  font-family: inherit;
+  min-height: 48px;
+}
+
+.btn-dashboard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 196, 109, 0.4);
+}
+
+.btn-dashboard:active {
+  transform: translateY(0);
+}
+
+.btn-dashboard svg {
+  width: 20px;
+  height: 20px;
 }
 
 .profile-field {
@@ -48,6 +90,38 @@
 
 .profile-field a:hover {
   text-decoration: underline;
+}
+
+.contact-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 12px;
+  background: var(--color-surface);
+  transition: all 0.2s ease;
+  border: 2px solid var(--color-border);
+}
+
+.contact-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary);
+}
+
+.contact-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .badge-admin,
