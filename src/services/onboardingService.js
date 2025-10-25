@@ -1,5 +1,4 @@
 import { supabase } from '../utils/supabase'
-import { avatarService } from './avatarService'
 import { getProfileAssociations } from './profileLocationAssociationsService'
 
 export const onboardingService = {
@@ -147,11 +146,16 @@ export const onboardingService = {
         throw new Error('Profile data is required for onboarding')
       }
 
-      const { username, avatar_url, avatar_file, block, lot } = profileData
+      const { username, avatar_url, block, lot } = profileData
       
       // Validate username
       if (!username || username.trim().length === 0) {
         throw new Error('Username is required')
+      }
+
+      // Validate avatar_url
+      if (!avatar_url || avatar_url.trim().length === 0) {
+        throw new Error('Profile picture is required')
       }
 
       // Validate location fields
@@ -163,28 +167,10 @@ export const onboardingService = {
         throw new Error('Lot is required')
       }
       
-      let finalAvatarUrl = avatar_url
-
-      // Handle avatar file upload if provided
-      if (avatar_file && !avatar_url) {
-        try {
-          const uploadResult = await avatarService.uploadAvatar(userId, avatar_file)
-          if (uploadResult.success) {
-            finalAvatarUrl = uploadResult.data.url
-
-          } else {
-
-            // Continue with onboarding even if avatar upload fails
-          }
-        } catch {
-          // Continue with onboarding even if avatar upload fails
-        }
-      }
-      
       // Update profile with username and avatar first
       const profileUpdateData = {
         username: username.trim(),
-        avatar_url: finalAvatarUrl,
+        avatar_url: avatar_url.trim(),
         updated_at: new Date().toISOString()
       }
 

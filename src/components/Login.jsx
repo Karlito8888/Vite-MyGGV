@@ -81,11 +81,16 @@ export default function Login() {
   })
 
   // Redirect to onboarding if user is already authenticated
+  // Note: Skip redirect after OAuth since OAuth already redirects to /onboarding
   useEffect(() => {
     log('Login: Checking authentication state...', { user, authLoading })
     if (user && !authLoading) {
       log('Login: User already authenticated, redirecting to onboarding')
-      navigate('/onboarding', { replace: true })
+      // Only redirect if we're still on the login page
+      // This prevents double-redirect after OAuth callback
+      if (window.location.pathname === '/login' || window.location.pathname === '/') {
+        navigate('/onboarding', { replace: true })
+      }
     }
   }, [user, authLoading, navigate])
 

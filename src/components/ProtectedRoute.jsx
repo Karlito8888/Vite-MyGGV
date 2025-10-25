@@ -1,8 +1,8 @@
-import { Navigate } from 'react-router'
+import { Navigate, Outlet } from 'react-router'
 import { ClimbingBoxLoader } from 'react-spinners'
 import { useUser } from '../contexts'
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute() {
   const { user, initialized } = useUser()
 
   // Show loading during initial auth check
@@ -24,8 +24,8 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />
   }
 
-  // Render children if access is granted
-  return children
+  // Render nested routes
+  return <Outlet />
 }
 
 export default ProtectedRoute

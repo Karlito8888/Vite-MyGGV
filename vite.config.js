@@ -17,6 +17,22 @@ export default defineConfig({
       ],
       workbox: {
         runtimeCaching: [
+          // Cache de l'API météo Open-Meteo
+          {
+            urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'weather-api',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 30 * 60 // 30 minutes
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              },
+              networkTimeoutSeconds: 10
+            }
+          },
           // Cache des tiles OpenStreetMap
           {
             urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/.*/,

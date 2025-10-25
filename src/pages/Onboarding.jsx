@@ -145,6 +145,8 @@ function Onboarding() {
           .single();
 
         if (profile?.onboarding_completed) {
+          // Ensure minimum 3-second loading time before redirecting
+          await ensureMinimumLoadingTime(startTime);
           navigate("/home");
           return;
         }
@@ -163,7 +165,7 @@ function Onboarding() {
       } catch (error) {
         console.error("Error checking onboarding status:", error);
         toast.error("Failed to load onboarding data. Please refresh the page.");
-        
+
         // Still respect 3-second minimum on error
         await ensureMinimumLoadingTime(startTime);
         setIsLoading(false);
@@ -182,10 +184,12 @@ function Onboarding() {
 
   const onSubmit = async (data) => {
     try {
-      // Include avatar URL in submission
+      // Ensure avatar_url is set from currentAvatar state
       const submissionData = {
-        ...data,
-        avatar_url: currentAvatar
+        username: data.username,
+        avatar_url: currentAvatar,
+        block: data.block,
+        lot: data.lot
       };
 
       // Use completeOnboarding which properly handles onboarding_completed flag
