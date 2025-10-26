@@ -25,7 +25,7 @@ function LocationRequests() {
     try {
       const statusFilter = filter === 'all' ? null : filter
       const result = await locationRequestsService.getAllRequests(user.id, statusFilter)
-      
+
       if (result.success) {
         setRequests(result.data)
       } else {
@@ -54,7 +54,7 @@ function LocationRequests() {
 
         // Refresh requests when there's a change
         fetchRequests()
-        
+
         // Show notification for new requests
         if (payload.eventType === 'INSERT') {
           toast.info('📬 New location request received!')
@@ -73,7 +73,7 @@ function LocationRequests() {
     setProcessingId(requestId)
     try {
       const result = await locationRequestsService.approveRequest(requestId, user.id)
-      
+
       if (result.success) {
         toast.success('✅ Request approved! User has been added to the location.')
         // Refresh the list
@@ -95,7 +95,7 @@ function LocationRequests() {
     setProcessingId(requestId)
     try {
       const result = await locationRequestsService.rejectRequest(requestId, user.id)
-      
+
       if (result.success) {
         toast.success('❌ Request rejected.')
         // Refresh the list
@@ -124,7 +124,7 @@ function LocationRequests() {
     if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
     if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
-    
+
     return date.toLocaleDateString()
   }
 
@@ -168,7 +168,7 @@ function LocationRequests() {
         pauseOnHover
         theme="light"
       />
-      
+
       <div className="container">
         <div className="requests-header">
           <h1>Location Requests</h1>
@@ -211,7 +211,7 @@ function LocationRequests() {
               <div className="empty-icon">📭</div>
               <h3>No {filter !== 'all' ? filter : ''} requests</h3>
               <p>
-                {filter === 'pending' 
+                {filter === 'pending'
                   ? "You don't have any pending location requests at the moment."
                   : `No ${filter} requests found.`}
               </p>
@@ -223,7 +223,7 @@ function LocationRequests() {
 
               return (
                 <Card key={request.request_id} hover className="location-request-card">
-                  <CardHeader className="request-header">
+                  <CardHeader>
                     <div className="requester-info">
                       <Avatar
                         src={request.requester_avatar_url}

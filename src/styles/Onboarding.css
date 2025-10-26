@@ -1,29 +1,39 @@
 /* MOBILE FIRST - Base styles for 320px+ */
-.onboarding-page {
-  min-height: 100%;
-  padding: 1rem 0.5rem;
+.page-container {
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100%;
 }
 
-.onboarding-content {
+.page-content {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
+  animation: fadeInUp 0.4s ease;
+}
+
+.page-header {
   text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-.onboarding-content h1 {
+.page-header h2 {
   color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
-.onboarding-subtitle {
+.page-subtitle {
   color: var(--color-text-secondary);
-  font-size: 1rem;
-  margin-bottom: 2rem;
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
 }
 
 .onboarding-form {
@@ -186,7 +196,7 @@
 }
 
 /* Loader Styles - MOBILE FIRST */
-.onboarding-page .loader-wrapper {
+.loader-wrapper {
   width: 100%;
   max-width: 400px;
   padding: 1.5rem 1rem;
@@ -198,39 +208,35 @@
   overflow: hidden;
 }
 
-.onboarding-page .loader-text {
+.loader-text {
   font-size: 1rem;
   color: var(--color-text-secondary);
   margin: 0;
   font-weight: 500;
-  font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: inherit;
   letter-spacing: 1px;
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* Animations */
-
-
 /* Dark mode adjustments */
-:root.dark .onboarding-page .loader-wrapper {
+:root.dark .loader-wrapper {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   background: var(--color-surface);
 }
 
 /* Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .onboarding-page {
-    padding: 1.5rem 1rem;
+  .page-container {
+    padding: 1.5rem;
   }
 
-  .onboarding-content h1 {
+  .page-header h2 {
     font-size: 1.75rem;
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.75rem;
   }
 
-  .onboarding-subtitle {
-    font-size: 1.0625rem;
-    margin-bottom: 2.5rem;
+  .page-subtitle {
+    font-size: 1rem;
   }
 
   .onboarding-form {
@@ -251,29 +257,29 @@
     padding: 0 0.875rem;
   }
 
-  .onboarding-page .loader-wrapper {
+  .loader-wrapper {
     padding: 1.75rem 1.5rem;
   }
 
-  .onboarding-page .loader-text {
+  .loader-text {
     font-size: 1.0625rem;
   }
 }
 
 /* Tablets and larger (769px+) */
 @media (min-width: 769px) {
-  .onboarding-page {
-    padding: 2rem 1rem;
+  .page-container {
+    padding: 2rem;
+    max-width: 900px;
   }
 
-  .onboarding-content h1 {
+  .page-header h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
   }
 
-  .onboarding-subtitle {
-    font-size: 1.125rem;
-    margin-bottom: 3rem;
+  .page-subtitle {
+    font-size: 1.0625rem;
   }
 
   .onboarding-form {
@@ -318,12 +324,18 @@
     padding: 0 1rem;
   }
 
-  .onboarding-page .loader-wrapper {
+  .loader-wrapper {
     padding: 1.75rem 1.5rem;
   }
 
-  .onboarding-page .loader-text {
+  .loader-text {
     font-size: 1.125rem;
   }
 }
 
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .page-container {
+    max-width: 1000px;
+  }
+}

@@ -5,9 +5,9 @@ import { z } from "zod";
 import { supabase } from "../../utils/supabase";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
 import Input from "../ui/Input";
+import Button from "../ui/Button";
 import AvatarUploader from "../ui/AvatarUploader";
 import { toast } from "react-toastify";
-import { BeatLoader } from "react-spinners";
 
 const profileSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -188,9 +188,9 @@ function ProfileForm({ profile, refreshProfile }) {
                         {...form.register("tiktok_url")}
                         error={form.formState.errors.tiktok_url?.message}
                     />
-                    <button type="submit" className="btn-primary" disabled={saving}>
-                        {saving ? <BeatLoader color="#ffffff" size={8} /> : "Save Profile"}
-                    </button>
+                    <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+                        Save Profile
+                    </Button>
                 </form>
             </CardContent>
         </Card>

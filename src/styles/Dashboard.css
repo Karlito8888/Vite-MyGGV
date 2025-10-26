@@ -1,19 +1,30 @@
 /* Dashboard Styles - MOBILE FIRST */
+/* Boutons centralisés dans src/components/ui/Button.css */
+@import '../components/ui/Button.css';
 
 /* Mobile Base Styles (320px+) */
-.dashboard-container {
-  padding: 2rem 1rem;
-  height: 100%;
+.page-container {
+  padding: 1rem;
   width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  text-align: center;
 }
 
-.dashboard-container h2 {
+.page-content {
+  width: 100%;
+  animation: fadeInUp 0.4s ease;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
   color: var(--color-text-primary);
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   letter-spacing: 2px;
 }
 
@@ -55,8 +66,8 @@
   font-weight: 600;
 }
 
-/* Content */
-.dashboard-content {
+/* Tab Content */
+.tab-content {
   animation: fadeInUp 0.4s ease;
 }
 
@@ -74,51 +85,13 @@
   margin-top: 1rem;
 }
 
-/* Buttons - Mobile First */
+/* Buttons - Styles centralisés dans Button.css */
+/* Ajustements spécifiques au Dashboard */
 .btn-primary,
 .btn-secondary,
 .btn-edit,
 .btn-delete {
   width: 100%;
-  padding: 0.875rem 1.5rem;
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-primary {
-  background: var(--color-button-primary);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--color-button-primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
-  transition: all 0.2s ease;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: var(--color-button-secondary);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: var(--color-button-secondary-hover);
-  transition: all 0.2s ease;
 }
 
 /* Items List */
@@ -167,31 +140,7 @@
   border-top: 1px solid var(--color-border);
 }
 
-.btn-edit {
-  background: var(--color-primary);
-  color: white;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
-}
-
-.btn-edit:hover {
-  background: var(--color-button-primary-hover);
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
-}
-
-.btn-delete {
-  background: #ef4444;
-  color: white;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.875rem;
-}
-
-.btn-delete:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
-}
+/* btn-edit et btn-delete définis dans Button.css */
 
 /* Empty State */
 .empty-message {
@@ -211,31 +160,31 @@
 }
 
 /* Not Found */
-.dashboard-not-found {
+.page-not-found {
   text-align: center;
   padding: 2rem 1rem;
 }
 
-.dashboard-not-found h2 {
+.page-not-found h2 {
   color: var(--color-text-primary);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
 
-.dashboard-not-found p {
+.page-not-found p {
   color: var(--color-text-secondary);
   font-size: 0.9375rem;
 }
 
 /* Responsive - Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .dashboard-container {
-    padding: 2rem 1.5rem;
+  .page-container {
+    padding: 1.5rem;
   }
 
-  .dashboard-container h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+  .page-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
   }
 
   .dashboard-tabs {
@@ -263,23 +212,23 @@
     padding: 2.5rem;
   }
 
-  .dashboard-not-found {
+  .page-not-found {
     padding: 2.5rem 1rem;
   }
 
-  .dashboard-not-found h2 {
+  .page-not-found h2 {
     font-size: 1.625rem;
   }
 }
 
 /* Responsive - Tablets (769px+) */
 @media (min-width: 769px) {
-  .dashboard-container {
+  .page-container {
     padding: 2rem;
-    max-width: 700px;
+    max-width: 900px;
   }
 
-  .dashboard-container h2 {
+  .page-header h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
   }
@@ -330,22 +279,22 @@
     padding: 3rem;
   }
 
-  .dashboard-not-found {
+  .page-not-found {
     padding: 3rem 1rem;
   }
 
-  .dashboard-not-found h2 {
+  .page-not-found h2 {
     font-size: 1.75rem;
   }
 }
 
-/* Responsive - Desktop (1025px+) */
-@media (min-width: 1025px) {
-  .dashboard-container {
-    max-width: 900px;
+/* Responsive - Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .page-container {
+    max-width: 1000px;
   }
 
-  .dashboard-not-found h2 {
+  .page-not-found h2 {
     font-size: 2rem;
   }
 }

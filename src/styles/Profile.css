@@ -1,11 +1,13 @@
 /* Mobile-first base styles */
-.profile-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
+/* .page-container, .page-content, .page-header définis dans index.css */
+/* Boutons centralisés dans src/components/ui/Button.css */
+@import '../components/ui/Button.css';
+
+/* Override pour page-content - ajoute gap */
+.page-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .profile-header {
@@ -17,44 +19,7 @@
   flex-wrap: wrap;
 }
 
-.profile-container h2 {
-  text-align: center;
-  color: var(--color-text-primary);
-  flex: 1;
-  margin: 0;
-}
-
-.btn-dashboard {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-button-primary-hover));
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
-  font-family: inherit;
-  min-height: 48px;
-}
-
-.btn-dashboard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(91, 196, 109, 0.4);
-}
-
-.btn-dashboard:active {
-  transform: translateY(0);
-}
-
-.btn-dashboard svg {
-  width: 20px;
-  height: 20px;
-}
+/* btn-dashboard défini dans Button.css */
 
 .profile-field {
   display: flex;
@@ -222,10 +187,12 @@
   color: #333;
 }
 
+/* .page-not-found défini dans index.css */
+
 /* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
-  .profile-container {
-    padding: 1.5rem;
+  .page-content {
+    gap: 1.75rem;
   }
   
   .profile-field {
@@ -235,8 +202,8 @@
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
-  .profile-container {
-    padding: 2rem;
+  .page-content {
+    gap: 2rem;
   }
 
   .profile-field {
@@ -248,5 +215,6 @@
     width: 130px;
     flex-shrink: 0;
   }
-
 }
+
+/* Desktop (1024px+) - Styles définis dans index.css */

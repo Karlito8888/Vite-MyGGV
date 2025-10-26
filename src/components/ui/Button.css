@@ -1,4 +1,8 @@
-/* Button Component Styles - MOBILE FIRST */
+/* ============================================
+   BUTTON STYLES - CENTRALISÉ
+   Tous les styles de boutons du projet
+   MOBILE FIRST (320px+)
+   ============================================ */
 
 /* Base button styles */
 .btn {
@@ -169,5 +173,254 @@
 
   .btn-large {
     padding: 1.25rem 2rem;
+  }
+}
+
+/* ============================================
+   BOUTONS SPÉCIALISÉS
+   ============================================ */
+
+/* Bouton Edit - Actions d'édition */
+.btn-edit {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: var(--color-button-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Bouton Delete - Actions de suppression */
+.btn-delete {
+  background: #ef4444;
+  color: white;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Bouton Dashboard - Navigation vers dashboard */
+.btn-dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-button-primary-hover));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
+  font-family: inherit;
+  min-height: 48px;
+}
+
+.btn-dashboard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 196, 109, 0.4);
+}
+
+.btn-dashboard:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-dashboard svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   BOUTONS LOGIN/AUTH
+   ============================================ */
+
+/* Bouton de base login */
+.login-button {
+  height: 3rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.login-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.login-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Variantes login */
+.login-button-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.login-button-primary:hover:not(:disabled) {
+  background-color: var(--color-button-primary-hover);
+}
+
+.login-button-outline {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.login-button-outline:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+}
+
+.login-button-full {
+  width: 100%;
+}
+
+/* Boutons sociaux */
+.login-social-button {
+  height: 3rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.login-social-button:hover:not(:disabled) {
+  transform: scale(1.02);
+  background-color: color-mix(in srgb, var(--color-secondary) 50%, transparent);
+}
+
+.login-social-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.login-social-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Toggle buttons pour login */
+.login-toggle-button {
+  position: relative;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  z-index: var(--z-content);
+  min-width: 5rem;
+  font-family: inherit;
+}
+
+.login-toggle-button:hover {
+  color: var(--color-text-primary);
+}
+
+.login-toggle-button.active {
+  color: white;
+  background-color: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-toggle-button.active:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+}
+
+/* ============================================
+   BOUTONS TAB
+   ============================================ */
+
+.tab-button {
+  padding-block: 0.875rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.tab-button:hover {
+  color: var(--color-primary);
+  background: rgba(91, 196, 109, 0.05);
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Responsive tab buttons */
+@media (min-width: 481px) {
+  .tab-button {
+    padding: 0.9375rem 1.125rem;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .tab-button {
+    padding: 1rem;
+    font-size: 1rem;
   }
 }

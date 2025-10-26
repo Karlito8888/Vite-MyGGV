@@ -11,8 +11,8 @@ import {
 import { listServiceCategories } from "../../services/serviceCategoriesService";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
 import Input from "../ui/Input";
+import Button from "../ui/Button";
 import { toast } from "react-toastify";
-import { BeatLoader } from "react-spinners";
 
 const serviceSchema = z.object({
     description: z.string().max(1000).optional(),
@@ -238,13 +238,13 @@ function ServicesManager({ profileId }) {
                             error={form.formState.errors.facebook_url?.message}
                         />
                         <div className="form-actions">
-                            <button type="submit" className="btn-primary" disabled={saving}>
-                                {saving ? <BeatLoader color="#ffffff" size={8} /> : editingId ? "Update" : "Add"}
-                            </button>
+                            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+                                {editingId ? "Update" : "Add"}
+                            </Button>
                             {editingId && (
-                                <button type="button" className="btn-secondary" onClick={handleCancel}>
+                                <Button type="button" variant="secondary" onClick={handleCancel}>
                                     Cancel
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </form>
@@ -270,12 +270,12 @@ function ServicesManager({ profileId }) {
                                 )}
                                 {service.block && service.lot && <p>🏠 Block {service.block}, Lot {service.lot}</p>}
                                 <div className="item-actions">
-                                    <button className="btn-edit" onClick={() => handleEdit(service)}>
+                                    <Button className="btn-edit" onClick={() => handleEdit(service)}>
                                         Edit
-                                    </button>
-                                    <button className="btn-delete" onClick={() => handleDelete(service.id)}>
+                                    </Button>
+                                    <Button className="btn-delete" onClick={() => handleDelete(service.id)}>
                                         Delete
-                                    </button>
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

@@ -5,8 +5,8 @@ import { z } from "zod";
 import { supabase } from "../../utils/supabase";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
 import Input from "../ui/Input";
+import Button from "../ui/Button";
 import { toast } from "react-toastify";
-import { BeatLoader } from "react-spinners";
 
 const businessOutsideSchema = z.object({
     business_name: z.string().min(2, "Business name must be at least 2 characters").max(100),
@@ -297,13 +297,13 @@ function BusinessOutsideManager({ profileId }) {
                             error={form.formState.errors.facebook_url?.message}
                         />
                         <div className="form-actions">
-                            <button type="submit" className="btn-primary" disabled={saving}>
-                                {saving ? <BeatLoader color="#ffffff" size={8} /> : editingId ? "Update" : "Add"}
-                            </button>
+                            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+                                {editingId ? "Update" : "Add"}
+                            </Button>
                             {editingId && (
-                                <button type="button" className="btn-secondary" onClick={handleCancel}>
+                                <Button type="button" variant="secondary" onClick={handleCancel}>
                                     Cancel
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </form>
@@ -334,12 +334,12 @@ function BusinessOutsideManager({ profileId }) {
                                     </p>
                                 )}
                                 <div className="item-actions">
-                                    <button className="btn-edit" onClick={() => handleEdit(business)}>
+                                    <Button className="btn-edit" onClick={() => handleEdit(business)}>
                                         Edit
-                                    </button>
-                                    <button className="btn-delete" onClick={() => handleDelete(business.id)}>
+                                    </Button>
+                                    <Button className="btn-delete" onClick={() => handleDelete(business.id)}>
                                         Delete
-                                    </button>
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

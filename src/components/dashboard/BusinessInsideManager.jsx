@@ -5,8 +5,8 @@ import { z } from "zod";
 import { supabase } from "../../utils/supabase";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
 import Input from "../ui/Input";
+import Button from "../ui/Button";
 import { toast } from "react-toastify";
-import { BeatLoader } from "react-spinners";
 
 const businessInsideSchema = z.object({
     business_name: z.string().min(2, "Business name must be at least 2 characters").max(100),
@@ -48,7 +48,7 @@ function BusinessInsideManager({ profileId }) {
     useEffect(() => {
         loadBusinesses();
         loadCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [profileId]);
 
     const loadCategories = async () => {
@@ -264,13 +264,13 @@ function BusinessInsideManager({ profileId }) {
                             error={form.formState.errors.lot?.message}
                         />
                         <div className="form-actions">
-                            <button type="submit" className="btn-primary" disabled={saving}>
-                                {saving ? <BeatLoader color="#ffffff" size={8} /> : editingId ? "Update" : "Add"}
-                            </button>
+                            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+                                {editingId ? "Update" : "Add"}
+                            </Button>
                             {editingId && (
-                                <button type="button" className="btn-secondary" onClick={handleCancel}>
+                                <Button type="button" variant="secondary" onClick={handleCancel}>
                                     Cancel
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </form>
@@ -294,12 +294,12 @@ function BusinessInsideManager({ profileId }) {
                                 {business.hours && <p>🕒 {business.hours}</p>}
                                 {business.block && business.lot && <p>📍 Block {business.block}, Lot {business.lot}</p>}
                                 <div className="item-actions">
-                                    <button className="btn-edit" onClick={() => handleEdit(business)}>
+                                    <Button className="btn-edit" onClick={() => handleEdit(business)}>
                                         Edit
-                                    </button>
-                                    <button className="btn-delete" onClick={() => handleDelete(business.id)}>
+                                    </Button>
+                                    <Button className="btn-delete" onClick={() => handleDelete(business.id)}>
                                         Delete
-                                    </button>
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

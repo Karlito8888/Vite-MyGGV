@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import Button from './ui/Button'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -20,23 +21,20 @@ class ErrorBoundary extends Component {
         <div style={{ 
           padding: '2rem', 
           textAlign: 'center',
-          minHeight: '100vh',
+          minHeight: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <h2>Something went wrong</h2>
-          <button 
+          <Button 
             onClick={() => window.location.reload()}
-            style={{
-              marginTop: '1rem',
-              padding: '0.5rem 1rem',
-              cursor: 'pointer'
-            }}
+            variant="primary"
+            style={{ marginTop: '1rem' }}
           >
             Reload
-          </button>
+          </Button>
         </div>
       )
     }

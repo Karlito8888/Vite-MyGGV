@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import ReactCrop from 'react-image-crop'
+import Button from './ui/Button'
 import 'react-image-crop/dist/ReactCrop.css'
 
 const centerAspectCrop = (mediaWidth, mediaHeight, aspect) => {
@@ -110,26 +111,23 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
           <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#1f2937' }}>
             Crop Your Avatar
           </h3>
-          <button 
+          <Button 
             type="button" 
             onClick={onCancel}
+            variant="outline"
+            size="small"
             style={{
-              background: 'none',
-              border: 'none',
               fontSize: '1.5rem',
-              cursor: 'pointer',
               color: '#6b7280',
               padding: '0.25rem',
               width: '2rem',
               height: '2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              minHeight: '2rem',
               borderRadius: '4px'
             }}
           >
             ×
-          </button>
+          </Button>
         </div>
         
         <div style={{ padding: '1.5rem' }}>
@@ -156,41 +154,23 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
           padding: '1rem 1.5rem 1.5rem',
           borderTop: '1px solid #e5e7eb'
         }}>
-          <button
+          <Button
             type="button"
             onClick={onCancel}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: '6px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              border: 'none',
-              fontSize: '0.875rem',
-              backgroundColor: '#f3f4f6',
-              color: '#374151'
-            }}
+            variant="secondary"
+            style={{ flex: 1 }}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={applyCrop}
             disabled={!completedCrop}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: '6px',
-              fontWeight: 500,
-              cursor: completedCrop ? 'pointer' : 'not-allowed',
-              border: 'none',
-              fontSize: '0.875rem',
-              backgroundColor: completedCrop ? '#3b82f6' : '#9ca3af',
-              color: 'white'
-            }}
+            variant="primary"
+            style={{ flex: 1 }}
           >
             Crop & Upload
-          </button>
+          </Button>
         </div>
       </div>
     </div>

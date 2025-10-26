@@ -208,15 +208,13 @@ function Onboarding() {
         } else if (locationType === "pending_approval") {
           // Location request sent - MUST WAIT for owner approval
           toast.info(
-            "📬 Your location request has been sent to the owner. You will be able to access the app once the owner approves your request. Please check back later.",
-            { autoClose: 6000 }
+            "📬 Your location request has been sent to the owner. You will be notified once approved.",
+            { autoClose: 3000 }
           );
-          // Redirect to a waiting page or logout
+          // Redirect to pending approval page
           setTimeout(() => {
-            // Log out the user since they can't access the app yet
-            supabase.auth.signOut()
-            navigate("/login", { replace: true })
-          }, 6000);
+            navigate("/pending-approval", { replace: true })
+          }, 3000);
         } else {
           // Fallback - onboarding completed
           toast.success("🎉 Onboarding completed successfully! Welcome to your app!");
@@ -239,8 +237,8 @@ function Onboarding() {
   // Show loader while fetching profile data (minimum 3 seconds)
   if (isLoading) {
     return (
-      <div className="onboarding-page">
-        <div className="container-centered">
+      <div className="page-container">
+        <div className="page-content">
           <div className="loader-wrapper">
             <div style={{
               display: 'flex',
@@ -257,25 +255,27 @@ function Onboarding() {
   }
 
   return (
-    <div className="onboarding-page">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <div className="container-centered">
-        <div className="onboarding-content">
+    <div className="page-container">
+      <div className="page-content">
+        <div className="page-header">
           <h2>Welcome to Your PWA App!</h2>
-          <p className="onboarding-subtitle">
+          <p className="page-subtitle">
             Let's get you set up with your essential information
           </p>
+        </div>
+
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
 
           {errors.root && (
             <div className="error-message">{errors.root.message}</div>
@@ -469,7 +469,6 @@ function Onboarding() {
               Complete Setup
             </Button>
           </form>
-        </div>
       </div>
     </div>
   );

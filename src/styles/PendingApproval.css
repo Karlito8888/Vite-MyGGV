@@ -1,15 +1,12 @@
 /* MOBILE FIRST - Base styles for 320px+ */
-.pending-approval-page {
+/* .page-container défini dans index.css */
+
+/* Variante centrée pour cette page spéciale */
+.page-centered {
   min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem 0.5rem;
-  background: linear-gradient(
-    to bottom right,
-    var(--color-background),
-    var(--color-surface)
-  );
 }
 
 .pending-approval-content {
@@ -21,15 +18,14 @@
   border-radius: 1rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--color-border);
+  animation: fadeInUp 0.4s ease;
 }
 
 .icon-container {
   font-size: 4rem;
   margin-bottom: 1rem;
-  animation: pulse 2s infinite;
+  animation: pulse-subtle 3s ease-in-out infinite;
 }
-
-
 
 .pending-approval-content h1 {
   font-size: 1.5rem;
@@ -65,24 +61,9 @@
   margin-bottom: 1.5rem;
 }
 
-/* Actions - Utilise les classes globales de boutons */
+/* Actions - Utilise le composant Button */
 .actions .btn {
   width: 100%;
-  padding: 1rem;
-  font-weight: 600;
-}
-
-.actions .btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.actions .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-button-primary-hover);
-}
-
-.actions .btn-secondary {
-  @extend .btn-outline;
 }
 
 .info-box {
@@ -119,10 +100,6 @@
 
 /* Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .pending-approval-page {
-    padding: 1.5rem 1rem;
-  }
-
   .pending-approval-content {
     padding: 2.5rem 1.75rem;
   }
@@ -175,10 +152,6 @@
 
 /* Tablets and larger (769px+) */
 @media (min-width: 769px) {
-  .pending-approval-page {
-    padding: 2rem 1rem;
-  }
-
   .pending-approval-content {
     padding: 3rem 2rem;
   }

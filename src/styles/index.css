@@ -1,6 +1,9 @@
 /* src/style.css */
 @import url("https://fonts.googleapis.com/css2?family=Madimi+One&display=swap");
 
+/* Import centralized button styles */
+@import '../components/ui/Button.css';
+
 /* Theme Variables */
 :root.light {
   --color-primary: #5bc46d;
@@ -71,17 +74,61 @@
   box-sizing: border-box;
 }
 
-/* Page container styles */
+/* Common Page Structure - MOBILE FIRST (320px+) */
 .page-container {
-  padding: 2rem 1rem;
-  text-align: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-.page-container h2 {
+.page-content {
+  width: 100%;
+  animation: fadeInUp 0.4s ease;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
   color: var(--color-text-primary);
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
+}
+
+/* Not Found State */
+.page-not-found {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.page-not-found h2 {
+  color: var(--color-text-primary);
   margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.page-not-found p {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* Loader State */
+.loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 }
 
 html {
@@ -202,12 +249,66 @@ h2 {
   html {
     font-size: 15px;
   }
+
+  .page-container {
+    padding: 1.5rem;
+  }
+
+  .page-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .page-subtitle {
+    font-size: 1rem;
+  }
+
+  .page-not-found {
+    padding: 2.5rem 1rem;
+  }
+
+  .page-not-found h2 {
+    font-size: 1.625rem;
+  }
 }
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
   html {
     font-size: 16px;
+  }
+
+  .page-container {
+    padding: 2rem;
+    max-width: 900px;
+  }
+
+  .page-header h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    font-size: 1.0625rem;
+  }
+
+  .page-not-found {
+    padding: 3rem 1rem;
+  }
+
+  .page-not-found h2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Large Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .page-container {
+    max-width: 1000px;
+  }
+
+  .page-not-found h2 {
+    font-size: 2rem;
   }
 }
 

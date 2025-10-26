@@ -7,6 +7,7 @@ import { supabase } from '../utils/supabase'
 import { updateUserPassword } from '../utils/authHelpers'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
 import Input from '../components/ui/Input'
+import Button from '../components/ui/Button'
 import '../styles/login.css'
 
 // Conditional logging for development only
@@ -209,12 +210,14 @@ export default function UpdatePassword() {
                             <div className="login-message login-message-error">
                                 Please request a new password reset link from the login page.
                             </div>
-                            <button
+                            <Button
                                 onClick={handleBackToLogin}
-                                className="login-button login-button-primary login-button-full"
+                                variant="primary"
+                                fullWidth
+                                className="login-button"
                             >
                                 Back to Login
-                            </button>
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
@@ -252,12 +255,14 @@ export default function UpdatePassword() {
                                 <div className="login-message login-message-success">
                                     Password updated successfully! Redirecting to login...
                                 </div>
-                                <button
+                                <Button
                                     onClick={handleBackToLogin}
-                                    className="login-button login-button-outline login-button-full"
+                                    variant="outline"
+                                    fullWidth
+                                    className="login-button"
                                 >
                                     Go to Login Now
-                                </button>
+                                </Button>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit(handleUpdatePassword)} className="login-form">
@@ -283,28 +288,24 @@ export default function UpdatePassword() {
                                     </div>
                                 )}
                                 <div className="login-button-flex">
-                                    <button
+                                    <Button
                                         type="submit"
-                                        className="login-button login-button-primary"
+                                        variant="primary"
+                                        loading={loading}
                                         disabled={loading}
+                                        className="login-button"
                                     >
-                                        {loading ? (
-                                            <>
-                                                <div className="login-spinner" />
-                                                Updating...
-                                            </>
-                                        ) : (
-                                            'Update Password'
-                                        )}
-                                    </button>
-                                    <button
+                                        Update Password
+                                    </Button>
+                                    <Button
                                         type="button"
                                         onClick={handleBackToLogin}
                                         disabled={loading}
-                                        className="login-button login-button-outline"
+                                        variant="outline"
+                                        className="login-button"
                                     >
                                         Cancel
-                                    </button>
+                                    </Button>
                                 </div>
                             </form>
                         )}

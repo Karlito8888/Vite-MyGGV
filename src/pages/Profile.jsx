@@ -6,6 +6,7 @@ import Card, {
   CardTitle,
   CardContent,
 } from "../components/ui/Card";
+import Button from "../components/ui/Button";
 import { LayoutDashboard } from "lucide-react";
 import "../styles/Profile.css";
 import { BeatLoader } from "react-spinners";
@@ -23,28 +24,32 @@ function Profile() {
   // Si pas de profil, afficher un message (pas de loading car géré par ProtectedRoute + UserContext)
   if (!profile) {
     return (
-      <div className="container">
-        <div className="profile-not-found">
-          <h2>Profile Not Found</h2>
-          <p>No profile data available. Please try refreshing the page.</p>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="page-not-found">
+            <h2>Profile Not Found</h2>
+            <p>No profile data available. Please try refreshing the page.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container">
-      <div className="profile-container">
+    <div className="page-container">
+      <div className="page-content">
         <div className="profile-header">
-          <h2>My Profile</h2>
-          <button
+          <div className="page-header">
+            <h2>My Profile</h2>
+          </div>
+          <Button
             className="btn-dashboard"
             onClick={() => navigate("/dashboard")}
             aria-label="Go to Dashboard"
           >
             <LayoutDashboard size={20} />
             Dashboard
-          </button>
+          </Button>
         </div>
 
         <Card>

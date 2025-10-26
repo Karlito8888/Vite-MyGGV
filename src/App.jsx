@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Lazy loading des pages
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
+const PendingApproval = lazy(() => import("./pages/PendingApproval"));
 const Home = lazy(() => import("./pages/Home"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -59,6 +60,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="onboarding" element={<Onboarding />} />
           <Route path="update-password" element={<UpdatePassword />} />
+          <Route path="pending-approval" element={<PendingApproval />} />
 
           <Route element={<ProtectedRoute />}>
             {protectedRoutes.map(({ path, element: Element }) => (

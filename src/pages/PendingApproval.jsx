@@ -124,28 +124,30 @@ function PendingApproval() {
 
   if (isLoading) {
     return (
-      <div className="pending-approval-page">
-        <div className="container-centered">
-          <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+      <div className="page-container page-centered">
+        <div className="page-content">
+          <div className="loader-wrapper">
+            <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="pending-approval-page">
-      <div className="container-centered">
+    <div className="page-container page-centered">
+      <div className="page-content">
         <div className="pending-approval-content">
           <div className="icon-container">
             {requestInfo?.status === 'rejected' ? '❌' : '⏳'}
           </div>
-          
+
           <h1>
-            {requestInfo?.status === 'rejected' 
-              ? 'Request Rejected' 
+            {requestInfo?.status === 'rejected'
+              ? 'Request Rejected'
               : 'Waiting for Approval'}
           </h1>
-          
+
           {requestInfo?.status === 'rejected' ? (
             <>
               <p className="message">

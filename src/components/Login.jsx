@@ -8,6 +8,7 @@ import { signUpUser, signInUser, resetPasswordForEmail } from '../utils/authHelp
 import { useUser } from '../contexts'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card'
 import Input from './ui/Input'
+import Button from './ui/Button'
 import '../styles/login.css'
 
 // Conditional logging for development only
@@ -238,21 +239,16 @@ export default function Login() {
                   </div>
                 )}
                 <div className="login-button-flex">
-                  <button
+                  <Button
                     type="submit"
-                    className="login-button login-button-primary"
+                    variant="primary"
+                    loading={loading}
                     disabled={loading}
+                    className="login-button"
                   >
-                    {loading ? (
-                      <>
-                        <div className="login-spinner" />
-                        Sending...
-                      </>
-                    ) : (
-                      'Send Reset Link'
-                    )}
-                  </button>
-                  <button
+                    Send Reset Link
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => {
                       setShowResetForm(false)
@@ -261,10 +257,11 @@ export default function Login() {
                       resetResetForm()
                     }}
                     disabled={loading}
-                    className="login-button login-button-outline"
+                    variant="outline"
+                    className="login-button"
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </form>
             ) : (
@@ -368,23 +365,19 @@ export default function Login() {
                       Password reset email sent! Check your inbox.
                     </div>
                   )}
-                  <button
+                  <Button
                     type="submit"
-                    className="login-button login-button-primary login-button-full"
+                    variant="primary"
+                    fullWidth
+                    loading={loading}
                     disabled={loading}
+                    className="login-button"
                   >
-                    {loading ? (
-                      <>
-                        <div className="login-spinner" />
-                        {isSignUp ? 'Creating account...' : 'Signing in...'}
-                      </>
-                    ) : (
-                      isSignUp ? 'Create Account' : 'Sign In'
-                    )}
-                  </button>
+                    {isSignUp ? 'Create Account' : 'Sign In'}
+                  </Button>
                   {!isSignUp && (
                     <div className="login-forgot-password">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => {
                           setShowResetForm(true)
@@ -395,10 +388,12 @@ export default function Login() {
                           const currentEmail = getAuthValues('email') || ''
                           setResetValue('email', currentEmail)
                         }}
+                        variant="outline"
+                        size="small"
                         className="login-forgot-link"
                       >
                         Forgot password?
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </form>

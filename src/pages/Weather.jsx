@@ -119,17 +119,18 @@ function Weather() {
 
   return (
     <div className="page-container">
-      <div className="weather-header">
-        <div className="weather-header-info">
-          <h2>Weather</h2>
-          <div className="location-info">
-            <span>{weatherData.location.name}</span>
+      <div className="page-content">
+        <div className="page-header">
+          <div className="page-header-info">
+            <h2>Weather</h2>
+            <div className="location-info">
+              <span>{weatherData.location.name}</span>
+            </div>
+            <Clock className="weather-clock" showIcon={false} showDate={true} />
           </div>
-          <Clock className="weather-clock" showIcon={false} showDate={true} />
         </div>
-      </div>
 
-      <div className="weather-tabs">
+        <div className="weather-tabs">
         <button
           className={`tab-button ${activeTab === 'current' ? 'active' : ''}`}
           onClick={() => setActiveTab('current')}
@@ -150,8 +151,8 @@ function Weather() {
         </button>
       </div>
 
-      <div className="weather-content">
-        {activeTab === 'current' && (
+        <div className="tab-content">
+          {activeTab === 'current' && (
           <div className="current-weather">
             <div className="current-main">
               <div className="temperature-display">
@@ -275,6 +276,7 @@ function Weather() {
             })()}
           </div>
         )}
+        </div>
       </div>
     </div>
   )
