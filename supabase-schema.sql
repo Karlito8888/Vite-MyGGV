@@ -302,11 +302,13 @@ CREATE TABLE public.user_services (
   photo_3_url text,
   photo_4_url text,
   photo_5_url text,
+  photo_6_url text,
   facebook_url text,
-  block text,
-  lot text,
+  hours text,
   CONSTRAINT user_services_pkey PRIMARY KEY (id),
   CONSTRAINT user_services_location_id_fkey FOREIGN KEY (location_id) REFERENCES public.locations(id),
   CONSTRAINT user_services_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id),
   CONSTRAINT user_services_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.service_categories(id)
 );
+
+-- Block and lot information should be retrieved via location_id -> locations table

@@ -1,10 +1,10 @@
 // Weather service for Open-Meteo API integration
 const BASE_URL = 'https://api.open-meteo.com/v1/forecast'
 
-// Dasmarinas, Cavite, Philippines coordinates
+// Dasmarinas, Cavite, Philippines coordinates (aligned with Map)
 const DASMARINAS_COORDS = {
-  latitude: 14.2949,
-  longitude: 120.9441
+  latitude: 14.347872973134175,
+  longitude: 120.95134859887523
 }
 
 // Cache key for localStorage

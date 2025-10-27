@@ -1,0 +1,117 @@
+/* Mobile First (320px+) */
+.rich-text-editor-field {
+    margin-bottom: 1rem;
+}
+
+.rich-text-editor-field .input-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.rich-text-editor-field .ql-container {
+    font-size: 16px;
+    min-height: 150px;
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    background: var(--color-background);
+    border-color: var(--color-input-border);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.rich-text-editor-field .ql-editor {
+    min-height: 150px;
+    color: var(--color-text-primary);
+}
+
+.rich-text-editor-field .ql-toolbar {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    background: var(--color-surface);
+    border-color: var(--color-input-border);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.rich-text-editor-field .ql-toolbar .ql-stroke {
+    stroke: var(--color-text-primary);
+}
+
+.rich-text-editor-field .ql-toolbar .ql-fill {
+    fill: var(--color-text-primary);
+}
+
+.rich-text-editor-field .ql-toolbar .ql-picker-label {
+    color: var(--color-text-primary);
+}
+
+.rich-text-editor-field.has-error .ql-container,
+.rich-text-editor-field.has-error .ql-toolbar {
+    border-color: var(--color-error-text);
+}
+
+.rich-text-editor-field .input-error {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-error-text);
+}
+
+.rich-text-editor-field .input-helper {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* Focus state */
+.rich-text-editor-field .ql-container.ql-snow:focus-within {
+    border-color: var(--color-input-focus);
+}
+
+.rich-text-editor-field .ql-toolbar.ql-snow:has(+ .ql-container:focus-within) {
+    border-color: var(--color-input-focus);
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+    .rich-text-editor-field .ql-container,
+    .rich-text-editor-field .ql-editor {
+        min-height: 180px;
+    }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+    .rich-text-editor-field .ql-container,
+    .rich-text-editor-field .ql-editor {
+        min-height: 200px;
+    }
+}
+
+/* Links in editor */
+.rich-text-editor-field .ql-editor a {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* Alignment styles - Quill applies alignment to entire paragraphs */
+.rich-text-editor-field .ql-editor p {
+    margin-bottom: 0.5em;
+}
+
+.rich-text-editor-field .ql-editor .ql-align-center {
+    text-align: center;
+}
+
+.rich-text-editor-field .ql-editor .ql-align-right {
+    text-align: right;
+}
+
+.rich-text-editor-field .ql-editor .ql-align-left {
+    text-align: left;
+}
+
+.rich-text-editor-field .ql-editor .ql-align-justify {
+    text-align: justify;
+}

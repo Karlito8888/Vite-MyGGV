@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router";
 import { ClimbingBoxLoader } from "react-spinners";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Layout from "./components/Layout";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -36,42 +38,57 @@ const protectedRoutes = [
 
 function App() {
   return (
-    <Suspense
-      fallback={
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-          }}
-        >
-          <ClimbingBoxLoader
-            color="var(--color-primary)"
-            size={20}
-            loading={true}
-          />
-        </div>
-      }
-    >
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Login />} />
-          <Route path="login" element={<Login />} />
-          <Route path="onboarding" element={<Onboarding />} />
-          <Route path="update-password" element={<UpdatePassword />} />
-          <Route path="pending-approval" element={<PendingApproval />} />
+    <>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <ClimbingBoxLoader
+              color="var(--color-primary)"
+              size={20}
+              loading={true}
+            />
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Login />} />
+            <Route path="login" element={<Login />} />
+            <Route path="onboarding" element={<Onboarding />} />
+            <Route path="update-password" element={<UpdatePassword />} />
+            <Route path="pending-approval" element={<PendingApproval />} />
 
-          <Route element={<ProtectedRoute />}>
-            {protectedRoutes.map(({ path, element: Element }) => (
-              <Route key={path} path={path} element={<Element />} />
-            ))}
+            <Route element={<ProtectedRoute />}>
+              {protectedRoutes.map(({ path, element: Element }) => (
+                <Route key={path} path={path} element={<Element />} />
+              ))}
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
           </Route>
+        </Routes>
+      </Suspense>
 
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Suspense>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
   );
 }
 

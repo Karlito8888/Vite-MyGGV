@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../contexts";
 import { ProfileForm, ServicesManager, BusinessInsideManager, BusinessOutsideManager } from "../components/dashboard";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
@@ -73,20 +71,6 @@ function Dashboard() {
                         <BusinessOutsideManager profileId={profile.id} />
                     )}
                 </div>
-
-                {/* Toast Container */}
-                <ToastContainer
-                    position="top-right"
-                    autoClose={3000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="colored"
-                />
             </div>
         </div>
     );

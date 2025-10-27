@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import { locationRequestsService } from '../services/locationRequestsService'
 import Card, { CardHeader, CardContent } from '../components/ui/Card'
@@ -133,18 +132,6 @@ function LocationRequests() {
   if (isLoading) {
     return (
       <div className="location-requests-page">
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
         <div className="container-centered">
           <div className="loader-wrapper">
             <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
@@ -156,19 +143,6 @@ function LocationRequests() {
 
   return (
     <div className="location-requests-page">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-
       <div className="container">
         <div className="requests-header">
           <h1>Location Requests</h1>

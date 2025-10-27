@@ -1,0 +1,136 @@
+/* ImageUploader Component Styles */
+
+.image-uploader {
+  width: 100%;
+}
+
+/* Drop zone */
+.image-uploader-dropzone {
+  position: relative;
+  border: 2px dashed var(--color-border);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  background-color: var(--color-background);
+  min-height: 48px;
+}
+
+.image-uploader-dropzone:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.image-uploader-dropzone.active {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+.image-uploader-dropzone.uploading {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.image-uploader-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.image-uploader-input:disabled {
+  cursor: not-allowed;
+}
+
+.image-uploader-icon {
+  margin: 0 auto 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-text-secondary);
+}
+
+.image-uploader-text {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+}
+
+.image-uploader-counter {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-family: inherit;
+}
+
+/* Image grid - 3 columns, 2 rows */
+.image-uploader-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Image item */
+.image-uploader-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.image-uploader-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-uploader-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0.5rem;
+}
+
+.image-uploader-item:hover .image-uploader-remove {
+  opacity: 1;
+}
+
+.image-uploader-label {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 0.75rem;
+  font-family: inherit;
+  border-radius: 0.25rem;
+  backdrop-filter: blur(4px);
+}
+
+/* Empty state */
+.image-uploader-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-secondary);
+}
+
+.image-uploader-empty-icon {
+  margin: 0 auto 0.5rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.image-uploader-empty-text {
+  font-size: 0.875rem;
+  font-family: inherit;
+}

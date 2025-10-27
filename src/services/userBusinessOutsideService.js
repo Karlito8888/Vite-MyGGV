@@ -114,23 +114,27 @@ export async function getBusinessOutsideById(id) {
  * @param {string} businessData.category_id - Category UUID
  * @param {string} businessData.business_name - Business name (2-100 chars)
  * @param {string} [businessData.description] - Description (max 1000 chars)
- * @param {string} [businessData.phone_number] - Phone number
- * @param {string} [businessData.phone_type] - Phone type
  * @param {string} [businessData.email] - Email
  * @param {string} [businessData.website_url] - Website URL
  * @param {string} [businessData.facebook_url] - Facebook URL
+ * @param {string} [businessData.messenger_url] - Facebook Messenger URL
+ * @param {string} [businessData.viber_number] - Viber contact number
+ * @param {string} [businessData.whatsapp_number] - WhatsApp contact number
+ * @param {string} [businessData.tiktok_url] - TikTok profile URL
+ * @param {string} [businessData.instagram_url] - Instagram profile URL
  * @param {string} [businessData.address] - Street address
  * @param {string} [businessData.barangay] - Barangay
  * @param {string} [businessData.city] - City
  * @param {string} [businessData.province] - Province
  * @param {string} [businessData.postal_code] - Postal code
  * @param {string} [businessData.google_maps_link] - Google Maps link
- * @param {string} [businessData.hours] - Business hours
+ * @param {string} [businessData.availability] - Business availability schedule
  * @param {string} [businessData.photo_1_url] - Photo URL
  * @param {string} [businessData.photo_2_url] - Photo URL
  * @param {string} [businessData.photo_3_url] - Photo URL
  * @param {string} [businessData.photo_4_url] - Photo URL
  * @param {string} [businessData.photo_5_url] - Photo URL
+ * @param {string} [businessData.photo_6_url] - Photo URL
  * @param {boolean} [businessData.is_active=true] - Active status
  * @param {boolean} [businessData.is_featured=false] - Featured status
  * @returns {Promise<{data: Object|null, error: Error|null}>}

@@ -119,11 +119,14 @@ export async function getBusinessInsideById(id) {
  * @param {string} businessData.business_name - Business name (2-100 chars)
  * @param {string} [businessData.description] - Description (max 1000 chars)
  * @param {string} [businessData.email] - Email
- * @param {string} [businessData.phone_number] - Phone number
- * @param {string} [businessData.phone_type] - Phone type (landline/mobile/viber/whatsapp)
  * @param {string} [businessData.website_url] - Website URL
  * @param {string} [businessData.facebook_url] - Facebook URL
- * @param {string} [businessData.hours] - Business hours
+ * @param {string} [businessData.messenger_url] - Facebook Messenger URL
+ * @param {string} [businessData.viber_number] - Viber contact number
+ * @param {string} [businessData.whatsapp_number] - WhatsApp contact number
+ * @param {string} [businessData.tiktok_url] - TikTok profile URL
+ * @param {string} [businessData.instagram_url] - Instagram profile URL
+ * @param {string} [businessData.availability] - Business availability schedule
  * @param {string} [businessData.location_id] - Location UUID
  * @param {string} [businessData.block] - Block identifier
  * @param {string} [businessData.lot] - Lot identifier
@@ -132,6 +135,7 @@ export async function getBusinessInsideById(id) {
  * @param {string} [businessData.photo_3_url] - Photo URL
  * @param {string} [businessData.photo_4_url] - Photo URL
  * @param {string} [businessData.photo_5_url] - Photo URL
+ * @param {string} [businessData.photo_6_url] - Photo URL
  * @param {boolean} [businessData.is_active=true] - Active status
  * @param {boolean} [businessData.is_featured=false] - Featured status
  * @returns {Promise<{data: Object|null, error: Error|null}>}

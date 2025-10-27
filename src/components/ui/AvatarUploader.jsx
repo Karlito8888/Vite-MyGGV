@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import { BeatLoader } from 'react-spinners'
 import { Camera, Trash2, Upload } from 'lucide-react'
 import ImageCropper from '../ImageCropper'
@@ -28,6 +28,7 @@ function AvatarUploader({
   const [previewUrl, setPreviewUrl] = useState(currentAvatar)
   const [imageError, setImageError] = useState(false)
   const fileInputRef = useRef(null)
+  const inputId = useId()
 
   // Update preview when currentAvatar changes
   useEffect(() => {
@@ -208,12 +209,15 @@ function AvatarUploader({
 
         {/* Hidden File Input */}
         <input
+          id={inputId}
+          name="avatar"
           ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleInputChange}
           className="avatar-uploader__input"
           disabled={isUploading}
+          autoComplete="off"
         />
 
         {/* Remove Button */}

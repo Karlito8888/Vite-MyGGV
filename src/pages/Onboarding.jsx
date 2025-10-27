@@ -3,8 +3,7 @@ import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ClimbingBoxLoader } from "react-spinners";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { supabase } from "../utils/supabase";
 import { onboardingService } from "../services/onboardingService";
 
@@ -264,22 +263,9 @@ function Onboarding() {
           </p>
         </div>
 
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-
-          {errors.root && (
-            <div className="error-message">{errors.root.message}</div>
-          )}
+        {errors.root && (
+          <div className="error-message">{errors.root.message}</div>
+        )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
             <div className="form-group">

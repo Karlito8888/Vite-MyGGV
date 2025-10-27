@@ -1,45 +1,130 @@
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { supabase } from "../../utils/supabase";
+import { useNavigate } from "react-router-dom";
+import {
+    createBusinessOutside,
+    updateBusinessOutside,
+    listMyBusinessesOutside
+} from "../../services/userBusinessOutsideService";
+import { listBusinessOutsideCategories, createBusinessOutsideCategory } from "../../services/businessOutsideCategoriesService";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
 import Input from "../ui/Input";
+import Select from "../ui/Select";
+import RichTextEditor from "../ui/RichTextEditor";
 import Button from "../ui/Button";
+import ImageUploader from "../ui/ImageUploader";
 import { toast } from "react-toastify";
+import { User } from "lucide-react";
+
+// Helper to normalize phone numbers
+const normalizePhoneNumber = (value) => {
+    if (!value || value.trim() === "") return "";
+    const cleaned = value.trim().replace(/[\s\-()]/g, "");
+    return cleaned;
+};
+
+// Helper to extract phone number from Viber/WhatsApp link
+const extractPhoneFromUrl = (value, platform) => {
+    if (!value || value.trim() === "") return "";
+    const trimmed = value.trim();
+    if (!trimmed.startsWith("http") && !trimmed.startsWith("viber://")) {
+        return trimmed;
+    }
+    if (platform === "viber" && trimmed.includes("viber://chat?number=")) {
+        const match = trimmed.match(/number=([^&]+)/);
+        if (match) {
+            return decodeURIComponent(match[1]);
+        }
+    }
+    if (platform === "whatsapp" && trimmed.includes("wa.me/")) {
+        const match = trimmed.match(/wa\.me\/(\+?\d+)/);
+        if (match) {
+            return match[1].startsWith("+") ? match[1] : `+${match[1]}`;
+        }
+    }
+    return trimmed;
+};
+
+// Helper to normalize social media URLs
+const normalizeSocialUrl = (value, platform) => {
+    if (!value || value.trim() === "") return "";
+    const trimmed = value.trim();
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("viber://")) {
+        return trimmed;
+    }
+    switch (platform) {
+        case "facebook":
+            return `https://facebook.com/${trimmed.replace(/^@/, "")}`;
+        case "messenger":
+            return `https://m.me/${trimmed.replace(/^@/, "")}`;
+        case "instagram":
+            return `https://instagram.com/${trimmed.replace(/^@/, "")}`;
+        case "tiktok":
+            return `https://tiktok.com/@${trimmed.replace(/^@/, "")}`;
+        case "whatsapp": {
+            const phone = normalizePhoneNumber(trimmed);
+            return `https://wa.me/${phone.replace(/^\+/, "")}`;
+        }
+        case "viber": {
+            const viberPhone = normalizePhoneNumber(trimmed);
+            const encodedPhone = encodeURIComponent(viberPhone.startsWith("+") ? viberPhone : `+${viberPhone}`);
+            return `viber://chat?number=${encodedPhone}`;
+        }
+        default:
+            return trimmed;
+    }
+};
 
 const businessOutsideSchema = z.object({
     business_name: z.string().min(2, "Business name must be at least 2 characters").max(100),
-    description: z.string().max(1000).optional(),
-    phone_number: z.string().optional(),
-    phone_type: z.string().optional(),
-    email: z.string().email("Invalid email").or(z.literal("")).optional(),
-    website_url: z.string().url("Invalid URL").or(z.literal("")).optional(),
+    description: z.string().optional(),
+    email: z.union([z.string().email(), z.literal("")]).optional(),
+    website_url: z.string().url().or(z.literal("")).optional(),
     address: z.string().optional(),
     city: z.string().optional(),
     postal_code: z.string().optional(),
     province: z.string().optional(),
     barangay: z.string().optional(),
-    google_maps_link: z.string().url("Invalid URL").or(z.literal("")).optional(),
-    hours: z.string().optional(),
-    facebook_url: z.string().url("Invalid URL").or(z.literal("")).optional(),
+    google_maps_link: z.string().url().or(z.literal("")).optional(),
+    availability: z.string().optional(),
+    viber_number: z.string()
+        .optional()
+        .refine((val) => {
+            if (!val || val.trim() === "") return true;
+            const cleaned = val.replace(/[\s\-()]/g, "");
+            return /^\+?\d{10,15}$/.test(cleaned);
+        }, "Must include country code (e.g., +639171234567)"),
+    whatsapp_number: z.string()
+        .optional()
+        .refine((val) => {
+            if (!val || val.trim() === "") return true;
+            const cleaned = val.replace(/[\s\-()]/g, "");
+            return /^\+?\d{10,15}$/.test(cleaned);
+        }, "Must include country code (e.g., +639171234567)"),
+    facebook_url: z.string().optional().transform((val) => val === "" ? "" : val),
+    messenger_url: z.string().optional().transform((val) => val === "" ? "" : val),
+    instagram_url: z.string().optional().transform((val) => val === "" ? "" : val),
+    tiktok_url: z.string().optional().transform((val) => val === "" ? "" : val),
 });
 
 function BusinessOutsideManager({ profileId }) {
-    const [businesses, setBusinesses] = useState([]);
+    const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
-    const [editingId, setEditingId] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [existingBusiness, setExistingBusiness] = useState(null);
+    const [photos, setPhotos] = useState([]);
+    const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState("");
+    const [creatingCategory, setCreatingCategory] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(businessOutsideSchema),
         defaultValues: {
             business_name: "",
             description: "",
-            phone_number: "",
-            phone_type: "",
             email: "",
             website_url: "",
             address: "",
@@ -48,43 +133,98 @@ function BusinessOutsideManager({ profileId }) {
             province: "",
             barangay: "",
             google_maps_link: "",
-            hours: "",
-            facebook_url: ""
+            availability: "",
+            facebook_url: "",
+            messenger_url: "",
+            viber_number: "",
+            whatsapp_number: "",
+            tiktok_url: "",
+            instagram_url: ""
         }
     });
 
     useEffect(() => {
-        loadBusinesses();
-        loadCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [profileId]);
+        const loadData = async () => {
+            // Load categories
+            const { data: categoriesData, error: categoriesError } = await listBusinessOutsideCategories();
+            if (!categoriesError && categoriesData) {
+                setCategories(categoriesData);
+            } else if (categoriesError) {
+                console.error("Error loading categories:", categoriesError);
+            }
 
-    const loadCategories = async () => {
-        try {
-            const { data, error } = await supabase
-                .from("business_outside_categories")
-                .select("*")
-                .eq("is_active", true)
-                .order("name");
-            if (!error) setCategories(data || []);
-        } catch (error) {
-            console.error("Error loading categories:", error);
-        }
-    };
+            // Load existing business
+            const { data: businessesData, error: businessError } = await listMyBusinessesOutside(profileId);
+            if (!businessError && businessesData && businessesData.length > 0) {
+                const businessData = businessesData[0]; // Get the first business
+                setExistingBusiness(businessData);
+                setSelectedCategory(businessData.category_id);
 
-    const loadBusinesses = async () => {
-        setLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from("user_business_outside")
-                .select("*, category:business_outside_categories(name)")
-                .eq("profile_id", profileId);
-            if (!error) setBusinesses(data || []);
-        } catch (error) {
-            console.error("Error loading businesses:", error);
-        } finally {
-            setLoading(false);
+                // Load photos
+                const existingPhotos = [
+                    businessData.photo_1_url,
+                    businessData.photo_2_url,
+                    businessData.photo_3_url,
+                    businessData.photo_4_url,
+                    businessData.photo_5_url,
+                    businessData.photo_6_url
+                ].filter(Boolean);
+                setPhotos(existingPhotos);
+
+                form.reset({
+                    business_name: businessData.business_name || "",
+                    description: businessData.description || "",
+                    email: businessData.email || "",
+                    website_url: businessData.website_url || "",
+                    address: businessData.address || "",
+                    city: businessData.city || "",
+                    postal_code: businessData.postal_code || "",
+                    province: businessData.province || "",
+                    barangay: businessData.barangay || "",
+                    google_maps_link: businessData.google_maps_link || "",
+                    availability: businessData.availability || "",
+                    viber_number: extractPhoneFromUrl(businessData.viber_number, "viber"),
+                    whatsapp_number: extractPhoneFromUrl(businessData.whatsapp_number, "whatsapp"),
+                    facebook_url: businessData.facebook_url || "",
+                    messenger_url: businessData.messenger_url || "",
+                    instagram_url: businessData.instagram_url || "",
+                    tiktok_url: businessData.tiktok_url || ""
+                });
+            }
+        };
+
+        loadData();
+    }, [profileId, form]);
+
+    const handleCreateCategory = async () => {
+        if (!newCategoryName.trim()) {
+            toast.error("Please enter a category name", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            return;
         }
+
+        setCreatingCategory(true);
+        const result = await createBusinessOutsideCategory({ name: newCategoryName.trim() });
+
+        if (result.error) {
+            console.error("Error creating category:", result.error);
+            toast.error("Error creating category. Please try again.", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+        } else {
+            setCategories([...categories, result.data]);
+            setSelectedCategory(result.data.id);
+            setNewCategoryName("");
+            setShowNewCategoryModal(false);
+            toast.success("Category created successfully! ✨", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+        setCreatingCategory(false);
     };
 
     const handleSave = async (data) => {
@@ -98,29 +238,40 @@ function BusinessOutsideManager({ profileId }) {
 
         setSaving(true);
         try {
-            const businessData = {
+            const normalizedData = {
                 ...data,
+                viber_number: normalizeSocialUrl(data.viber_number, "viber"),
+                whatsapp_number: normalizeSocialUrl(data.whatsapp_number, "whatsapp"),
+                facebook_url: normalizeSocialUrl(data.facebook_url, "facebook"),
+                messenger_url: normalizeSocialUrl(data.messenger_url, "messenger"),
+                instagram_url: normalizeSocialUrl(data.instagram_url, "instagram"),
+                tiktok_url: normalizeSocialUrl(data.tiktok_url, "tiktok"),
+            };
+            const businessData = {
+                ...normalizedData,
                 category_id: selectedCategory,
-                profile_id: profileId
+                profile_id: profileId,
+                photo_1_url: photos[0] || null,
+                photo_2_url: photos[1] || null,
+                photo_3_url: photos[2] || null,
+                photo_4_url: photos[3] || null,
+                photo_5_url: photos[4] || null,
+                photo_6_url: photos[5] || null
             };
 
-            if (editingId) {
-                const { error } = await supabase
-                    .from("user_business_outside")
-                    .update(businessData)
-                    .eq("id", editingId);
-                if (error) throw error;
+            let result;
+            if (existingBusiness) {
+                result = await updateBusinessOutside(existingBusiness.id, businessData);
             } else {
-                const { error } = await supabase
-                    .from("user_business_outside")
-                    .insert([businessData]);
-                if (error) throw error;
+                result = await createBusinessOutside(businessData);
             }
 
-            await loadBusinesses();
-            form.reset();
-            setSelectedCategory("");
-            setEditingId(null);
+            if (result.error) throw result.error;
+
+            if (!existingBusiness && result.data) {
+                setExistingBusiness(result.data);
+            }
+
             toast.success("Business saved successfully! 🏪", {
                 position: "top-right",
                 autoClose: 3000,
@@ -136,220 +287,232 @@ function BusinessOutsideManager({ profileId }) {
         }
     };
 
-    const handleEdit = (business) => {
-        setEditingId(business.id);
-        setSelectedCategory(business.category_id);
-        form.reset({
-            business_name: business.business_name,
-            description: business.description || "",
-            phone_number: business.phone_number || "",
-            phone_type: business.phone_type || "",
-            email: business.email || "",
-            website_url: business.website_url || "",
-            address: business.address || "",
-            city: business.city || "",
-            postal_code: business.postal_code || "",
-            province: business.province || "",
-            barangay: business.barangay || "",
-            google_maps_link: business.google_maps_link || "",
-            hours: business.hours || "",
-            facebook_url: business.facebook_url || ""
-        });
-    };
-
-    const handleCancel = () => {
-        setEditingId(null);
-        setSelectedCategory("");
-        form.reset();
-    };
-
-    const handleDelete = async (id) => {
-        if (!confirm("Delete this business?")) return;
-        try {
-            const { error } = await supabase
-                .from("user_business_outside")
-                .delete()
-                .eq("id", id);
-            if (error) throw error;
-            setBusinesses(businesses.filter(b => b.id !== id));
-            toast.success("Business deleted successfully! 🗑️", {
-                position: "top-right",
-                autoClose: 3000,
-            });
-        } catch (error) {
-            console.error("Error deleting business:", error);
-            toast.error("Error deleting business. Please try again.", {
-                position: "top-right",
-                autoClose: 5000,
-            });
-        }
-    };
-
     return (
-        <>
-            <Card>
-                <CardHeader>
-                    <CardTitle>{editingId ? "Edit Business Outside" : "Add New Business Outside"}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="dashboard-form">
-                        <div className="form-group">
-                            <label>Category *</label>
-                            <select
-                                value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="form-select"
-                                required
+        <Card>
+            <CardHeader>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+                    <CardTitle>My Business Outside</CardTitle>
+                    <Button
+                        className="btn-dashboard"
+                        onClick={() => navigate("/profile")}
+                        aria-label="Go to Profile"
+                        type="button"
+                    >
+                        <User size={20} />
+                        View Profile
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <form
+                    onSubmit={form.handleSubmit(handleSave)}
+                    className="dashboard-form"
+                >
+                    <div style={{ display: "grid", gap: "0.5rem" }}>
+                        <Select
+                            id="business-outside-category"
+                            name="category"
+                            label="Category"
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
+                            placeholder="Select a category"
+                            required
+                            helperText="Don't see your category? Create a new one! 🎯"
+                        />
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setShowNewCategoryModal(true)}
+                            style={{ whiteSpace: "nowrap", minHeight: "48px" }}
+                        >
+                            + New
+                        </Button>
+                    </div>
+                    <Input
+                        label="Business Name *"
+                        type="text"
+                        {...form.register("business_name")}
+                        error={form.formState.errors.business_name?.message}
+                    />
+                    <Controller
+                        name="description"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <RichTextEditor
+                                label="Description"
+                                value={field.value}
+                                onChange={field.onChange}
+                                error={fieldState.error?.message}
+                                placeholder="Describe your business..."
+                            />
+                        )}
+                    />
+                    <Input
+                        label="Availability"
+                        type="text"
+                        placeholder="e.g., Mon-Fri 9AM-5PM"
+                        {...form.register("availability")}
+                        error={form.formState.errors.availability?.message}
+                    />
+                    <Input
+                        label="Email"
+                        type="email"
+                        {...form.register("email")}
+                        error={form.formState.errors.email?.message}
+                    />
+                    <Input
+                        label="Website URL"
+                        type="url"
+                        {...form.register("website_url")}
+                        error={form.formState.errors.website_url?.message}
+                    />
+                    <Input
+                        label="Address"
+                        type="text"
+                        {...form.register("address")}
+                        error={form.formState.errors.address?.message}
+                    />
+                    <Input
+                        label="Barangay"
+                        type="text"
+                        {...form.register("barangay")}
+                        error={form.formState.errors.barangay?.message}
+                    />
+                    <Input
+                        label="City"
+                        type="text"
+                        {...form.register("city")}
+                        error={form.formState.errors.city?.message}
+                    />
+                    <Input
+                        label="Province"
+                        type="text"
+                        {...form.register("province")}
+                        error={form.formState.errors.province?.message}
+                    />
+                    <Input
+                        label="Postal Code"
+                        type="text"
+                        {...form.register("postal_code")}
+                        error={form.formState.errors.postal_code?.message}
+                    />
+                    <Input
+                        label="Google Maps Link"
+                        type="url"
+                        {...form.register("google_maps_link")}
+                        error={form.formState.errors.google_maps_link?.message}
+                    />
+                    <Input
+                        label="Viber Number"
+                        type="tel"
+                        placeholder="+639171234567"
+                        {...form.register("viber_number")}
+                        error={form.formState.errors.viber_number?.message}
+                        helperText={<>Must include country code<br />Example: +63 917 123 4567 (Philippines)</>}
+                    />
+                    <Input
+                        label="WhatsApp Number"
+                        type="tel"
+                        placeholder="+639171234567"
+                        {...form.register("whatsapp_number")}
+                        error={form.formState.errors.whatsapp_number?.message}
+                        helperText={<>Must include country code<br />Example: +63 917 123 4567 (Philippines)</>}
+                    />
+                    <Input
+                        label="Facebook URL"
+                        type="text"
+                        placeholder="username or https://facebook.com/username"
+                        {...form.register("facebook_url")}
+                        error={form.formState.errors.facebook_url?.message}
+                        helperText={<>📱 Mobile: Share profile → Copy link<br />💻 Desktop: Copy from browser address bar</>}
+                    />
+                    <Input
+                        label="Messenger URL"
+                        type="text"
+                        placeholder="username or https://m.me/username"
+                        {...form.register("messenger_url")}
+                        error={form.formState.errors.messenger_url?.message}
+                        helperText={<>📱 Mobile: Share profile → Copy link<br />💻 Desktop: Copy from browser address bar</>}
+                    />
+                    <Input
+                        label="Instagram URL"
+                        type="text"
+                        placeholder="@username or https://instagram.com/username"
+                        {...form.register("instagram_url")}
+                        error={form.formState.errors.instagram_url?.message}
+                        helperText={<>📱 Mobile: Profile → ⋯ → Share → Copy link<br />💻 Desktop: Copy from browser address bar</>}
+                    />
+                    <Input
+                        label="TikTok URL"
+                        type="text"
+                        placeholder="@username or https://tiktok.com/@username"
+                        {...form.register("tiktok_url")}
+                        error={form.formState.errors.tiktok_url?.message}
+                        helperText={<>📱 Mobile: Profile → Share → Copy link<br />💻 Desktop: Copy from browser address bar</>}
+                    />
+                    <ImageUploader
+                        label="Photos (up to 6)"
+                        images={photos}
+                        onChange={setPhotos}
+                        maxImages={6}
+                        bucket="business-outside-photos"
+                        folder="uploads"
+                    />
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        loading={saving}
+                        disabled={saving}
+                    >
+                        Save Business
+                    </Button>
+                </form>
+
+                {showNewCategoryModal && (
+                    <div
+                        className="modal-overlay"
+                        onClick={() => setShowNewCategoryModal(false)}
+                    >
+                        <div
+                            className="modal-content"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h3>Create New Category</h3>
+                            <Input
+                                label="Category Name"
+                                type="text"
+                                value={newCategoryName}
+                                onChange={(e) => setNewCategoryName(e.target.value)}
+                                placeholder="Enter category name"
+                                autoFocus
+                            />
+                            <div
+                                style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}
                             >
-                                <option value="">Select a category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <Input
-                            label="Business Name *"
-                            type="text"
-                            {...form.register("business_name")}
-                            error={form.formState.errors.business_name?.message}
-                        />
-                        <Input
-                            label="Description"
-                            as="textarea"
-                            rows="3"
-                            {...form.register("description")}
-                            error={form.formState.errors.description?.message}
-                        />
-                        <Input
-                            label="Phone Number"
-                            type="text"
-                            {...form.register("phone_number")}
-                            error={form.formState.errors.phone_number?.message}
-                        />
-                        <Input
-                            label="Phone Type"
-                            type="text"
-                            placeholder="e.g., Mobile, Landline"
-                            {...form.register("phone_type")}
-                            error={form.formState.errors.phone_type?.message}
-                        />
-                        <Input
-                            label="Email"
-                            type="email"
-                            {...form.register("email")}
-                            error={form.formState.errors.email?.message}
-                        />
-                        <Input
-                            label="Website URL"
-                            type="url"
-                            {...form.register("website_url")}
-                            error={form.formState.errors.website_url?.message}
-                        />
-                        <Input
-                            label="Address"
-                            type="text"
-                            {...form.register("address")}
-                            error={form.formState.errors.address?.message}
-                        />
-                        <Input
-                            label="Barangay"
-                            type="text"
-                            {...form.register("barangay")}
-                            error={form.formState.errors.barangay?.message}
-                        />
-                        <Input
-                            label="City"
-                            type="text"
-                            {...form.register("city")}
-                            error={form.formState.errors.city?.message}
-                        />
-                        <Input
-                            label="Province"
-                            type="text"
-                            {...form.register("province")}
-                            error={form.formState.errors.province?.message}
-                        />
-                        <Input
-                            label="Postal Code"
-                            type="text"
-                            {...form.register("postal_code")}
-                            error={form.formState.errors.postal_code?.message}
-                        />
-                        <Input
-                            label="Google Maps Link"
-                            type="url"
-                            {...form.register("google_maps_link")}
-                            error={form.formState.errors.google_maps_link?.message}
-                        />
-                        <Input
-                            label="Hours"
-                            type="text"
-                            placeholder="e.g., Mon-Fri 9AM-5PM"
-                            {...form.register("hours")}
-                            error={form.formState.errors.hours?.message}
-                        />
-                        <Input
-                            label="Facebook URL"
-                            type="url"
-                            {...form.register("facebook_url")}
-                            error={form.formState.errors.facebook_url?.message}
-                        />
-                        <div className="form-actions">
-                            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
-                                {editingId ? "Update" : "Add"}
-                            </Button>
-                            {editingId && (
-                                <Button type="button" variant="secondary" onClick={handleCancel}>
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    onClick={handleCreateCategory}
+                                    loading={creatingCategory}
+                                    disabled={creatingCategory}
+                                >
+                                    Create
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() => setShowNewCategoryModal(false)}
+                                    disabled={creatingCategory}
+                                >
                                     Cancel
                                 </Button>
-                            )}
+                            </div>
                         </div>
-                    </form>
-                </CardContent>
-            </Card>
-
-            {loading ? (
-                <div className="loading-container">
-                    <BeatLoader color="var(--color-primary)" />
-                </div>
-            ) : (
-                <div className="items-list">
-                    {businesses.map((business) => (
-                        <Card key={business.id} className="item-card">
-                            <CardContent>
-                                <h4>{business.business_name}</h4>
-                                {business.category && <p className="item-category">Category: {business.category.name}</p>}
-                                <p>{business.description}</p>
-                                {business.phone_number && <p>📞 {business.phone_number} {business.phone_type && `(${business.phone_type})`}</p>}
-                                {business.email && <p>✉️ {business.email}</p>}
-                                {business.hours && <p>🕒 {business.hours}</p>}
-                                {business.address && (
-                                    <p>📍 {business.address}
-                                        {business.barangay && `, ${business.barangay}`}
-                                        {business.city && `, ${business.city}`}
-                                        {business.province && `, ${business.province}`}
-                                        {business.postal_code && ` ${business.postal_code}`}
-                                    </p>
-                                )}
-                                <div className="item-actions">
-                                    <Button className="btn-edit" onClick={() => handleEdit(business)}>
-                                        Edit
-                                    </Button>
-                                    <Button className="btn-delete" onClick={() => handleDelete(business.id)}>
-                                        Delete
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    {businesses.length === 0 && (
-                        <p className="empty-message">No businesses yet. Add your first business above!</p>
-                    )}
-                </div>
-            )}
-        </>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 

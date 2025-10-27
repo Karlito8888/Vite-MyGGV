@@ -140,15 +140,19 @@ export async function getUserServiceById(id) {
  * @param {string} [serviceData.price_range] - Price range
  * @param {string} [serviceData.availability] - Availability schedule
  * @param {string} [serviceData.service_location_type] - Location type (at_provider/mobile/both)
- * @param {string} [serviceData.location_id] - Location UUID
- * @param {string} [serviceData.block] - Block identifier
- * @param {string} [serviceData.lot] - Lot identifier
+ * @param {string} [serviceData.location_id] - Location UUID (block/lot info retrieved from locations table)
  * @param {string} [serviceData.facebook_url] - Facebook URL
+ * @param {string} [serviceData.messenger_url] - Facebook Messenger URL
+ * @param {string} [serviceData.viber_number] - Viber contact number
+ * @param {string} [serviceData.whatsapp_number] - WhatsApp contact number
+ * @param {string} [serviceData.tiktok_url] - TikTok profile URL
+ * @param {string} [serviceData.instagram_url] - Instagram profile URL
  * @param {string} [serviceData.photo_1_url] - Photo URL
  * @param {string} [serviceData.photo_2_url] - Photo URL
  * @param {string} [serviceData.photo_3_url] - Photo URL
  * @param {string} [serviceData.photo_4_url] - Photo URL
  * @param {string} [serviceData.photo_5_url] - Photo URL
+ * @param {string} [serviceData.photo_6_url] - Photo URL
  * @param {boolean} [serviceData.is_mobile=false] - Deprecated, use service_location_type
  * @param {boolean} [serviceData.is_active=true] - Active status
  * @returns {Promise<{data: Object|null, error: Error|null}>}
