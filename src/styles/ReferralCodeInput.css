@@ -1,0 +1,88 @@
+/* Referral Code Input Styles - Suit la politique de style de index.css et CSS-REFERENCE.md */
+/* Utilise les variables CSS globales et les composants UI (Button, Input, Card) */
+
+.referral-code-input-container {
+  margin: 1.5rem 0 0 0;
+}
+
+/* Toggle button - utilise le composant Button.jsx */
+
+.referral-success-badge {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 2px solid #28a745;
+  border-radius: 8px;
+  color: #155724;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.referral-code-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.referral-code-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Input - utilise le composant Input.jsx avec styles additionnels */
+.referral-code-input-group .input {
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Submit button - utilise le composant Button.jsx */
+
+/* Cancel button - utilise le composant Button.jsx */
+
+.referral-code-message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+.referral-code-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.referral-code-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive - Mobile First */
+@media (min-width: 481px) {
+  .referral-code-input-group {
+    flex-direction: row;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .referral-code-message {
+    animation: none;
+  }
+}

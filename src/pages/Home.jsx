@@ -221,7 +221,7 @@ function Home() {
         map.current = null
       }
     }
-  }, [mapType, mapStyle, blocksGeoJSON, locations, locationsLoading, user, currentCenter, currentZoom, initialViewState])
+  }, [mapType, mapStyle, blocksGeoJSON, locations, locationsLoading, user, currentCenter, currentZoom, initialViewState, isUserOnline])
 
 
 

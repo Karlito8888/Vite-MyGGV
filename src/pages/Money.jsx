@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import { canCollectDailyCoin, collectDailyCoin } from '../services/profilesService'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
 import Button from '../components/ui/Button'
+import ReferralModal from '../components/ReferralModal'
+import ReferralCodeInput from '../components/ReferralCodeInput'
 import '../styles/Money.css'
 
 function Money() {
@@ -12,11 +14,48 @@ function Money() {
   const [checkingStatus, setCheckingStatus] = useState(true)
   const [collectionStatus, setCollectionStatus] = useState(null)
   const [timeUntilNext, setTimeUntilNext] = useState('')
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false)
+  const [showReferralModal, setShowReferralModal] = useState(false)
+
+  const checkCollectionStatus = useCallback(async () => {
+    if (!profile) return
+
+    setCheckingStatus(true)
+    const { data, error } = await canCollectDailyCoin()
+    setCheckingStatus(false)
+
+    if (error) {
+      console.error('Error checking collection status:', error)
+      return
+    }
+
+    setCollectionStatus(data)
+  }, [profile])
+
+  const handleCollectCoin = async () => {
+    setLoading(true)
+
+    const { data, error } = await collectDailyCoin()
+
+    setLoading(false)
+
+    if (error) {
+      toast.error(error.message || 'Failed to collect daily coin')
+      return
+    }
+
+    if (data && data.success) {
+      toast.success(`🪙 +1 coin collected! New balance: ${data.new_balance} coins`)
+      await refreshProfile()
+      await checkCollectionStatus()
+    }
+  }
 
   // Check collection status on mount and when profile changes
   useEffect(() => {
-    checkCollectionStatus()
+    if (profile) {
+      checkCollectionStatus()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile])
 
   // Check for payment success/failure in URL
@@ -34,7 +73,7 @@ function Money() {
       // Clean URL
       window.history.replaceState({}, '', '/money')
     }
-  }, [])
+  }, [refreshProfile])
 
   // Update countdown timer
   useEffect(() => {
@@ -62,41 +101,7 @@ function Money() {
     const interval = setInterval(updateCountdown, 1000)
 
     return () => clearInterval(interval)
-  }, [collectionStatus])
-
-  const checkCollectionStatus = async () => {
-    if (!profile) return
-
-    setCheckingStatus(true)
-    const { data, error } = await canCollectDailyCoin()
-    setCheckingStatus(false)
-
-    if (error) {
-      console.error('Error checking collection status:', error)
-      return
-    }
-
-    setCollectionStatus(data)
-  }
-
-  const handleCollectCoin = async () => {
-    setLoading(true)
-
-    const { data, error } = await collectDailyCoin()
-
-    setLoading(false)
-
-    if (error) {
-      toast.error(error.message || 'Failed to collect daily coin')
-      return
-    }
-
-    if (data && data.success) {
-      toast.success(`🪙 +1 coin collected! New balance: ${data.new_balance} coins`)
-      await refreshProfile()
-      await checkCollectionStatus()
-    }
-  }
+  }, [collectionStatus, checkCollectionStatus])
 
   const userCoins = profile?.coins || 0
 
@@ -227,7 +232,59 @@ function Money() {
             </CardContent>
           </Card> */}
 
-          {/* Card 4: How to Earn */}
+          {/* Card 4: Referral Program */}
+          <Card className="money-card referral-card">
+            <CardHeader>
+              <CardTitle>🎁 Invite Friends</CardTitle>
+              <CardDescription>
+                Earn 10 coins for each friend who joins!
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="referral-info">
+                <div className="referral-icon">👥</div>
+                <p className="referral-text">
+                  Share your referral code with friends. When they complete their profile, you both get bonus coins!
+                </p>
+                <div className="referral-rewards">
+                  <div className="reward-item">
+                    <span className="reward-emoji">🎉</span>
+                    <div>
+                      <strong>You get 10 coins</strong>
+                      <p>For each successful referral</p>
+                    </div>
+                  </div>
+                  <div className="reward-item">
+                    <span className="reward-emoji">🎁</span>
+                    <div>
+                      <strong>They get 10 coins</strong>
+                      <p>Welcome bonus for new users</p>
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="primary"
+                  fullWidth
+                  onClick={() => setShowReferralModal(true)}
+                  disabled={!profile}
+                >
+                  📱 Share this app with a QR
+                </Button>
+
+                {/* Only show referral code input if user hasn't been referred yet */}
+                {profile && !profile.referred_by && (
+                  <ReferralCodeInput
+                    onSuccess={() => {
+                      toast.success('🎉 Referral code applied! You\'ll get 10 bonus coins when you complete your profile.');
+                      refreshProfile();
+                    }}
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card 5: How to Earn */}
           <Card className="money-card info-card">
             <CardHeader>
               <CardTitle>📊 How to Earn Coins</CardTitle>
@@ -245,10 +302,10 @@ function Money() {
                   </div>
                 </li>
                 <li className="earn-item">
-                  <span className="earn-icon">🎮</span>
+                  <span className="earn-icon">👥</span>
                   <div className="earn-details">
-                    <strong>Play Games</strong>
-                    <p>Win coins by playing games</p>
+                    <strong>Refer Friends</strong>
+                    <p>Earn 10 coins per referral</p>
                   </div>
                 </li>
                 <li className="earn-item">
@@ -264,11 +321,10 @@ function Money() {
         </div>
       </div>
 
-      {/* TEMPORARILY DISABLED */}
-      {/* <CoinPurchaseModal
-        isOpen={showPurchaseModal}
-        onClose={() => setShowPurchaseModal(false)}
-      /> */}
+      <ReferralModal
+        isOpen={showReferralModal}
+        onClose={() => setShowReferralModal(false)}
+      />
     </div>
   )
 }

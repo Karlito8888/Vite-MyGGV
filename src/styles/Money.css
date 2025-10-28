@@ -1,10 +1,14 @@
-/* Money Page Styles - MOBILE FIRST (320px+) */
+/* Money Page Styles - Suit la politique de style de index.css et CSS-REFERENCE.md */
+/* MOBILE FIRST (320px+) */
+/* Utilise les variables CSS globales et les composants UI (Button, Card) */
 
 .money-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
   width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .money-card {
@@ -144,6 +148,63 @@
   margin-top: 1rem;
 }
 
+/* Referral Card */
+.referral-card {
+  border: 2px solid #667eea;
+}
+
+.referral-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.referral-icon {
+  font-size: 3rem;
+}
+
+.referral-text {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.referral-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+
+.reward-emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.reward-item strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.reward-item p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
 /* Info Card */
 .earn-list {
   list-style: none;
@@ -208,23 +269,14 @@
 /* Tablet (481px+) */
 @media (min-width: 481px) {
   .money-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .balance-card {
-    grid-column: 1 / -1;
+    gap: 1.75rem;
   }
 }
 
 /* Desktop (769px+) */
 @media (min-width: 769px) {
   .money-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
-  }
-
-  .balance-card {
-    grid-column: auto;
   }
 
   .balance-display {
@@ -253,8 +305,7 @@
     transform: none;
   }
 }
-/* P
-urchase Card Styles */
+/* Purchase Card Styles */
 .purchase-card .purchase-info {
   text-align: center;
 }
@@ -265,7 +316,7 @@ urchase Card Styles */
 }
 
 .purchase-text {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   margin-bottom: 1.5rem;
   line-height: 1.6;
 }
@@ -276,8 +327,9 @@ urchase Card Styles */
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: var(--bg-secondary);
+  background: var(--color-surface);
   border-radius: 8px;
+  border: 1px solid var(--color-border);
 }
 
 .feature-item {
@@ -285,15 +337,15 @@ urchase Card Styles */
   align-items: center;
   gap: 0.75rem;
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
 .feature-item span:first-child {
   font-size: 1.25rem;
 }
 
-/* Modal Overlay */
-.modal-overlay {
+/* Modal Overlay - utilise les styles globaux de index.css */
+.money-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -303,53 +355,43 @@ urchase Card Styles */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-overlay);
   padding: 1rem;
 }
 
-.modal-content {
-  background: var(--card-bg);
+.money-modal-content {
+  background: var(--color-background);
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   overflow-y: auto;
-  animation: modalSlideIn 0.3s ease;
+  animation: fadeInUp 0.3s ease;
 }
 
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-header {
+.money-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.modal-header h2 {
+.money-modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-.modal-close {
+.money-modal-close {
   background: none;
   border: none;
   font-size: 2rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0;
   width: 32px;
   height: 32px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -357,39 +399,39 @@ urchase Card Styles */
   transition: all 0.2s ease;
 }
 
-.modal-close:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+.money-modal-close:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
-.modal-close:disabled {
+.money-modal-close:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.modal-body {
+.money-modal-body {
   padding: 1.5rem;
 }
 
-.modal-footer {
+.money-modal-footer {
   display: flex;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--color-border);
 }
 
-.modal-footer button {
+.money-modal-footer button {
   flex: 1;
 }
 
-@media (max-width: 640px) {
-  .modal-content {
+@media (max-width: 480px) {
+  .money-modal-content {
     max-height: 95vh;
   }
   
-  .modal-header,
-  .modal-body,
-  .modal-footer {
+  .money-modal-header,
+  .money-modal-body,
+  .money-modal-footer {
     padding: 1rem;
   }
   

@@ -10,3 +10,8 @@ entrypoint = "functions/create-gcash-payment/index.js"
 [functions.paymongo-webhook]
 verify_jwt = true
 entrypoint = "functions/paymongo-webhook/index.js"
+
+# Fonction de validation de code de parrainage
+[functions.validate-referral]
+verify_jwt = false
+entrypoint = "functions/validate-referral/index.js"

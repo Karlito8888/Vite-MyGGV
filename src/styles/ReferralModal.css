@@ -1,0 +1,320 @@
+/* Referral Modal Styles - Suit la politique de style de index.css et CSS-REFERENCE.md */
+/* Utilise les variables CSS globales et les composants UI (Button, Card) */
+
+.referral-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-overlay);
+  padding: 1rem;
+}
+
+.referral-modal {
+  background: var(--color-background);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.referral-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.referral-modal-close:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.referral-modal h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.referral-subtitle {
+  color: var(--color-text-secondary);
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.referral-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+/* QR Code Section */
+.referral-qr-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.qr-code-container {
+  display: inline-block;
+  padding: 1.5rem;
+  background: var(--color-background);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-border);
+}
+
+.qr-code-container svg {
+  display: block;
+  border-radius: 8px;
+}
+
+.qr-instruction {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Referral Code Section */
+.referral-code-section {
+  margin-bottom: 2rem;
+}
+
+.referral-code-section label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.referral-code-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.referral-code {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Bouton copie - utilise le composant Button.jsx */
+
+/* Stats Section */
+.referral-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.referral-stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.referral-stat-value {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.referral-stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.2;
+}
+
+/* How it works */
+.referral-how-it-works {
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.referral-how-it-works h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.referral-how-it-works ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.referral-how-it-works li {
+  margin-bottom: 0.5rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.referral-how-it-works strong {
+  color: var(--color-primary);
+}
+
+/* Share Button - utilise le composant Button.jsx */
+
+.referral-share-message {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Referral List */
+.referral-list {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.referral-list h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.referral-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--color-surface);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--color-border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.referral-list-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.referral-list-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.referral-list-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.referral-list-info {
+  flex: 1;
+}
+
+.referral-list-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.referral-list-date {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.referral-list-status {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.referral-list-status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.referral-list-status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* Responsive - Mobile First */
+@media (min-width: 481px) {
+  .referral-modal {
+    padding: 2rem;
+  }
+
+  .referral-modal h2 {
+    font-size: 1.75rem;
+  }
+
+  .referral-code {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .referral-modal h2 {
+    font-size: 2rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .referral-modal,
+  .referral-list-item {
+    animation: none;
+    transition: none;
+  }
+}

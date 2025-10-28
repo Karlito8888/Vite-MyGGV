@@ -1,5 +1,4 @@
 import { supabase, executeQuery } from './baseService'
-import { getAuthenticatedUserId } from '../utils/authHelpers'
 
 /**
  * Messages Header Service (Pinned/Featured Messages)

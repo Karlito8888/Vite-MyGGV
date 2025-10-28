@@ -1,9 +1,8 @@
+/* Onboarding Styles - Suit la politique de style de index.css et CSS-REFERENCE.md */
 /* MOBILE FIRST - Base styles for 320px+ */
+/* Structure de base héritée de index.css */
+
 .page-container {
-  padding: 1rem;
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,28 +11,6 @@
 
 .page-content {
   max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
-  animation: fadeInUp 0.4s ease;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.page-header h2 {
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-
-.page-subtitle {
-  color: var(--color-text-secondary);
-  font-size: 0.9375rem;
-  margin-top: 0.5rem;
 }
 
 .onboarding-form {
@@ -196,7 +173,8 @@
 }
 
 /* Loader Styles - MOBILE FIRST */
-.loader-wrapper {
+/* Utilise .loader-wrapper de index.css avec ajustements spécifiques */
+.onboarding-form .loader-wrapper {
   width: 100%;
   max-width: 400px;
   padding: 1.5rem 1rem;
@@ -204,8 +182,6 @@
   border-radius: 0.75rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--color-border);
-  position: relative;
-  overflow: hidden;
 }
 
 .loader-text {
@@ -218,27 +194,8 @@
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* Dark mode adjustments */
-:root.dark .loader-wrapper {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  background: var(--color-surface);
-}
-
 /* Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .page-container {
-    padding: 1.5rem;
-  }
-
-  .page-header h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .page-subtitle {
-    font-size: 1rem;
-  }
-
   .onboarding-form {
     margin-top: 1.75rem;
   }
@@ -268,20 +225,6 @@
 
 /* Tablets and larger (769px+) */
 @media (min-width: 769px) {
-  .page-container {
-    padding: 2rem;
-    max-width: 900px;
-  }
-
-  .page-header h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .page-subtitle {
-    font-size: 1.0625rem;
-  }
-
   .onboarding-form {
     margin-top: 2rem;
   }
@@ -333,9 +276,46 @@
   }
 }
 
-/* Desktop (1024px+) */
-@media (min-width: 1024px) {
-  .page-container {
-    max-width: 1000px;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .page-content,
+  .referral-success-banner {
+    animation: none;
+  }
+}
+
+/* Referral Success Banner */
+.referral-success-banner {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 2px solid #28a745;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #155724;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  animation: slideInBounce 0.5s ease-out;
+}
+
+@keyframes slideInBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .referral-success-banner {
+    font-size: 0.9rem;
+    padding: 0.875rem 1rem;
   }
 }
