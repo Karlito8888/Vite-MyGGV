@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useId } from 'react'
 import { BeatLoader } from 'react-spinners'
-import { Camera, Trash2, Upload } from 'lucide-react'
+import { Camera, Upload } from 'lucide-react'
 import ImageCropper from '../ImageCropper'
 import { avatarService } from '../../services/avatarService'
 import './AvatarUploader.css'
@@ -141,14 +141,7 @@ function AvatarUploader({
     fileInputRef.current?.click()
   }
 
-  const handleRemove = () => {
-    if (confirm('Remove profile picture?')) {
-      setPreviewUrl(null)
-      if (onUploadSuccess) {
-        onUploadSuccess('')
-      }
-    }
-  }
+
 
   const fallbackText = (fallback && /[a-zA-Z]/.test(fallback[0]))
     ? fallback[0].toUpperCase()
@@ -220,20 +213,7 @@ function AvatarUploader({
           autoComplete="off"
         />
 
-        {/* Remove Button */}
-        {previewUrl && !imageError && !isUploading && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleRemove()
-            }}
-            className="avatar-uploader__remove"
-            title="Remove picture"
-          >
-            <Trash2 size={size === 'small' ? 14 : 18} />
-          </button>
-        )}
+
       </div>
 
       {/* Image Cropper Modal */}

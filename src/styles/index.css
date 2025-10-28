@@ -440,6 +440,7 @@ body.sidebar-open {
     transform: rotate(360deg);
   }
 }
+
 /* Modal S
 tyles */
 .modal-overlay {
@@ -478,7 +479,7 @@ tyles */
     padding: 1rem;
     max-width: 100%;
   }
-  
+
   .modal-content h3 {
     font-size: 1.125rem;
   }

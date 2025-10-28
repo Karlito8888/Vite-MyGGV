@@ -1,0 +1,216 @@
+/* Messages Page Styles - MOBILE FIRST */
+/* Common page structure inherited from index.css */
+
+/* Messages Grid */
+.messages-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+}
+
+.message-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Coins Balance */
+.coins-balance {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+}
+
+.coins-icon {
+    font-size: 1.25rem;
+}
+
+.coins-text {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+}
+
+.coins-text strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Message Form */
+.message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message-form textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Duration Selector */
+.duration-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.duration-label {
+    color: var(--color-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.duration-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.duration-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.875rem;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    min-height: 48px;
+}
+
+.duration-option:hover:not(.disabled) {
+    border-color: var(--color-primary);
+    background: rgba(91, 196, 109, 0.05);
+}
+
+.duration-option.active {
+    border-color: var(--color-primary);
+    background: rgba(91, 196, 109, 0.1);
+}
+
+.duration-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.duration-time {
+    color: var(--color-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.duration-cost {
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+}
+
+.duration-insufficient {
+    color: var(--color-error-text, #ef4444);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.message-warning {
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Private Messages Info */
+.private-messages-info {
+    margin-bottom: 1.5rem;
+}
+
+.info-text {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.features-list li {
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    padding-left: 0.25rem;
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+    .messages-grid {
+        gap: 1.5rem;
+    }
+
+    .message-form {
+        gap: 1.25rem;
+    }
+
+    .duration-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .info-text {
+        font-size: 1rem;
+    }
+
+    .features-list li {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+    .messages-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .message-form {
+        gap: 1.5rem;
+    }
+}
+
+/* Large Desktop (1024px+) - No specific Messages styles needed */
+/*
+ Character counter */
+.message-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.character-counter {
+  font-size: 0.875rem;
+  color: var(--color-muted, #6c757d);
+  text-align: right;
+  margin-top: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.character-counter.warning {
+  color: var(--color-warning, #ffc107);
+  font-weight: 500;
+}
+
+.character-counter.error {
+  color: var(--color-error, #dc3545);
+  font-weight: 600;
+}

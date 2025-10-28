@@ -1,4 +1,4 @@
-/* ImageUploader Component Styles */
+/* ImageUploader Component Styles - MOBILE FIRST (320px+) */
 
 .image-uploader {
   width: 100%;
@@ -9,7 +9,7 @@
   position: relative;
   border: 2px dashed var(--color-border);
   border-radius: 0.75rem;
-  padding: 2rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -47,30 +47,30 @@
 
 .image-uploader-icon {
   margin: 0 auto 0.5rem;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   color: var(--color-text-secondary);
 }
 
 .image-uploader-text {
   margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--color-text-primary);
   font-family: inherit;
 }
 
 .image-uploader-counter {
   margin-top: 0.25rem;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--color-text-secondary);
   font-family: inherit;
 }
 
-/* Image grid - 3 columns, 2 rows */
+/* Image grid - Mobile First: 2 columns */
 .image-uploader-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
   margin-top: 1rem;
 }
 
@@ -90,28 +90,24 @@
 
 .image-uploader-remove {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.375rem;
+  right: 0.375rem;
   border-radius: 50%;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s ease;
   min-height: 32px;
   min-width: 32px;
   padding: 0.5rem;
 }
 
-.image-uploader-item:hover .image-uploader-remove {
-  opacity: 1;
-}
-
 .image-uploader-label {
   position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
+  bottom: 0.375rem;
+  left: 0.375rem;
   padding: 0.25rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-family: inherit;
   border-radius: 0.25rem;
   backdrop-filter: blur(4px);
@@ -120,17 +116,96 @@
 /* Empty state */
 .image-uploader-empty {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   color: var(--color-text-secondary);
 }
 
 .image-uploader-empty-icon {
   margin: 0 auto 0.5rem;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .image-uploader-empty-text {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-family: inherit;
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .image-uploader-dropzone {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .image-uploader-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .image-uploader-text {
+    font-size: 0.875rem;
+  }
+
+  .image-uploader-counter {
+    font-size: 0.75rem;
+  }
+
+  .image-uploader-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.875rem;
+  }
+
+  .image-uploader-remove {
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+  }
+
+  .image-uploader-item:hover .image-uploader-remove {
+    opacity: 1;
+  }
+
+  .image-uploader-label {
+    bottom: 0.5rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .image-uploader-empty {
+    padding: 1.75rem 1rem;
+  }
+
+  .image-uploader-empty-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .image-uploader-empty-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .image-uploader-dropzone {
+    padding: 2rem;
+  }
+
+  .image-uploader-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .image-uploader-grid {
+    gap: 1rem;
+  }
+
+  .image-uploader-empty {
+    padding: 2rem 1rem;
+  }
+
+  .image-uploader-empty-icon {
+    width: 3rem;
+    height: 3rem;
+  }
 }

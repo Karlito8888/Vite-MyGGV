@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import ReactCrop from 'react-image-crop'
 import Button from './ui/Button'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -79,27 +80,13 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
 
   if (!imgSrc) return null
 
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '1rem'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '8px',
+  const modalContent = (
+    <div className="modal-overlay" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+      <div className="modal-content" style={{
         maxWidth: '600px',
-        width: '100%',
         maxHeight: '90vh',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        padding: 0
       }}>
         <div style={{
           display: 'flex',
@@ -111,8 +98,8 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
           <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#1f2937' }}>
             Crop Your Avatar
           </h3>
-          <Button 
-            type="button" 
+          <Button
+            type="button"
             onClick={onCancel}
             variant="outline"
             size="small"
@@ -129,8 +116,8 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
             ×
           </Button>
         </div>
-        
-        <div style={{ padding: '1.5rem' }}>
+
+        <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <ReactCrop
             crop={crop}
             onChange={setCrop}
@@ -143,7 +130,7 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
               alt="crop"
               src={imgSrc}
               onLoad={onImageLoad}
-              style={{ maxWidth: '100%' }}
+              style={{ maxWidth: '100%', display: 'block' }}
             />
           </ReactCrop>
         </div>
@@ -175,6 +162,8 @@ function ImageCropper({ imageFile, onCrop, onCancel }) {
       </div>
     </div>
   )
+
+  return createPortal(modalContent, document.body)
 }
 
 export default ImageCropper

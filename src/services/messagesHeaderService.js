@@ -65,29 +65,33 @@ export async function getHeaderMessageById(id) {
 }
 
 /**
- * Create a header message
+ * Create a header message with coin payment
  * @param {Object} messageData - Message data
  * @param {string} messageData.message - Message content
- * @param {number} [messageData.coins_spent=0] - Coins spent for this message
- * @param {string} [messageData.expires_at] - Expiration timestamp
+ * @param {number} messageData.duration_hours - Duration in hours (12, 24, or 168)
  * @returns {Promise<{data: Object|null, error: Error|null}>}
  */
 export async function createHeaderMessage(messageData) {
-  const { userId, error } = await getAuthenticatedUserId()
+  const { message, duration_hours } = messageData
+
+  const { data, error } = await supabase.rpc('publish_header_message_with_payment', {
+    p_message: message,
+    p_duration_hours: duration_hours
+  })
+
   if (error) {
     return { data: null, error }
   }
 
-  return executeQuery(
-    supabase
-      .from('messages_header')
-      .insert({
-        ...messageData,
-        user_id: userId
-      })
-      .select()
-      .single()
-  )
+  // Check if the function returned an error
+  if (data && !data.success) {
+    return { 
+      data: null, 
+      error: new Error(data.error || 'Failed to publish message')
+    }
+  }
+
+  return { data, error: null }
 }
 
 /**

@@ -1,4 +1,4 @@
-/* Input Component Styles */
+/* Input Component Styles - MOBILE FIRST (320px+) */
 
 .input-field {
   display: flex;
@@ -14,7 +14,7 @@
 
 .input {
   min-height: 3rem;
-  font-size: 1rem;
+  font-size: 16px;
   transition: all 0.2s ease;
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
@@ -33,12 +33,6 @@ textarea.input {
   min-height: 6rem;
 }
 
-@media (min-width: 640px) {
-  .input {
-    font-size: 0.875rem;
-  }
-}
-
 .input:focus {
   outline: none;
   border-color: var(--color-input-focus);
@@ -49,4 +43,18 @@ textarea.input {
   font-size: 0.75rem;
   color: var(--color-error-text);
   margin-top: 0.25rem;
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .input {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .input {
+    font-size: 1rem;
+  }
 }

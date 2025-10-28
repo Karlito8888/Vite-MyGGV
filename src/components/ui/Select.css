@@ -1,10 +1,10 @@
-/* Select Component Styles */
+/* Select Component Styles - MOBILE FIRST (320px+) */
 
 .select-input {
   width: 100%;
   min-height: 48px;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
-  font-size: 1rem;
+  font-size: 16px;
   font-family: inherit;
   color: var(--color-text-primary);
   background-color: var(--color-surface);
@@ -37,7 +37,7 @@
 }
 
 .select-error {
-  border-color: #ef4444;
+  border-color: var(--color-error-text);
 }
 
 .select-error:focus {
@@ -51,7 +51,7 @@
 }
 
 .required-indicator {
-  color: #ef4444;
+  color: var(--color-error-text);
   font-weight: 600;
 }
 
@@ -63,16 +63,16 @@
   line-height: 1.4;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
   .select-input {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    font-size: 0.9375rem;
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
   .select-input {
-    font-size: 16px; /* Prevent zoom on iOS */
+    font-size: 1rem;
   }
 }

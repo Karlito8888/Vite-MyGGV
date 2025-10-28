@@ -10,6 +10,7 @@ const Input = forwardRef(({
     helperText,
     as = 'input',
     autoComplete,
+    required,
     ...props
 }, ref) => {
     const generatedId = useId()
@@ -50,6 +51,7 @@ const Input = forwardRef(({
             {label && (
                 <label htmlFor={inputId} className="input-label">
                     {label}
+                    {required && <span className="required-indicator"> *</span>}
                 </label>
             )}
             <Component
@@ -60,6 +62,7 @@ const Input = forwardRef(({
                 style={{ fontSize: '16px' }}
                 aria-invalid={error ? 'true' : 'false'}
                 autoComplete={getAutoComplete()}
+                required={required}
                 {...props}
             />
             {helperText && !error && (

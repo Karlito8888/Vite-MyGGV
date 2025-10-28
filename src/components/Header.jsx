@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
+import UserProfileModal from "./UserProfileModal";
 import { useUser } from '../contexts'
 import { supabase } from '../utils/supabase'
 import { BeatLoader } from "react-spinners";
@@ -21,6 +22,7 @@ function Header() {
   const subscriptionRef = useRef(null);
   const [subscriptionError, setSubscriptionError] = useState(null);
   const loadingStartTimeRef = useRef(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   // Avatar refs and state
   const avatarElementRef = useRef(null);
@@ -243,26 +245,26 @@ function Header() {
           currentMessage?.user?.id && (
             <div
               ref={avatarElementRef}
-              className="header-avatar"
+              className="header-avatar header-avatar--clickable"
               style={{ opacity: 0 }}
-              role="img"
-              aria-label={`${currentMessage.user.full_name ||
-                currentMessage.user.email ||
-                "User"
-                } profile avatar`}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedUserId(currentMessage?.user?.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedUserId(currentMessage?.user?.id);
+                }
+              }}
+              aria-label={`View ${currentMessage.user.username || "User"}'s profile`}
             >
               <Avatar
                 src={currentMessage?.user?.avatar_url || null}
                 userId={currentMessage?.user?.id}
-                alt={`${currentMessage?.user?.full_name ||
-                  currentMessage?.user?.email ||
-                  "User"
-                  } avatar`}
+                alt={`${currentMessage?.user?.username || "User"} avatar`}
                 size="small"
                 fallback={
-                  currentMessage?.user?.full_name ||
                   currentMessage?.user?.username ||
-                  currentMessage?.user?.email ||
                   "U"
                 }
                 showPresence={true}
@@ -309,6 +311,12 @@ function Header() {
           )}
         </div>
       </div>
+      {selectedUserId && (
+        <UserProfileModal
+          userId={selectedUserId}
+          onClose={() => setSelectedUserId(null)}
+        />
+      )}
     </header>
   );
 }

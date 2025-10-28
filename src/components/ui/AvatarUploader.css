@@ -1,4 +1,4 @@
-/* Avatar Uploader Styles */
+/* Avatar Uploader Styles - MOBILE FIRST (320px+) */
 
 .avatar-uploader {
   position: relative;
@@ -18,7 +18,6 @@
 .avatar-uploader__container:hover {
   border-color: var(--color-primary);
   transform: scale(1.02);
-  transition: all 0.2s ease;
 }
 
 .avatar-uploader__container.dragging {
@@ -26,7 +25,6 @@
   border-style: dashed;
   border-width: 3px;
   transform: scale(1.05);
-  transition: all 0.2s ease;
 }
 
 .avatar-uploader__container.uploading {
@@ -34,20 +32,20 @@
   opacity: 0.7;
 }
 
-/* Size Variants */
+/* Size Variants - Mobile First (320px+) */
 .avatar-uploader--small .avatar-uploader__container {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
 }
 
 .avatar-uploader--medium .avatar-uploader__container {
-  width: 120px;
-  height: 120px;
+  width: 96px;
+  height: 96px;
 }
 
 .avatar-uploader--large .avatar-uploader__container {
-  width: 160px;
-  height: 160px;
+  width: 128px;
+  height: 128px;
 }
 
 /* Preview */
@@ -75,18 +73,18 @@
 }
 
 .avatar-uploader__fallback-text {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 600;
   color: white;
   user-select: none;
 }
 
 .avatar-uploader--small .avatar-uploader__fallback-text {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .avatar-uploader--medium .avatar-uploader__fallback-text {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
 }
 
 /* Overlay */
@@ -102,12 +100,10 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
-.avatar-uploader__container:hover .avatar-uploader__overlay {
-  opacity: 1;
-}
-
+.avatar-uploader__container:hover .avatar-uploader__overlay,
 .avatar-uploader__container.uploading .avatar-uploader__overlay {
   opacity: 1;
 }
@@ -122,32 +118,25 @@
 
 .avatar-uploader__icon {
   flex-shrink: 0;
-}
-
-.avatar-uploader--small .avatar-uploader__icon {
   width: 20px;
   height: 20px;
 }
 
 .avatar-uploader--medium .avatar-uploader__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.avatar-uploader--large .avatar-uploader__icon {
   width: 28px;
   height: 28px;
 }
 
-.avatar-uploader--large .avatar-uploader__icon {
-  width: 32px;
-  height: 32px;
-}
-
 .avatar-uploader__text {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.avatar-uploader--small .avatar-uploader__text {
-  font-size: 0.75rem;
 }
 
 .avatar-uploader__loading {
@@ -218,8 +207,8 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #ef4444;
   border: 2px solid white;
@@ -229,38 +218,110 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-height: 32px;
 }
 
 .avatar-uploader__remove:hover {
   background: #dc2626;
   transform: scale(1.1);
-  transition: all 0.2s ease;
 }
 
 .avatar-uploader__remove svg {
   color: white;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .avatar-uploader--small .avatar-uploader__remove {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
 }
 
 .avatar-uploader--small .avatar-uploader__remove svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .avatar-uploader--large .avatar-uploader__container {
-    width: 140px;
-    height: 140px;
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .avatar-uploader--small .avatar-uploader__container {
+    width: 80px;
+    height: 80px;
   }
 
   .avatar-uploader--medium .avatar-uploader__container {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-uploader--large .avatar-uploader__container {
+    width: 160px;
+    height: 160px;
+  }
+
+  .avatar-uploader__fallback-text {
+    font-size: 2.5rem;
+  }
+
+  .avatar-uploader--small .avatar-uploader__fallback-text {
+    font-size: 1.5rem;
+  }
+
+  .avatar-uploader--medium .avatar-uploader__fallback-text {
+    font-size: 2rem;
+  }
+
+  .avatar-uploader__text {
+    font-size: 0.875rem;
+  }
+
+  .avatar-uploader__icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .avatar-uploader--medium .avatar-uploader__icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .avatar-uploader--large .avatar-uploader__icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .avatar-uploader__remove {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+
+  .avatar-uploader__remove svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .avatar-uploader--small .avatar-uploader__remove {
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .avatar-uploader--small .avatar-uploader__remove svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .avatar-uploader__fallback-text {
+    font-size: 3rem;
+  }
+
+  .avatar-uploader--medium .avatar-uploader__fallback-text {
+    font-size: 2.5rem;
   }
 }

@@ -192,12 +192,6 @@ export default function Login() {
     <div className="login-container">
       <div className="login-wrapper">
         <div className="login-header">
-          <div className="login-logo">
-            <img
-              src="/src/assets/logos/ggv-100.png"
-              alt="GGV"
-            />
-          </div>
           <div className="login-title-section">
             <h2 className="login-title">
               Welcome to MyGGV

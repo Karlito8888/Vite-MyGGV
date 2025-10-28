@@ -140,11 +140,35 @@
   cursor: not-allowed;
 }
 
-/* Progressive Enhancement for larger screens */
-@media (min-width: 641px) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .image-cropper-modal {
+    max-width: 500px;
+    margin: 0;
+    max-height: 92vh;
+  }
+  
+  .image-cropper-container {
+    height: 280px;
+  }
+  
+  .image-cropper-header {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .image-cropper-content {
+    padding: 1.25rem;
+  }
+  
+  .image-cropper-actions {
+    padding: 0.875rem 1.25rem 1.25rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
   .image-cropper-modal {
     max-width: 600px;
-    margin: 0;
     max-height: 90vh;
   }
   

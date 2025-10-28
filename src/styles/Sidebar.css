@@ -263,10 +263,60 @@ SIDEBAR NAVIGATION - UNIFIÉE ET OPTIMISÉE
   }
 }
 
-/* Desktop - Adjust sidebar width */
-@media (min-width: 768px) {
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .sidebar {
+    max-width: 90vw;
+  }
+
+  .sidebar-navigation {
+    padding: 1.25rem;
+  }
+
+  .sidebar-navigation .nav-scroll-content {
+    gap: 1.125rem;
+  }
+
+  .sidebar-navigation .nav-link {
+    padding: 1.125rem;
+  }
+
+  .sidebar-navigation .nav-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .sidebar-navigation .nav-link span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
   .sidebar {
     width: 320px;
+    max-width: 320px;
+  }
+
+  .sidebar-navigation {
+    padding: 1.5rem;
+  }
+
+  .sidebar-navigation .nav-scroll-content {
+    gap: 1.25rem;
+  }
+
+  .sidebar-navigation .nav-link {
+    padding: 1.25rem;
+  }
+
+  .sidebar-navigation .nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .sidebar-navigation .nav-link span {
+    font-size: 0.8rem;
   }
 }
 

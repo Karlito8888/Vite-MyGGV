@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import {
     createBusinessOutside,
     updateBusinessOutside,
-    listMyBusinessesOutside
+    listMyBusinessesOutside,
+    deleteBusinessOutside
 } from "../../services/userBusinessOutsideService";
 import { listBusinessOutsideCategories, createBusinessOutsideCategory } from "../../services/businessOutsideCategoriesService";
 import Card, { CardHeader, CardTitle, CardContent } from "../ui/Card";
@@ -119,6 +120,8 @@ function BusinessOutsideManager({ profileId }) {
     const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
     const [creatingCategory, setCreatingCategory] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(businessOutsideSchema),
@@ -287,7 +290,39 @@ function BusinessOutsideManager({ profileId }) {
         }
     };
 
+    const handleDelete = async () => {
+        if (!existingBusiness) return;
+
+        setDeleting(true);
+        try {
+            const result = await deleteBusinessOutside(existingBusiness.id);
+
+            if (result.error) throw result.error;
+
+            toast.success("Business deleted successfully! 🗑️", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+
+            // Reset form and state
+            setExistingBusiness(null);
+            setSelectedCategory("");
+            setPhotos([]);
+            form.reset();
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error("Error deleting business:", error);
+            toast.error("Error deleting business. Please try again.", {
+                position: "top-right",
+                autoClose: 5000,
+            });
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     return (
+        <>
         <Card>
             <CardHeader>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
@@ -330,8 +365,9 @@ function BusinessOutsideManager({ profileId }) {
                         </Button>
                     </div>
                     <Input
-                        label="Business Name *"
+                        label="Business Name"
                         type="text"
+                        required
                         {...form.register("business_name")}
                         error={form.formState.errors.business_name?.message}
                     />
@@ -459,60 +495,111 @@ function BusinessOutsideManager({ profileId }) {
                         bucket="business-outside-photos"
                         folder="uploads"
                     />
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        loading={saving}
-                        disabled={saving}
-                    >
-                        Save Business
-                    </Button>
-                </form>
-
-                {showNewCategoryModal && (
-                    <div
-                        className="modal-overlay"
-                        onClick={() => setShowNewCategoryModal(false)}
-                    >
-                        <div
-                            className="modal-content"
-                            onClick={(e) => e.stopPropagation()}
+                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            loading={saving}
+                            disabled={saving}
+                            style={{ flex: 1 }}
                         >
-                            <h3>Create New Category</h3>
-                            <Input
-                                label="Category Name"
-                                type="text"
-                                value={newCategoryName}
-                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                placeholder="Enter category name"
-                                autoFocus
-                            />
-                            <div
-                                style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}
+                            Save Business
+                        </Button>
+                        {existingBusiness && (
+                            <Button
+                                type="button"
+                                variant="danger"
+                                onClick={() => setShowDeleteModal(true)}
+                                disabled={saving || deleting}
+                                style={{ flex: 1 }}
                             >
-                                <Button
-                                    type="button"
-                                    variant="primary"
-                                    onClick={handleCreateCategory}
-                                    loading={creatingCategory}
-                                    disabled={creatingCategory}
-                                >
-                                    Create
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={() => setShowNewCategoryModal(false)}
-                                    disabled={creatingCategory}
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </div>
+                                Delete Business
+                            </Button>
+                        )}
                     </div>
-                )}
+                </form>
             </CardContent>
         </Card>
+
+        {showNewCategoryModal && (
+            <div
+                className="modal-overlay"
+                onClick={() => setShowNewCategoryModal(false)}
+            >
+                <div
+                    className="modal-content"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <h3>Create New Category</h3>
+                    <Input
+                        label="Category Name"
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        placeholder="Enter category name"
+                        autoFocus
+                    />
+                    <div
+                        style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}
+                    >
+                        <Button
+                            type="button"
+                            variant="primary"
+                            onClick={handleCreateCategory}
+                            loading={creatingCategory}
+                            disabled={creatingCategory}
+                        >
+                            Create
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setShowNewCategoryModal(false)}
+                            disabled={creatingCategory}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {showDeleteModal && (
+            <div
+                className="modal-overlay"
+                onClick={() => setShowDeleteModal(false)}
+            >
+                <div
+                    className="modal-content"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <h3>Delete Business</h3>
+                    <p>Are you sure you want to delete this business? This action cannot be undone.</p>
+                    <div
+                        style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}
+                    >
+                        <Button
+                            type="button"
+                            variant="danger"
+                            onClick={handleDelete}
+                            loading={deleting}
+                            disabled={deleting}
+                        >
+                            Delete
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setShowDeleteModal(false)}
+                            disabled={deleting}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }
 

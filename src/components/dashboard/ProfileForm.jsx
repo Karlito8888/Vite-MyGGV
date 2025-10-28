@@ -279,6 +279,7 @@ function ProfileForm({ profile, refreshProfile }) {
                     <Input
                         label="Username"
                         type="text"
+                        required
                         {...form.register("username")}
                         error={form.formState.errors.username?.message}
                     />

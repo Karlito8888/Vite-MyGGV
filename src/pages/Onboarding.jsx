@@ -236,19 +236,18 @@ function Onboarding() {
   // Show loader while fetching profile data (minimum 3 seconds)
   if (isLoading) {
     return (
-      <div className="page-container">
-        <div className="page-content">
-          <div className="loader-wrapper">
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%'
-            }}>
-              <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
-            </div>
-          </div>
-        </div>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'var(--color-background, #fff)'
+      }}>
+        <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
       </div>
     );
   }
@@ -267,194 +266,194 @@ function Onboarding() {
           <div className="error-message">{errors.root.message}</div>
         )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
-            <div className="form-group">
-              <label htmlFor="username">Username *</label>
-              <Controller
-                name="username"
-                control={control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    id="username"
-                    placeholder="Choose a username"
-                    maxLength="50"
-                    className={errors.username ? "error" : ""}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      if (errors.username) {
-                        clearErrors("username");
-                      }
-                    }}
-                  />
-                )}
-              />
-              {errors.username && (
-                <span className="error-text">{errors.username.message}</span>
-              )}
-              <small>
-                Required: Letters, numbers, underscores, spaces, and hyphens (min 3 characters)
-              </small>
-            </div>
-
-            <div className="form-group">
-              <label>Profile Picture *</label>
-              <div className="avatar-upload-container">
-                <AvatarUploader
-                  currentAvatar={currentAvatar}
-                  userId={user.id}
-                  onUploadSuccess={handleAvatarUploadSuccess}
-                  fallback={watch("username") || "U"}
-                  size="large"
+        <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
+          <div className="form-group">
+            <label htmlFor="username">Username *</label>
+            <Controller
+              name="username"
+              control={control}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="text"
+                  id="username"
+                  placeholder="Choose a username"
+                  maxLength="50"
+                  className={errors.username ? "error" : ""}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (errors.username) {
+                      clearErrors("username");
+                    }
+                  }}
                 />
-                <div className="avatar-upload-info">
-                  <p>Drag & drop or click to upload your profile picture</p>
-                  <small>Required: Square image, at least 200x200px, max 5MB</small>
-                </div>
+              )}
+            />
+            {errors.username && (
+              <span className="error-text">{errors.username.message}</span>
+            )}
+            <small>
+              Required: Letters, numbers, underscores, spaces, and hyphens (min 3 characters)
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label>Profile Picture *</label>
+            <div className="avatar-upload-container">
+              <AvatarUploader
+                currentAvatar={currentAvatar}
+                userId={user.id}
+                onUploadSuccess={handleAvatarUploadSuccess}
+                fallback={watch("username") || "U"}
+                size="large"
+              />
+              <div className="avatar-upload-info">
+                <p>Drag & drop or click to upload your profile picture</p>
+                <small>Required: Square image, at least 200x200px, max 5MB</small>
               </div>
-              {errors.avatar_url && (
-                <span className="error-text">{errors.avatar_url.message}</span>
-              )}
-              <Controller
-                name="avatar_url"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
             </div>
+            {errors.avatar_url && (
+              <span className="error-text">{errors.avatar_url.message}</span>
+            )}
+            <Controller
+              name="avatar_url"
+              control={control}
+              render={({ field }) => <input {...field} type="hidden" />}
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="block">Block *</label>
-              <Controller
-                name="block"
-                control={control}
-                render={({ field }) => (
-                  <div className="wheel-picker-container">
-                    {loadingBlocks ? (
-                      <div className="picker-loading">Loading blocks...</div>
-                    ) : availableBlocks.length > 0 ? (
-                      <Picker
-                        value={{ block: field.value || "" }}
-                        onChange={(newValue) => {
-                          field.onChange(newValue.block);
-                          if (errors.block) {
-                            clearErrors("block");
-                          }
-                        }}
-                        wheelMode="natural"
-                        height={200}
-                        itemHeight={40}
-                      >
-                        <Picker.Column name="block">
-                          {availableBlocks.map((block, index) => (
-                            <Picker.Item
-                              key={`block-${index}-${block}`}
-                              value={block}
-                            >
-                              {({ selected }) => (
-                                <div
-                                  className={`picker-item ${selected ? "selected" : ""}`}
-                                >
-                                  {block}
-                                </div>
-                              )}
-                            </Picker.Item>
-                          ))}
-                        </Picker.Column>
-                      </Picker>
-                    ) : (
-                      <div className="picker-placeholder">
-                        No blocks available
-                      </div>
-                    )}
-                  </div>
-                )}
-              />
-              {errors.block && (
-                <span className="error-text">{errors.block.message}</span>
+          <div className="form-group">
+            <label htmlFor="block">Block *</label>
+            <Controller
+              name="block"
+              control={control}
+              render={({ field }) => (
+                <div className="wheel-picker-container">
+                  {loadingBlocks ? (
+                    <div className="picker-loading">Loading blocks...</div>
+                  ) : availableBlocks.length > 0 ? (
+                    <Picker
+                      value={{ block: field.value || "" }}
+                      onChange={(newValue) => {
+                        field.onChange(newValue.block);
+                        if (errors.block) {
+                          clearErrors("block");
+                        }
+                      }}
+                      wheelMode="natural"
+                      height={200}
+                      itemHeight={40}
+                    >
+                      <Picker.Column name="block">
+                        {availableBlocks.map((block, index) => (
+                          <Picker.Item
+                            key={`block-${index}-${block}`}
+                            value={block}
+                          >
+                            {({ selected }) => (
+                              <div
+                                className={`picker-item ${selected ? "selected" : ""}`}
+                              >
+                                {block}
+                              </div>
+                            )}
+                          </Picker.Item>
+                        ))}
+                      </Picker.Column>
+                    </Picker>
+                  ) : (
+                    <div className="picker-placeholder">
+                      No blocks available
+                    </div>
+                  )}
+                </div>
               )}
-              {blocksError && (
-                <span className="error-text">{blocksError}</span>
-              )}
-              <small>Select your block number from available locations</small>
-            </div>
+            />
+            {errors.block && (
+              <span className="error-text">{errors.block.message}</span>
+            )}
+            {blocksError && (
+              <span className="error-text">{blocksError}</span>
+            )}
+            <small>Select your block number from available locations</small>
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="lot">Lot *</label>
-              <Controller
-                name="lot"
-                control={control}
-                render={({ field }) => (
-                  <div
-                    className={`wheel-picker-container ${!selectedBlock ? "disabled" : ""}`}
-                  >
-                    {!selectedBlock ? (
-                      <div className="picker-placeholder">
-                        Select a block first
-                      </div>
-                    ) : loadingLots ? (
-                      <div className="picker-loading">Loading lots...</div>
-                    ) : availableLots.length > 0 ? (
-                      <Picker
-                        value={{ lot: field.value || "" }}
-                        onChange={(newValue) => {
-                          field.onChange(newValue.lot);
-                          if (errors.lot) {
-                            clearErrors("lot");
-                          }
-                        }}
-                        wheelMode="natural"
-                        height={200}
-                        itemHeight={40}
-                      >
-                        <Picker.Column name="lot">
-                          {availableLots.map((lot, index) => (
-                            <Picker.Item
-                              key={`lot-${index}-${lot}`}
-                              value={lot}
-                            >
-                              {({ selected }) => (
-                                <div
-                                  className={`picker-item ${selected ? "selected" : ""}`}
-                                >
-                                  {lot}
-                                </div>
-                              )}
-                            </Picker.Item>
-                          ))}
-                        </Picker.Column>
-                      </Picker>
-                    ) : (
-                      <div className="picker-placeholder">
-                        No lots available
-                      </div>
-                    )}
-                  </div>
-                )}
-              />
-              {errors.lot && (
-                <span className="error-text">{errors.lot.message}</span>
+          <div className="form-group">
+            <label htmlFor="lot">Lot *</label>
+            <Controller
+              name="lot"
+              control={control}
+              render={({ field }) => (
+                <div
+                  className={`wheel-picker-container ${!selectedBlock ? "disabled" : ""}`}
+                >
+                  {!selectedBlock ? (
+                    <div className="picker-placeholder">
+                      Select a block first
+                    </div>
+                  ) : loadingLots ? (
+                    <div className="picker-loading">Loading lots...</div>
+                  ) : availableLots.length > 0 ? (
+                    <Picker
+                      value={{ lot: field.value || "" }}
+                      onChange={(newValue) => {
+                        field.onChange(newValue.lot);
+                        if (errors.lot) {
+                          clearErrors("lot");
+                        }
+                      }}
+                      wheelMode="natural"
+                      height={200}
+                      itemHeight={40}
+                    >
+                      <Picker.Column name="lot">
+                        {availableLots.map((lot, index) => (
+                          <Picker.Item
+                            key={`lot-${index}-${lot}`}
+                            value={lot}
+                          >
+                            {({ selected }) => (
+                              <div
+                                className={`picker-item ${selected ? "selected" : ""}`}
+                              >
+                                {lot}
+                              </div>
+                            )}
+                          </Picker.Item>
+                        ))}
+                      </Picker.Column>
+                    </Picker>
+                  ) : (
+                    <div className="picker-placeholder">
+                      No lots available
+                    </div>
+                  )}
+                </div>
               )}
-              {lotsError && (
-                <span className="error-text">{lotsError}</span>
-              )}
-              <small>Select your lot number from available locations</small>
-            </div>
+            />
+            {errors.lot && (
+              <span className="error-text">{errors.lot.message}</span>
+            )}
+            {lotsError && (
+              <span className="error-text">{lotsError}</span>
+            )}
+            <small>Select your lot number from available locations</small>
+          </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isSubmitting}
-              style={{
-                width: "100%",
-                maxWidth: "300px",
-                margin: "2rem auto 0",
-                display: "block",
-              }}
-            >
-              Complete Setup
-            </Button>
-          </form>
+          <Button
+            type="submit"
+            variant="primary"
+            loading={isSubmitting}
+            style={{
+              width: "100%",
+              maxWidth: "300px",
+              margin: "2rem auto 0",
+              display: "block",
+            }}
+          >
+            Complete Setup
+          </Button>
+        </form>
       </div>
     </div>
   );

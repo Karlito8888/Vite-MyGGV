@@ -20,23 +20,25 @@
   box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
 }
 
-/* Size variants - Mobile-first */
+/* Size variants - MOBILE FIRST (320px+) */
 .avatar--small {
-  width: 44px;
-  height: 44px;
-  font-size: 14px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 12px;
 }
 
 .avatar--medium {
-  width: 56px;
-  height: 56px;
-  font-size: 20px;
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
 }
 
 .avatar--large {
-  width: 80px;
-  height: 80px;
-  font-size: 32px;
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
 }
 
 /* Image styling */
@@ -107,28 +109,56 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-/* Progressive Enhancement for larger screens */
+/* No hover effect for header avatar */
+.header-avatar-component:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.header-avatar-component.avatar--online:hover {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Fixed size for header avatar - same on all devices */
+.header-avatar-component {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  min-height: 46px !important;
+  font-size: 14px !important;
+}
+
+/* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
+  .avatar--small {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 13px;
+  }
+
   .avatar--medium {
-    width: 60px;
-    height: 60px;
-    font-size: 22px;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
   }
 
   .avatar--large {
-    width: 88px;
-    height: 88px;
-    font-size: 34px;
+    width: 72px;
+    height: 72px;
+    font-size: 28px;
   }
 }
 
+/* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
   .avatar--small {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-    min-width: 32px;
-    min-height: 32px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 14px;
   }
 
   .avatar--medium {
@@ -138,14 +168,18 @@
   }
 
   .avatar--large {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+}
+
+/* Large Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .avatar--large {
     width: 96px;
     height: 96px;
     font-size: 36px;
-  }
-
-  .avatar {
-    min-width: auto;
-    min-height: auto;
   }
 }
 
@@ -164,6 +198,11 @@
 
 .avatar--online:hover {
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Override for header avatar - keep online indicator only */
+.header-avatar-component.avatar--online:hover {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
 }
 
 /* Reduced motion support */

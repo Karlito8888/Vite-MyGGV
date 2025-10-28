@@ -158,3 +158,24 @@ export async function updateDailyCheckin(id) {
       .single()
   )
 }
+
+/**
+ * Get user's coin balance
+ * @param {string} id - Profile UUID
+ * @returns {Promise<{data: number|null, error: Error|null}>}
+ */
+export async function getUserCoins(id) {
+  const { data, error } = await executeQuery(
+    supabase
+      .from('profiles')
+      .select('coins')
+      .eq('id', id)
+      .single()
+  )
+  
+  if (error) {
+    return { data: null, error }
+  }
+  
+  return { data: data?.coins || 0, error: null }
+}

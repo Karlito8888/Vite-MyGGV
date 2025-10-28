@@ -1,3 +1,4 @@
+/* Home Page - MOBILE FIRST (320px+) */
 .home-page {
   width: 100%;
   height: 100%;
@@ -34,36 +35,226 @@
 }
 
 /* Styles pour les popups MapLibre */
+.maplibregl-popup {
+  max-width: none !important;
+}
+
 .maplibregl-popup-content {
   background-color: var(--color-background);
   color: var(--color-text-primary);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   padding: 0;
   border: 1px solid var(--color-border);
-}
-
-.maplibregl-popup-content strong {
-  color: var(--color-text-primary);
-  font-size: 14px;
-}
-
-.maplibregl-popup-content small {
-  color: var(--color-text-secondary);
-  font-size: 12px;
+  min-width: 280px;
+  max-width: 320px;
 }
 
 .maplibregl-popup-tip {
-  border-top-color: var(--color-background);
+  border-top-color: var(--color-background) !important;
+  border-bottom-color: transparent !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: var(--color-background) !important;
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  border-bottom-color: var(--color-background) !important;
+  border-top-color: transparent !important;
 }
 
 .maplibregl-popup-close-button {
   color: var(--color-text-secondary);
-  font-size: 20px;
-  padding: 4px 8px;
+  font-size: 22px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin: 4px;
 }
 
 .maplibregl-popup-close-button:hover {
   background-color: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+/* Contenu du popup personnalisé - MOBILE FIRST (320px+) */
+.location-popup {
+  padding: 0.875rem;
+}
+
+.popup-header {
+  margin-bottom: 0.875rem;
+}
+
+.popup-location-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.popup-location-badge svg {
+  flex-shrink: 0;
+}
+
+.popup-occupants {
+  margin-top: 0.75rem;
+}
+
+.popup-occupants-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.popup-avatars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.popup-avatar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.popup-avatar-item:hover {
+  background-color: var(--color-surface-hover);
+  transform: translateX(2px);
+}
+
+.popup-avatar-item:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.popup-avatar-item .avatar {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.popup-avatar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.popup-avatar-name {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-current-user-badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background-color: #22c55e;
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .location-popup {
+    padding: 1rem;
+  }
+
+  .popup-header {
+    margin-bottom: 1rem;
+  }
+
+  .popup-location-badge {
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .popup-occupants {
+    margin-top: 0.875rem;
+  }
+
+  .popup-occupants-title {
+    font-size: 0.75rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .popup-avatars-list {
+    gap: 0.75rem;
+  }
+
+  .popup-avatar-item {
+    gap: 0.875rem;
+    padding: 0.625rem;
+  }
+
+  .popup-avatar-name {
+    font-size: 0.875rem;
+  }
+
+  .popup-current-user-badge {
+    font-size: 0.6875rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .mapboxgl-popup-content,
+  .maplibregl-popup-content {
+    min-width: 300px;
+    max-width: 350px;
+  }
+
+  .popup-location-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .popup-occupants-title {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .popup-avatars-list {
+    gap: 0.875rem;
+  }
+
+  .popup-avatar-item {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+
+  .popup-avatar-name {
+    font-size: 0.875rem;
+  }
+
+  .popup-current-user-badge {
+    margin-top: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.6875rem;
+  }
 }
