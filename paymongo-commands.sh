@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# 🚀 Commandes utiles pour PayMongo + Supabase
+
+echo "=== PayMongo + Supabase Commands ==="
+echo ""
+
+# Configuration
+echo "📝 1. CONFIGURATION"
+echo "-------------------"
+echo "# Ajouter la clé secrète PayMongo dans Supabase"
+echo "supabase secrets set PAYMONGO_SECRET_KEY=sk_test_xxxxx"
+echo ""
+echo "# Voir tous les secrets"
+echo "supabase secrets list"
+echo ""
+
+# Migration
+echo "💾 2. MIGRATION DATABASE"
+echo "------------------------"
+echo "# Appliquer la migration"
+echo "supabase db push"
+echo ""
+echo "# Voir l'historique des migrations"
+echo "supabase migration list"
+echo ""
+
+# Edge Functions
+echo "⚡ 3. EDGE FUNCTIONS"
+echo "--------------------"
+echo "# Déployer toutes les fonctions"
+echo "supabase functions deploy create-gcash-payment"
+echo "supabase functions deploy paymongo-webhook"
+echo ""
+echo "# Voir les logs en temps réel"
+echo "supabase functions logs create-gcash-payment --follow"
+echo "supabase functions logs paymongo-webhook --follow"
+echo ""
+echo "# Lister toutes les fonctions"
+echo "supabase functions list"
+echo ""
+
+# Tests
+echo "🧪 4. TESTS"
+echo "-----------"
+echo "# Tester la fonction de création de paiement"
+echo "curl -X POST https://ton-projet.supabase.co/functions/v1/create-gcash-payment \\"
+echo "  -H 'Authorization: Bearer TON_ANON_KEY' \\"
+echo "  -H 'Content-Type: application/json' \\"
+echo "  -d '{\"package_id\":\"small\",\"user_id\":\"USER_ID\",\"coins\":10,\"amount\":50,\"return_url\":\"http://localhost:5173/money\"}'"
+echo ""
+
+# SQL utiles
+echo "📊 5. REQUÊTES SQL UTILES"
+echo "-------------------------"
+echo "# Voir toutes les transactions"
+echo "SELECT * FROM coin_transactions ORDER BY created_at DESC LIMIT 10;"
+echo ""
+echo "# Voir les transactions en attente"
+echo "SELECT * FROM coin_transactions WHERE status = 'pending';"
+echo ""
+echo "# Voir les transactions réussies"
+echo "SELECT * FROM coin_transactions WHERE status = 'completed';"
+echo ""
+echo "# Voir le total des revenus"
+echo "SELECT SUM(price_amount) as total_revenue FROM coin_transactions WHERE status = 'completed';"
+echo ""
+echo "# Voir les coins distribués"
+echo "SELECT SUM(coins_amount) as total_coins FROM coin_transactions WHERE status = 'completed';"
+echo ""
+
+# Monitoring
+echo "📈 6. MONITORING"
+echo "----------------"
+echo "# Dashboard PayMongo"
+echo "https://dashboard.paymongo.com/payments"
+echo ""
+echo "# Dashboard Supabase"
+echo "https://supabase.com/dashboard/project/ton-projet"
+echo ""
+echo "# Logs en temps réel"
+echo "supabase functions logs paymongo-webhook --follow"
+echo ""
+
+# Production
+echo "🚀 7. PASSAGE EN PRODUCTION"
+echo "----------------------------"
+echo "# 1. Obtenir les clés live sur PayMongo"
+echo "# 2. Mettre à jour le secret"
+echo "supabase secrets set PAYMONGO_SECRET_KEY=sk_live_xxxxx"
+echo ""
+echo "# 3. Redéployer les fonctions"
+echo "supabase functions deploy create-gcash-payment"
+echo "supabase functions deploy paymongo-webhook"
+echo ""
+echo "# 4. Configurer le webhook live sur PayMongo"
+echo "https://dashboard.paymongo.com/developers/webhooks"
+echo ""
+
+echo "✅ Commandes prêtes à utiliser !"

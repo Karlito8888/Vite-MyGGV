@@ -1,0 +1,12 @@
+# Configuration Supabase
+
+# Désactiver la vérification JWT pour la fonction de paiement
+# Ceci permet d'éviter les problèmes d'authentification
+[functions.create-gcash-payment]
+verify_jwt = false
+entrypoint = "functions/create-gcash-payment/index.js"
+
+# Garder la vérification JWT pour le webhook PayMongo
+[functions.paymongo-webhook]
+verify_jwt = true
+entrypoint = "functions/paymongo-webhook/index.js"

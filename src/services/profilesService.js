@@ -179,3 +179,47 @@ export async function getUserCoins(id) {
   
   return { data: data?.coins || 0, error: null }
 }
+
+/**
+ * Check if user can collect daily coin
+ * @returns {Promise<{data: Object|null, error: Error|null}>}
+ */
+export async function canCollectDailyCoin() {
+  const { data, error } = await supabase.rpc('can_collect_daily_coin')
+
+  if (error) {
+    return { data: null, error }
+  }
+
+  // Check if the function returned an error
+  if (data && !data.success) {
+    return { 
+      data: null, 
+      error: new Error(data.error || 'Failed to check daily coin status')
+    }
+  }
+
+  return { data, error: null }
+}
+
+/**
+ * Collect daily coin (1 coin per day)
+ * @returns {Promise<{data: Object|null, error: Error|null}>}
+ */
+export async function collectDailyCoin() {
+  const { data, error } = await supabase.rpc('collect_daily_coin')
+
+  if (error) {
+    return { data: null, error }
+  }
+
+  // Check if the function returned an error
+  if (data && !data.success) {
+    return { 
+      data: null, 
+      error: new Error(data.error || 'Failed to collect daily coin')
+    }
+  }
+
+  return { data, error: null }
+}
