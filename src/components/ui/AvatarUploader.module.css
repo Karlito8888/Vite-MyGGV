@@ -1,11 +1,11 @@
 /* Avatar Uploader Styles - MOBILE FIRST (320px+) */
 
-.avatar-uploader {
+.avatarUploader {
   position: relative;
   display: inline-block;
 }
 
-.avatar-uploader__container {
+.container {
   position: relative;
   border-radius: 50%;
   overflow: hidden;
@@ -15,41 +15,41 @@
   background: var(--color-background);
 }
 
-.avatar-uploader__container:hover {
+.container:hover {
   border-color: var(--color-primary);
   transform: scale(1.02);
 }
 
-.avatar-uploader__container.dragging {
+.container.dragging {
   border-color: var(--color-primary);
   border-style: dashed;
   border-width: 3px;
   transform: scale(1.05);
 }
 
-.avatar-uploader__container.uploading {
+.container.uploading {
   pointer-events: none;
   opacity: 0.7;
 }
 
 /* Size Variants - Mobile First (320px+) */
-.avatar-uploader--small .avatar-uploader__container {
+.small .container {
   width: 64px;
   height: 64px;
 }
 
-.avatar-uploader--medium .avatar-uploader__container {
+.medium .container {
   width: 96px;
   height: 96px;
 }
 
-.avatar-uploader--large .avatar-uploader__container {
+.large .container {
   width: 128px;
   height: 128px;
 }
 
 /* Preview */
-.avatar-uploader__preview {
+.preview {
   width: 100%;
   height: 100%;
   display: flex;
@@ -57,13 +57,13 @@
   justify-content: center;
 }
 
-.avatar-uploader__image {
+.image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.avatar-uploader__fallback {
+.fallback {
   width: 100%;
   height: 100%;
   display: flex;
@@ -72,23 +72,23 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.avatar-uploader__fallback-text {
+.fallbackText {
   font-size: 2rem;
   font-weight: 600;
   color: white;
   user-select: none;
 }
 
-.avatar-uploader--small .avatar-uploader__fallback-text {
+.small .fallbackText {
   font-size: 1.25rem;
 }
 
-.avatar-uploader--medium .avatar-uploader__fallback-text {
+.medium .fallbackText {
   font-size: 1.75rem;
 }
 
 /* Overlay */
-.avatar-uploader__overlay {
+.overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -103,12 +103,12 @@
   pointer-events: none;
 }
 
-.avatar-uploader__container:hover .avatar-uploader__overlay,
-.avatar-uploader__container.uploading .avatar-uploader__overlay {
+.container:hover .overlay,
+.container.uploading .overlay {
   opacity: 1;
 }
 
-.avatar-uploader__actions {
+.actions {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,30 +116,30 @@
   color: white;
 }
 
-.avatar-uploader__icon {
+.icon {
   flex-shrink: 0;
   width: 20px;
   height: 20px;
 }
 
-.avatar-uploader--medium .avatar-uploader__icon {
+.medium .icon {
   width: 24px;
   height: 24px;
 }
 
-.avatar-uploader--large .avatar-uploader__icon {
+.large .icon {
   width: 28px;
   height: 28px;
 }
 
-.avatar-uploader__text {
+.text {
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.avatar-uploader__loading {
+.loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -147,13 +147,13 @@
   color: white;
 }
 
-.avatar-uploader__loading span {
+.loading span {
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 /* Drag Indicator */
-.avatar-uploader__drag-indicator {
+.dragIndicator {
   position: absolute;
   top: 0;
   left: 0;
@@ -170,12 +170,12 @@
   transition: background-color 0.2s ease;
 }
 
-.avatar-uploader__drag-icon {
+.dragIcon {
   animation: bounce 1s infinite;
   flex-shrink: 0;
 }
 
-.avatar-uploader__drag-indicator span {
+.dragIndicator span {
   font-size: 1rem;
   font-weight: 600;
 }
@@ -190,20 +190,20 @@
 }
 
 /* Add consistent font family */
-.avatar-uploader__fallback-text,
-.avatar-uploader__text,
-.avatar-uploader__loading span,
-.avatar-uploader__drag-indicator span {
+.fallbackText,
+.text,
+.loading span,
+.dragIndicator span {
   font-family: "Madimi One", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
 
 /* Hidden Input */
-.avatar-uploader__input {
+.input {
   display: none;
 }
 
 /* Remove Button */
-.avatar-uploader__remove {
+.remove {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -221,95 +221,95 @@
   min-height: 32px;
 }
 
-.avatar-uploader__remove:hover {
+.remove:hover {
   background: #dc2626;
   transform: scale(1.1);
 }
 
-.avatar-uploader__remove svg {
+.remove svg {
   color: white;
   flex-shrink: 0;
   width: 16px;
   height: 16px;
 }
 
-.avatar-uploader--small .avatar-uploader__remove {
+.small .remove {
   width: 24px;
   height: 24px;
   min-height: 24px;
 }
 
-.avatar-uploader--small .avatar-uploader__remove svg {
+.small .remove svg {
   width: 12px;
   height: 12px;
 }
 
 /* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
-  .avatar-uploader--small .avatar-uploader__container {
+  .small .container {
     width: 80px;
     height: 80px;
   }
 
-  .avatar-uploader--medium .avatar-uploader__container {
+  .medium .container {
     width: 120px;
     height: 120px;
   }
 
-  .avatar-uploader--large .avatar-uploader__container {
+  .large .container {
     width: 160px;
     height: 160px;
   }
 
-  .avatar-uploader__fallback-text {
+  .fallbackText {
     font-size: 2.5rem;
   }
 
-  .avatar-uploader--small .avatar-uploader__fallback-text {
+  .small .fallbackText {
     font-size: 1.5rem;
   }
 
-  .avatar-uploader--medium .avatar-uploader__fallback-text {
+  .medium .fallbackText {
     font-size: 2rem;
   }
 
-  .avatar-uploader__text {
+  .text {
     font-size: 0.875rem;
   }
 
-  .avatar-uploader__icon {
+  .icon {
     width: 24px;
     height: 24px;
   }
 
-  .avatar-uploader--medium .avatar-uploader__icon {
+  .medium .icon {
     width: 28px;
     height: 28px;
   }
 
-  .avatar-uploader--large .avatar-uploader__icon {
+  .large .icon {
     width: 32px;
     height: 32px;
   }
 
-  .avatar-uploader__remove {
+  .remove {
     width: 36px;
     height: 36px;
     min-height: 36px;
   }
 
-  .avatar-uploader__remove svg {
+  .remove svg {
     width: 18px;
     height: 18px;
   }
 
-  .avatar-uploader--small .avatar-uploader__remove {
+  .small .remove {
     width: 28px;
     height: 28px;
     min-height: 28px;
   }
 
-  .avatar-uploader--small .avatar-uploader__remove svg {
+  .small .remove svg {
     width: 14px;
     height: 14px;
   }
@@ -317,11 +317,11 @@
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
-  .avatar-uploader__fallback-text {
+  .fallbackText {
     font-size: 3rem;
   }
 
-  .avatar-uploader--medium .avatar-uploader__fallback-text {
+  .medium .fallbackText {
     font-size: 2.5rem;
   }
 }

@@ -2,7 +2,7 @@ import { useState, useCallback, useId } from 'react'
 import { supabase } from '../../services/baseService'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
 import Button from './Button'
-import './ImageUploader.css'
+import styles from './ImageUploader.module.css'
 
 /**
  * ImageUploader Component
@@ -106,7 +106,7 @@ export default function ImageUploader({
   }
 
   return (
-    <div className="image-uploader">
+    <div className={styles.imageUploader}>
       {label && (
         <label htmlFor={inputId} className="form-label">
           {label}
@@ -118,7 +118,7 @@ export default function ImageUploader({
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          className={`image-uploader-dropzone ${dragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
+          className={`${styles.dropzone} ${dragActive ? styles.active : ''} ${uploading ? styles.uploading : ''}`}
         >
           <input
             id={inputId}
@@ -128,14 +128,14 @@ export default function ImageUploader({
             accept="image/*"
             onChange={handleChange}
             disabled={uploading}
-            className="image-uploader-input"
+            className={styles.input}
             autoComplete="off"
           />
-          <Upload className="image-uploader-icon" />
-          <p className="image-uploader-text">
+          <Upload className={styles.icon} />
+          <p className={styles.text}>
             {uploading ? 'Uploading...' : 'Click or drag and drop your images'}
           </p>
-          <p className="image-uploader-counter">
+          <p className={styles.counter}>
             {images.length} / {maxImages} photos
           </p>
         </div>
@@ -143,24 +143,24 @@ export default function ImageUploader({
 
       {/* Image preview */}
       {images.length > 0 && (
-        <div className="image-uploader-grid">
+        <div className={styles.grid}>
           {images.map((url, index) => (
-            <div key={index} className="image-uploader-item">
+            <div key={index} className={styles.item}>
               <img
                 src={url}
                 alt={`Photo ${index + 1}`}
-                className="image-uploader-preview"
+                className={styles.preview}
               />
               <Button
                 type="button"
                 onClick={() => removeImage(index)}
                 variant="danger"
                 size="small"
-                className="image-uploader-remove"
+                className={styles.remove}
               >
                 <X size={16} />
               </Button>
-              <div className="image-uploader-label">
+              <div className={styles.label}>
                 Photo {index + 1}
               </div>
             </div>
@@ -169,9 +169,9 @@ export default function ImageUploader({
       )}
 
       {images.length === 0 && (
-        <div className="image-uploader-empty">
-          <ImageIcon className="image-uploader-empty-icon" />
-          <p className="image-uploader-empty-text">No photos added</p>
+        <div className={styles.empty}>
+          <ImageIcon className={styles.emptyIcon} />
+          <p className={styles.emptyText}>No photos added</p>
         </div>
       )}
     </div>

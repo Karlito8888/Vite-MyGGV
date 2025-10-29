@@ -1,9 +1,8 @@
-/* Login Page Styles */
+/* Login Page Styles - CSS Module */
 /* Boutons centralisés dans src/components/ui/Button.css */
-@import '../components/ui/Button.css';
 
 /* Main container */
-.login-container {
+.loginContainer {
   min-height: 100%;
   display: flex;
   align-items: center;
@@ -12,9 +11,9 @@
 }
 
 /* Login wrapper with animations */
-.login-wrapper {
+.loginWrapper {
   width: 100%;
-  max-width: 24rem; /* sm:max-w-md */
+  max-width: 24rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -22,19 +21,19 @@
 }
 
 @media (min-width: 481px) {
-  .login-wrapper {
-    max-width: 28rem; /* sm:max-w-md */
+  .loginWrapper {
+    max-width: 28rem;
   }
 }
 
 @media (min-width: 769px) {
-  .login-wrapper {
-    max-width: 32rem; /* lg:max-w-lg */
+  .loginWrapper {
+    max-width: 32rem;
   }
 }
 
 /* Header section */
-.login-header {
+.loginHeader {
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -42,7 +41,7 @@
 }
 
 /* Logo container */
-.login-logo {
+.loginLogo {
   margin: 0 auto;
   width: 4rem;
   height: 4rem;
@@ -54,33 +53,33 @@
 }
 
 @media (min-width: 481px) {
-  .login-logo {
+  .loginLogo {
     width: 5rem;
     height: 5rem;
   }
 }
 
 @media (min-width: 769px) {
-  .login-logo {
+  .loginLogo {
     width: 6rem;
     height: 6rem;
   }
 }
 
-.login-logo img {
+.loginLogo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Title and description */
-.login-title-section {
+.loginTitleSection {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.login-title {
+.loginTitle {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -88,32 +87,32 @@
 }
 
 @media (min-width: 481px) {
-  .login-title {
+  .loginTitle {
     font-size: 1.5rem;
   }
 }
 
 @media (min-width: 769px) {
-  .login-title {
+  .loginTitle {
     font-size: 1.875rem;
   }
 }
 
 /* Form sections */
-.login-form-section {
+.loginFormSection {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 /* Auth mode toggle */
-.login-toggle-section {
+.loginToggleSection {
   display: flex;
   justify-content: center;
   margin-bottom: 0.5rem;
 }
 
-.login-toggle-container {
+.loginToggleContainer {
   display: flex;
   background-color: var(--color-surface);
   border-radius: 1rem;
@@ -122,41 +121,37 @@
   border: 1px solid var(--color-border);
 }
 
-/* login-toggle-button défini dans Button.css */
-
-.login-form {
+.loginForm {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
 /* Social authentication */
-.login-social-section {
+.loginSocialSection {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.login-social-buttons {
+.loginSocialButtons {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
 }
 
 @media (min-width: 481px) {
-  .login-social-buttons {
+  .loginSocialButtons {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-/* login-social-button défini dans Button.css */
-
 /* Divider */
-.login-divider {
+.loginDivider {
   position: relative;
 }
 
-.login-divider::before {
+.loginDivider::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -166,7 +161,7 @@
   background-color: color-mix(in srgb, var(--color-border) 60%, transparent);
 }
 
-.login-divider-text {
+.loginDividerText {
   position: relative;
   display: flex;
   justify-content: center;
@@ -179,25 +174,8 @@
   letter-spacing: 0.1em;
 }
 
-
-
-/* Buttons - Styles centralisés dans Button.css */
-/* Ajustements spécifiques au login */
-.login-button-flex {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.login-button-flex .login-button:first-child {
-  flex: 1;
-}
-
-.login-button-flex .login-button:last-child {
-  padding: 0 1.5rem;
-}
-
 /* Loading spinner */
-.login-spinner {
+.loginSpinner {
   width: 1rem;
   height: 1rem;
   border: 2px solid currentColor;
@@ -207,37 +185,37 @@
 }
 
 /* Messages */
-.login-message {
+.loginMessage {
   padding: 0.75rem;
   border-radius: 0.75rem;
   font-size: 0.875rem;
   animation: fadeInSlideDown 0.3s ease-out;
 }
 
-.login-message-error {
+.loginMessageError {
   background-color: color-mix(in srgb, var(--color-error-text) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-error-text) 20%, transparent);
   color: var(--color-error-text);
 }
 
-.login-message-success {
+.loginMessageSuccess {
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
   color: #15803d;
 }
 
-.dark .login-message-success {
+:root.dark .loginMessageSuccess {
   background-color: #14532d;
   border-color: #166534;
   color: #4ade80;
 }
 
 /* Forgot password link */
-.login-forgot-password {
+.loginForgotPassword {
   text-align: center;
 }
 
-.login-forgot-link {
+.loginForgotLink {
   font-size: 0.875rem;
   color: var(--color-primary);
   text-decoration: none;
@@ -246,12 +224,12 @@
   border-radius: 0.5rem;
 }
 
-.login-forgot-link:hover {
+.loginForgotLink:hover {
   color: color-mix(in srgb, var(--color-primary) 80%, black);
   text-decoration: underline;
 }
 
-.login-forgot-link:focus {
+.loginForgotLink:focus {
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
@@ -268,8 +246,6 @@
   }
 }
 
-
-
 @keyframes fadeInSlideDown {
   from {
     opacity: 0;
@@ -281,10 +257,8 @@
   }
 }
 
-
-
 /* Reset form section for password reset */
-.login-reset-form {
+.loginResetForm {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

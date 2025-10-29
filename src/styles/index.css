@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Madimi+One&display=swap");
 
 /* Import centralized button styles */
-@import '../components/ui/Button.css';
+/* @import '../components/ui/Button.css'; */
 
 /* Theme Variables */
 :root.light {
@@ -209,8 +209,7 @@ h2 {
   letter-spacing: 2px;
 }
 
-/* Mobile-specific optimizations - Base styles for 320px+ */
-
+/* Form Styles - Mobile First (320px+) */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -219,21 +218,22 @@ h2 {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 0.9375rem;
 }
 
 .form-input {
   width: 100%;
-  padding: 1rem;
+  padding: 0.875rem;
   border: 1px solid var(--color-input-border);
   border-radius: 0.75rem;
   font-size: 16px;
   /* Prevents zoom on iOS */
   background-color: var(--color-background);
   color: var(--color-text-primary);
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
   min-height: 48px;
+  /* Touch-friendly minimum */
 }
 
 .form-input:focus {
@@ -241,8 +241,6 @@ h2 {
   border-color: var(--color-input-focus);
   box-shadow: 0 0 0 3px rgba(80, 170, 97, 0.1);
 }
-
-
 
 /* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
@@ -269,6 +267,14 @@ h2 {
 
   .page-not-found h2 {
     font-size: 1.625rem;
+  }
+
+  .form-label {
+    font-size: 1rem;
+  }
+
+  .form-input {
+    padding: 1rem;
   }
 }
 
@@ -441,8 +447,7 @@ body.sidebar-open {
   }
 }
 
-/* Modal S
-tyles */
+/* Modal Styles - Mobile First (320px+) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -460,8 +465,8 @@ tyles */
 .modal-content {
   background-color: var(--color-background);
   border-radius: 0.75rem;
-  padding: 1.5rem;
-  max-width: 500px;
+  padding: 1rem;
+  max-width: 100%;
   width: 100%;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   animation: fadeInUp 0.3s ease;
@@ -470,17 +475,18 @@ tyles */
 .modal-content h3 {
   color: var(--color-text-primary);
   margin-bottom: 1rem;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
-@media (max-width: 480px) {
+/* Modal - Tablet (481px+) */
+@media (min-width: 481px) {
   .modal-content {
-    padding: 1rem;
-    max-width: 100%;
+    padding: 1.5rem;
+    max-width: 500px;
   }
 
   .modal-content h3 {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
   }
 }

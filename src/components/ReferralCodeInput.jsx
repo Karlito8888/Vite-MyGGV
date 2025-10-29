@@ -4,7 +4,7 @@ import { referralService } from '../services/referralService';
 import Button from './ui/Button';
 import Input from './ui/Input';
 import Card, { CardContent } from './ui/Card';
-import '../styles/ReferralCodeInput.css';
+import styles from './ReferralCodeInput.module.css';
 
 export default function ReferralCodeInput({ onSuccess }) {
   const [code, setCode] = useState('');
@@ -51,9 +51,9 @@ export default function ReferralCodeInput({ onSuccess }) {
 
   if (successApplied) {
     return (
-      <Card className="referral-code-input-container">
+      <Card className={styles.referralCodeInputContainer}>
         <CardContent>
-          <div className="referral-success-badge">
+          <div className={styles.referralSuccessBadge}>
             ✅ Referral code applied!
           </div>
         </CardContent>
@@ -63,7 +63,7 @@ export default function ReferralCodeInput({ onSuccess }) {
 
   if (!showInput) {
     return (
-      <div className="referral-code-input-container">
+      <div className={styles.referralCodeInputContainer}>
         <Button
           variant="outline"
           onClick={() => setShowInput(true)}
@@ -76,10 +76,10 @@ export default function ReferralCodeInput({ onSuccess }) {
   }
 
   return (
-    <Card className="referral-code-input-container">
+    <Card className={styles.referralCodeInputContainer}>
       <CardContent>
-        <form onSubmit={handleSubmit} className="referral-code-form">
-          <div className="referral-code-input-group">
+        <form onSubmit={handleSubmit} className={styles.referralCodeForm}>
+          <div className={styles.referralCodeInputGroup}>
             <Input
               type="text"
               value={code}

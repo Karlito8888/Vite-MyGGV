@@ -1,26 +1,22 @@
-/* Onboarding Styles - Suit la politique de style de index.css et CSS-REFERENCE.md */
-/* MOBILE FIRST - Base styles for 320px+ */
-/* Structure de base héritée de index.css */
+/* Onboarding Styles - MOBILE FIRST */
 
-.page-container {
+.pageContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100%;
 }
 
-.page-content {
+.pageContent {
   max-width: 600px;
 }
 
-.onboarding-form {
+.onboardingForm {
   text-align: left;
   margin-top: 1.5rem;
 }
 
-
-
-.avatar-upload-container {
+.avatarUploadContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,49 +27,44 @@
   background-color: var(--color-surface);
 }
 
-.avatar-upload-info {
+.avatarUploadInfo {
   text-align: center;
 }
 
-.avatar-upload-info p {
+.avatarUploadInfo p {
   margin: 0 0 0.5rem 0;
   font-weight: 500;
   color: var(--color-text-primary);
 }
 
-.avatar-upload-info small {
+.avatarUploadInfo small {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-/* Form labels - utilise les classes globales .form-label et .form-input */
-.onboarding-form .form-label {
-  font-weight: 600;
-}
-
 /* Enhanced form inputs for onboarding */
-.onboarding-form .form-input {
+.onboardingForm :global(.form-input) {
   font-family: inherit;
 }
 
-.onboarding-form .form-input.error {
+.onboardingForm :global(.form-input).error {
   border-color: var(--color-error-border);
 }
 
-.onboarding-form .form-input:disabled {
+.onboardingForm :global(.form-input):disabled {
   background-color: var(--color-surface);
   color: var(--color-text-secondary);
   cursor: not-allowed;
 }
 
-.onboarding-form .form-group small {
+.onboardingForm :global(.form-group) small {
   display: block;
   margin-top: 0.25rem;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-.onboarding-form .error-text {
+.errorText {
   display: block;
   margin-top: 0.25rem;
   color: var(--color-error-text);
@@ -81,7 +72,7 @@
 }
 
 /* Wheel Picker Styles - react-mobile-picker - MOBILE FIRST */
-.wheel-picker-container {
+.wheelPickerContainer {
   width: 100%;
   margin-top: 0.5rem;
   border: 1px solid var(--color-input-border);
@@ -91,24 +82,24 @@
   position: relative;
 }
 
-.wheel-picker-container.error {
+.wheelPickerContainer.error {
   border-color: var(--color-error-border);
 }
 
-.wheel-picker-container.disabled {
+.wheelPickerContainer.disabled {
   opacity: 0.6;
   pointer-events: none;
   background-color: var(--color-surface);
 }
 
 /* Touch-friendly improvements for all devices */
-.rmp-picker-column {
+.wheelPickerContainer :global(.rmp-picker-column) {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
 
 /* Picker item styling for selected state */
-.picker-item {
+.pickerItem {
   padding: 0 0.75rem;
   height: 48px;
   display: flex;
@@ -119,7 +110,7 @@
   transition: all 0.2s ease;
 }
 
-.picker-item.selected {
+.pickerItem.selected {
   font-weight: 600;
   font-size: 1.1rem;
   color: var(--color-primary);
@@ -128,7 +119,7 @@
 }
 
 /* Placeholder and loading states */
-.picker-placeholder {
+.pickerPlaceholder {
   padding: 2rem 1rem;
   color: var(--color-text-secondary);
   font-style: italic;
@@ -139,7 +130,7 @@
   min-height: 240px;
 }
 
-.picker-loading {
+.pickerLoading {
   padding: 2rem 1rem;
   color: var(--color-text-secondary);
   text-align: center;
@@ -150,7 +141,7 @@
   min-height: 240px;
 }
 
-.picker-loading::after {
+.pickerLoading::after {
   content: '';
   width: 20px;
   height: 20px;
@@ -160,9 +151,7 @@
   animation: spin 1s linear infinite;
 }
 
-
-
-.error-message {
+.errorMessage {
   background-color: var(--color-error-bg);
   color: var(--color-error-text);
   padding: 0.875rem;
@@ -173,8 +162,7 @@
 }
 
 /* Loader Styles - MOBILE FIRST */
-/* Utilise .loader-wrapper de index.css avec ajustements spécifiques */
-.onboarding-form .loader-wrapper {
+.loaderWrapper {
   width: 100%;
   max-width: 400px;
   padding: 1.5rem 1rem;
@@ -184,7 +172,7 @@
   border: 1px solid var(--color-border);
 }
 
-.loader-text {
+.loaderText {
   font-size: 1rem;
   color: var(--color-text-secondary);
   margin: 0;
@@ -194,98 +182,8 @@
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* Small tablets and larger phones (481px+) */
-@media (min-width: 481px) {
-  .onboarding-form {
-    margin-top: 1.75rem;
-  }
-
-  .error-message {
-    padding: 0.9375rem;
-    font-size: 0.9375rem;
-  }
-
-  .picker-placeholder,
-  .picker-loading {
-    padding: 2.25rem 1.25rem;
-  }
-
-  .picker-item {
-    padding: 0 0.875rem;
-  }
-
-  .loader-wrapper {
-    padding: 1.75rem 1.5rem;
-  }
-
-  .loader-text {
-    font-size: 1.0625rem;
-  }
-}
-
-/* Tablets and larger (769px+) */
-@media (min-width: 769px) {
-  .onboarding-form {
-    margin-top: 2rem;
-  }
-
-  .error-message {
-    padding: 1rem;
-    font-size: 1rem;
-  }
-
-  .wheel-picker-container {
-    min-height: 200px;
-  }
-
-  .rmp-picker {
-    height: 200px;
-  }
-
-  .rmp-picker-item {
-    height: 40px;
-    font-size: 1rem;
-  }
-
-  .picker-wheel-item {
-    padding: 0 1rem;
-    font-size: 1rem;
-  }
-
-  .rmp-picker::before {
-    height: 40px;
-  }
-
-  .picker-placeholder,
-  .picker-loading {
-    padding: 2rem;
-    min-height: 200px;
-  }
-
-  .picker-item {
-    height: 40px;
-    padding: 0 1rem;
-  }
-
-  .loader-wrapper {
-    padding: 1.75rem 1.5rem;
-  }
-
-  .loader-text {
-    font-size: 1.125rem;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .page-content,
-  .referral-success-banner {
-    animation: none;
-  }
-}
-
 /* Referral Success Banner */
-.referral-success-banner {
+.referralSuccessBanner {
   background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
   border: 2px solid #28a745;
   border-radius: 12px;
@@ -313,9 +211,92 @@
   }
 }
 
-@media (max-width: 768px) {
-  .referral-success-banner {
+/* Small tablets and larger phones (481px+) */
+@media (min-width: 481px) {
+  .onboardingForm {
+    margin-top: 1.75rem;
+  }
+
+  .errorMessage {
+    padding: 0.9375rem;
+    font-size: 0.9375rem;
+  }
+
+  .pickerPlaceholder,
+  .pickerLoading {
+    padding: 2.25rem 1.25rem;
+  }
+
+  .pickerItem {
+    padding: 0 0.875rem;
+  }
+
+  .loaderWrapper {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .loaderText {
+    font-size: 1.0625rem;
+  }
+
+  .referralSuccessBanner {
     font-size: 0.9rem;
     padding: 0.875rem 1rem;
+  }
+}
+
+/* Tablets and larger (769px+) */
+@media (min-width: 769px) {
+  .onboardingForm {
+    margin-top: 2rem;
+  }
+
+  .errorMessage {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .wheelPickerContainer {
+    min-height: 200px;
+  }
+
+  .wheelPickerContainer :global(.rmp-picker) {
+    height: 200px;
+  }
+
+  .wheelPickerContainer :global(.rmp-picker-item) {
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .wheelPickerContainer :global(.rmp-picker)::before {
+    height: 40px;
+  }
+
+  .pickerPlaceholder,
+  .pickerLoading {
+    padding: 2rem;
+    min-height: 200px;
+  }
+
+  .pickerItem {
+    height: 40px;
+    padding: 0 1rem;
+  }
+
+  .loaderWrapper {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .loaderText {
+    font-size: 1.125rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .pageContent,
+  .referralSuccessBanner {
+    animation: none;
   }
 }

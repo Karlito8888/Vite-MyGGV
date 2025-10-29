@@ -1,4 +1,4 @@
-import './Card.css'
+import styles from './Card.module.css'
 
 export default function Card({
   children,
@@ -8,7 +8,7 @@ export default function Card({
 }) {
   return (
     <div
-      className={`card ${hover ? 'card-hover' : ''} ${className}`}
+      className={`${styles.card} ${hover ? styles.cardHover : ''} ${className}`}
       {...props}
     >
       {children}
@@ -18,7 +18,7 @@ export default function Card({
 
 export function CardHeader({ children, className = '', ...props }) {
   return (
-    <div className={`card-header ${className}`} {...props}>
+    <div className={`${styles.cardHeader} ${className}`} {...props}>
       {children}
     </div>
   )
@@ -26,7 +26,7 @@ export function CardHeader({ children, className = '', ...props }) {
 
 export function CardTitle({ children, className = '', ...props }) {
   return (
-    <h3 className={`card-title ${className}`} {...props}>
+    <h3 className={`${styles.cardTitle} ${className}`} {...props}>
       {children}
     </h3>
   )
@@ -34,7 +34,7 @@ export function CardTitle({ children, className = '', ...props }) {
 
 export function CardDescription({ children, className = '', ...props }) {
   return (
-    <p className={`card-description ${className}`} {...props}>
+    <p className={`${styles.cardDescription} ${className}`} {...props}>
       {children}
     </p>
   )
@@ -42,7 +42,7 @@ export function CardDescription({ children, className = '', ...props }) {
 
 export function CardContent({ children, className = '', ...props }) {
   return (
-    <div className={`card-content ${className}`} {...props}>
+    <div className={`${styles.cardContent} ${className}`} {...props}>
       {children}
     </div>
   )

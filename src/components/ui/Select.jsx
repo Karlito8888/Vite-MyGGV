@@ -1,5 +1,5 @@
 import { forwardRef, useId } from "react";
-import "./Select.css";
+import styles from "./Select.module.css";
 
 const Select = forwardRef(
   (
@@ -28,14 +28,14 @@ const Select = forwardRef(
         {label && (
           <label htmlFor={selectId} className="form-label">
             {label}
-            {required && <span className="required-indicator"> *</span>}
+            {required && <span className={styles.requiredIndicator}> *</span>}
           </label>
         )}
         <select
           id={selectId}
           name={selectName}
           ref={ref}
-          className={`select-input ${error ? "select-error" : ""} ${disabled ? "select-disabled" : ""
+          className={`${styles.selectInput} ${error ? styles.selectError : ""} ${disabled ? styles.selectDisabled : ""
             } ${className}`}
           disabled={disabled}
           autoComplete={autoComplete}
@@ -50,7 +50,7 @@ const Select = forwardRef(
         </select>
         {error && <span className="error-text">{error}</span>}
         {helperText && !error && (
-          <small className="helper-text">{helperText}</small>
+          <small className={styles.helperText}>{helperText}</small>
         )}
       </div>
     );

@@ -1,15 +1,15 @@
 /* MOBILE FIRST - Base styles for 320px+ */
-.location-requests-page {
+.locationRequestsPage {
   min-height: 100%;
   padding: 1rem 0.5rem;
 }
 
-.location-requests-page .container {
+.container {
   max-width: 800px;
   margin: 0 auto;
 }
 
-.requests-header {
+.requestsHeader {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -17,14 +17,14 @@
   margin-bottom: 1.5rem;
 }
 
-.requests-header h1 {
+.requestsHeader h1 {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
 }
 
-.pending-badge {
+.pendingBadge {
   background-color: var(--color-primary);
   color: white;
   padding: 0.5rem 1rem;
@@ -33,7 +33,7 @@
   font-weight: 600;
 }
 
-.filter-tabs {
+.filterTabs {
   display: flex;
   gap: 0.25rem;
   margin-bottom: 1.5rem;
@@ -42,7 +42,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.filter-tab {
+.filterTab {
   background: none;
   border: none;
   padding: 0.75rem 1rem;
@@ -59,17 +59,17 @@
   min-height: 48px;
 }
 
-.filter-tab:hover {
+.filterTab:hover {
   color: var(--color-text-primary);
   background-color: var(--color-surface);
 }
 
-.filter-tab.active {
+.filterTab.active {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
 }
 
-.tab-count {
+.tabCount {
   background-color: var(--color-primary);
   color: white;
   padding: 0.25rem 0.5rem;
@@ -80,53 +80,46 @@
   text-align: center;
 }
 
-.requests-list {
+.requestsList {
   margin-top: 1.5rem;
 }
 
 /* Location Request Card Styles - MOBILE FIRST */
-.location-request-card {
+.locationRequestCard {
   margin-bottom: 1rem;
 }
 
-/* Override Card.css pour le header */
-.location-request-card .card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.requester-info {
+.requesterInfo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.requester-details h3 {
+.requesterDetails h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.requester-details .username {
+.requesterDetails .username {
   margin: 0.25rem 0 0 0;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 }
 
-.request-time {
+.requestTime {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   white-space: nowrap;
   align-self: flex-start;
 }
 
-.request-body {
+.requestBody {
   margin-bottom: 1.5rem;
 }
 
-.location-info {
+.locationInfo {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -136,30 +129,29 @@
   border: 1px solid var(--color-border);
 }
 
-.location-label {
+.locationLabel {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
-.location-value {
+.locationValue {
   font-size: 1rem;
   color: var(--color-text-primary);
   font-weight: 600;
 }
 
-.request-actions {
+.requestActions {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-/* Request Actions - Utilise le composant Button */
-.request-actions .btn {
+.requestActions :global(.btn) {
   width: 100%;
 }
 
-.empty-state {
+.emptyState {
   text-align: center;
   padding: 3rem 1rem;
   background: var(--color-surface);
@@ -167,68 +159,61 @@
   border: 1px solid var(--color-border);
 }
 
-.empty-icon {
+.emptyIcon {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
 
-.empty-state h3 {
+.emptyState h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0 0 0.5rem 0;
 }
 
-.empty-state p {
+.emptyState p {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin: 0;
 }
 
-.loader-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
 /* Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .location-requests-page {
+  .locationRequestsPage {
     padding: 1.5rem 1rem;
   }
 
-  .requests-header h1 {
+  .requestsHeader h1 {
     font-size: 1.75rem;
   }
 
-  .filter-tab {
+  .filterTab {
     padding: 0.875rem 1.25rem;
     font-size: 0.9375rem;
   }
 
-  .requester-details h3 {
+  .requesterDetails h3 {
     font-size: 1.0625rem;
   }
 
-  .empty-state {
+  .emptyState {
     padding: 3.5rem 1.5rem;
   }
 
-  .empty-state h3 {
+  .emptyState h3 {
     font-size: 1.375rem;
   }
 
-  .empty-state p {
+  .emptyState p {
     font-size: 0.9375rem;
   }
 
-  .request-actions {
+  .requestActions {
     flex-direction: row;
     justify-content: flex-end;
   }
 
-  .request-actions .btn {
+  .requestActions :global(.btn) {
     flex: 1;
     max-width: 180px;
   }
@@ -236,70 +221,64 @@
 
 /* Tablets and larger (769px+) */
 @media (min-width: 769px) {
-  .location-requests-page {
+  .locationRequestsPage {
     padding: 2rem 1rem;
   }
 
-  .requests-header {
+  .requestsHeader {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
   }
 
-  .requests-header h1 {
+  .requestsHeader h1 {
     font-size: 2rem;
   }
 
-  .filter-tabs {
+  .filterTabs {
     gap: 0.5rem;
     margin-bottom: 2rem;
   }
 
-  .filter-tab {
+  .filterTab {
     padding: 1rem 1.5rem;
     font-size: 1rem;
   }
 
-  .location-request-card .card-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .requester-info {
+  .requesterInfo {
     gap: 1rem;
   }
 
-  .requester-details h3 {
+  .requesterDetails h3 {
     font-size: 1.125rem;
   }
 
-  .request-time {
+  .requestTime {
     align-self: auto;
   }
 
-  .empty-state {
+  .emptyState {
     padding: 4rem 2rem;
   }
 
-  .empty-icon {
+  .emptyIcon {
     font-size: 4rem;
   }
 
-  .empty-state h3 {
+  .emptyState h3 {
     font-size: 1.5rem;
   }
 
-  .empty-state p {
+  .emptyState p {
     font-size: 1rem;
   }
 
-  .request-actions {
+  .requestActions {
     justify-content: flex-end;
   }
 
-  .request-actions .btn {
+  .requestActions :global(.btn) {
     flex: 1;
     max-width: 150px;
   }

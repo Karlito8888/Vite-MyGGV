@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import { COIN_PACKAGES, createGCashPayment } from '../services/paymentService'
 import Button from './ui/Button'
-import '../styles/CoinPurchaseModal.css'
+import styles from './CoinPurchaseModal.module.css'
 
 function CoinPurchaseModal({ isOpen, onClose }) {
   const { profile } = useUser()
@@ -58,8 +58,8 @@ function CoinPurchaseModal({ isOpen, onClose }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content coin-purchase-modal" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal-overlay ${styles.modalOverlay}`} onClick={handleClose}>
+      <div className={`modal-content ${styles.coinPurchaseModal}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>💰 Buy Coins</h2>
           <button className="modal-close" onClick={handleClose} disabled={loading}>
@@ -70,41 +70,41 @@ function CoinPurchaseModal({ isOpen, onClose }) {
         <div className="modal-body">
           {step === 'select' && (
             <>
-              <p className="modal-description">
+              <p className={styles.modalDescription}>
                 Choose a coin package to purchase with GCash
               </p>
 
-              <div className="coin-packages">
+              <div className={styles.coinPackages}>
                 {COIN_PACKAGES.map((pkg) => (
                   <div
                     key={pkg.id}
-                    className={`coin-package ${selectedPackage?.id === pkg.id ? 'selected' : ''} ${pkg.popular ? 'popular' : ''}`}
+                    className={`${styles.coinPackage} ${selectedPackage?.id === pkg.id ? styles.selected : ''} ${pkg.popular ? styles.popular : ''}`}
                     onClick={() => handleSelectPackage(pkg)}
                   >
-                    {pkg.popular && <div className="popular-badge">Most Popular</div>}
-                    <div className="package-icon">🪙</div>
-                    <div className="package-coins">{pkg.coins} Coins</div>
-                    <div className="package-price">₱{pkg.price}</div>
-                    <div className="package-rate">₱{(pkg.price / pkg.coins).toFixed(2)} per coin</div>
+                    {pkg.popular && <div className={styles.popularBadge}>Most Popular</div>}
+                    <div className={styles.packageIcon}>🪙</div>
+                    <div className={styles.packageCoins}>{pkg.coins} Coins</div>
+                    <div className={styles.packagePrice}>₱{pkg.price}</div>
+                    <div className={styles.packageRate}>₱{(pkg.price / pkg.coins).toFixed(2)} per coin</div>
                   </div>
                 ))}
               </div>
 
               {selectedPackage && (
-                <div className="purchase-summary">
-                  <div className="summary-row">
+                <div className={styles.purchaseSummary}>
+                  <div className={styles.summaryRow}>
                     <span>Package:</span>
                     <strong>{selectedPackage.label}</strong>
                   </div>
-                  <div className="summary-row">
+                  <div className={styles.summaryRow}>
                     <span>Amount:</span>
                     <strong>₱{selectedPackage.price}</strong>
                   </div>
-                  <div className="summary-row">
+                  <div className={styles.summaryRow}>
                     <span>Payment Method:</span>
                     <strong>GCash</strong>
                   </div>
-                  <div className="summary-note">
+                  <div className={styles.summaryNote}>
                     <small>💳 You'll be redirected to GCash to complete payment</small>
                   </div>
                 </div>
@@ -113,15 +113,15 @@ function CoinPurchaseModal({ isOpen, onClose }) {
           )}
 
           {step === 'processing' && (
-            <div className="processing-state">
-              <div className="spinner"></div>
+            <div className={styles.processingState}>
+              <div className={styles.spinner}></div>
               <p>Creating payment...</p>
             </div>
           )}
 
           {step === 'redirecting' && (
-            <div className="processing-state">
-              <div className="spinner"></div>
+            <div className={styles.processingState}>
+              <div className={styles.spinner}></div>
               <p>Redirecting to GCash...</p>
               <small>Please wait...</small>
             </div>

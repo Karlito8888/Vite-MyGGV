@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import './RichTextDisplay.css';
+import styles from './RichTextDisplay.module.css';
 
 const RichTextDisplay = ({ content, className = '' }) => {
     if (!content) return null;
@@ -18,7 +18,7 @@ const RichTextDisplay = ({ content, className = '' }) => {
 
     return (
         <div
-            className={`rich-text-display ${className}`}
+            className={`${styles.richTextDisplay} ${className}`}
             dangerouslySetInnerHTML={{ __html: cleanHTML }}
         />
     );

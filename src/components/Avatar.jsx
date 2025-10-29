@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useGlobalPresence } from '../contexts/GlobalPresenceContext'
 import { useUser } from '../contexts'
-import '../styles/Avatar.css'
+import styles from './Avatar.module.css'
 
 /**
  * Avatar component for displaying user profile images with fallback support
@@ -47,19 +47,20 @@ function Avatar({
   }
 
   const avatarClasses = [
-    'avatar',
-    `avatar--${size}`,
-    showFallback ? 'avatar--fallback' : '',
-    !imageLoaded && src ? 'avatar--loading' : '',
-    showPresence && isOnline ? 'avatar--online' : '',
+    styles.avatar,
+    styles[size],
+    showFallback ? styles.fallbackStyle : '',
+    !imageLoaded && src ? styles.loading : '',
+    showPresence && isOnline ? styles.online : '',
+    className.includes('header-avatar-component') ? styles.headerAvatar : '',
     className
   ].filter(Boolean).join(' ')
 
   return (
     <div className={avatarClasses}>
       {showFallback ? (
-        <div className="avatar__fallback">
-          <span className="avatar__fallback-text">{fallbackText}</span>
+        <div className={styles.fallback}>
+          <span className={styles.fallbackText}>{fallbackText}</span>
         </div>
       ) : (
         <>
@@ -67,13 +68,13 @@ function Avatar({
             key={src}
             src={src}
             alt={alt}
-            className={`avatar__image ${!imageLoaded ? 'avatar__image--loading' : ''}`}
+            className={`${styles.image} ${!imageLoaded ? styles.imageLoading : ''}`}
             onError={handleImageError}
             onLoad={handleImageLoad}
           />
           {!imageLoaded && src && (
-            <div className="avatar__loading-placeholder">
-              <span className="avatar__fallback-text">{fallbackText}</span>
+            <div className={styles.loadingPlaceholder}>
+              <span className={styles.fallbackText}>{fallbackText}</span>
             </div>
           )}
         </>

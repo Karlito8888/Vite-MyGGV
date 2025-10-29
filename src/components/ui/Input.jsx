@@ -1,5 +1,5 @@
 import { forwardRef, useId } from 'react'
-import './Input.css'
+import styles from './Input.module.css'
 
 const Input = forwardRef(({
     label,
@@ -47,9 +47,9 @@ const Input = forwardRef(({
     };
 
     return (
-        <div className={`input-field ${className}`}>
+        <div className={`${styles.inputField} ${className}`}>
             {label && (
-                <label htmlFor={inputId} className="input-label">
+                <label htmlFor={inputId} className={styles.inputLabel}>
                     {label}
                     {required && <span className="required-indicator"> *</span>}
                 </label>
@@ -58,7 +58,7 @@ const Input = forwardRef(({
                 id={inputId}
                 name={inputName}
                 ref={ref}
-                className="input"
+                className={styles.input}
                 style={{ fontSize: '16px' }}
                 aria-invalid={error ? 'true' : 'false'}
                 autoComplete={getAutoComplete()}
@@ -71,7 +71,7 @@ const Input = forwardRef(({
                 </span>
             )}
             {error && (
-                <span className="input-error" role="alert">
+                <span className={styles.inputError} role="alert">
                     {error}
                 </span>
             )}

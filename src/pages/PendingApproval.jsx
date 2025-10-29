@@ -4,7 +4,7 @@ import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Button from '../components/ui/Button'
-import '../styles/PendingApproval.css'
+import styles from '../styles/PendingApproval.module.css'
 
 function PendingApproval() {
   const navigate = useNavigate()
@@ -137,8 +137,8 @@ function PendingApproval() {
   return (
     <div className="page-container page-centered">
       <div className="page-content">
-        <div className="pending-approval-content">
-          <div className="icon-container">
+        <div className={styles.pendingApprovalContent}>
+          <div className={styles.iconContainer}>
             {requestInfo?.status === 'rejected' ? '❌' : '⏳'}
           </div>
 
@@ -150,25 +150,25 @@ function PendingApproval() {
 
           {requestInfo?.status === 'rejected' ? (
             <>
-              <p className="message">
+              <p className={styles.message}>
                 Unfortunately, your request to join <strong>Block {requestInfo.location_block}, Lot {requestInfo.location_lot}</strong> has been rejected by the owner.
               </p>
-              <p className="sub-message">
+              <p className={styles.subMessage}>
                 Please contact the owner or try a different location.
               </p>
             </>
           ) : (
             <>
-              <p className="message">
+              <p className={styles.message}>
                 Your request to join <strong>Block {requestInfo?.location_block}, Lot {requestInfo?.location_lot}</strong> is pending approval from the owner.
               </p>
-              <p className="sub-message">
+              <p className={styles.subMessage}>
                 You will receive access to the app once the owner approves your request. This page will automatically update when your request is processed.
               </p>
             </>
           )}
 
-          <div className="actions">
+          <div className={styles.actions}>
             <Button
               variant="primary"
               onClick={handleCheckStatus}
@@ -185,7 +185,7 @@ function PendingApproval() {
             </Button>
           </div>
 
-          <div className="info-box">
+          <div className={styles.infoBox}>
             <p>
               <strong>What happens next?</strong>
             </p>

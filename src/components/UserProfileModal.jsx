@@ -4,7 +4,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import Avatar from './Avatar'
 import Card, { CardHeader, CardTitle, CardContent } from './ui/Card'
 import RichTextDisplay from './ui/RichTextDisplay'
-import '../styles/UserProfileModal.css'
+import styles from './UserProfileModal.module.css'
 import { supabase } from '../utils/supabase'
 import viberLogo from '../assets/logos/viber.png'
 import whatsappLogo from '../assets/logos/whatsapp.png'
@@ -137,18 +137,18 @@ function UserProfileModal({ userId, onClose }) {
 
   return createPortal(
     <>
-      <div className="user-profile-modal-overlay" onClick={onClose}>
-        <div className="user-profile-modal" onClick={(e) => e.stopPropagation()}>
-          <button className="user-profile-modal__close" onClick={onClose} aria-label="Close">
+      <div className={styles.userProfileModalOverlay} onClick={onClose}>
+        <div className={styles.userProfileModal} onClick={(e) => e.stopPropagation()}>
+          <button className={styles.close} onClick={onClose} aria-label="Close">
             <X size={24} />
           </button>
 
           {loading ? (
-            <div className="user-profile-modal__loading">Loading...</div>
+            <div className={styles.loading}>Loading...</div>
           ) : (
-            <div className="user-profile-modal__content">
+            <div className={styles.content}>
               {/* Header with Avatar */}
-              <div className="user-profile-modal__header">
+              <div className={styles.header}>
                 <Avatar
                   src={profile?.avatar_url}
                   userId={userId}
@@ -156,12 +156,12 @@ function UserProfileModal({ userId, onClose }) {
                   fallback={profile?.username?.[0] || 'U'}
                   showPresence={true}
                 />
-                <h2 className="user-profile-modal__username">@{profile?.username || 'User'}</h2>
+                <h2 className={styles.username}>@{profile?.username || 'User'}</h2>
               </div>
 
               {/* Location Information */}
               {locationAssociations && locationAssociations.length > 0 && (
-                <Card className="user-profile-modal__section">
+                <Card className={styles.section}>
                   <CardHeader>
                     <CardTitle>Location Information</CardTitle>
                   </CardHeader>
@@ -187,7 +187,7 @@ function UserProfileModal({ userId, onClose }) {
 
               {/* Personal Information */}
               {(profile?.username || profile?.occupation || profile?.description) && (
-                <Card className="user-profile-modal__section">
+                <Card className={styles.section}>
                   <CardHeader>
                     <CardTitle>Personal Information</CardTitle>
                   </CardHeader>
@@ -217,7 +217,7 @@ function UserProfileModal({ userId, onClose }) {
               {/* Contact Information */}
               {(profile?.viber_number || profile?.whatsapp_number || profile?.facebook_url ||
                 profile?.messenger_url || profile?.instagram_url || profile?.tiktok_url) && (
-                  <Card className="user-profile-modal__section">
+                  <Card className={styles.section}>
                     <CardHeader>
                       <CardTitle>Contact Information</CardTitle>
                     </CardHeader>
@@ -260,7 +260,7 @@ function UserProfileModal({ userId, onClose }) {
 
               {/* User Service */}
               {userService && (
-                <Card className="user-profile-modal__section">
+                <Card className={styles.section}>
                   <CardHeader>
                     <CardTitle>Service</CardTitle>
                   </CardHeader>
@@ -369,7 +369,7 @@ function UserProfileModal({ userId, onClose }) {
 
               {/* Business Inside */}
               {businessInside && (
-                <Card className="user-profile-modal__section">
+                <Card className={styles.section}>
                   <CardHeader>
                     <CardTitle>Business Inside</CardTitle>
                   </CardHeader>
@@ -492,7 +492,7 @@ function UserProfileModal({ userId, onClose }) {
 
               {/* Business Outside */}
               {businessOutside && (
-                <Card className="user-profile-modal__section">
+                <Card className={styles.section}>
                   <CardHeader>
                     <CardTitle>Business Outside</CardTitle>
                   </CardHeader>
@@ -609,7 +609,7 @@ function UserProfileModal({ userId, onClose }) {
 
               {/* Empty State */}
               {!loading && !userService && !businessInside && !businessOutside && (
-                <div className="user-profile-modal__empty">
+                <div className={styles.empty}>
                   <p>No services or businesses listed yet.</p>
                 </div>
               )}

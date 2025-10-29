@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import './RecenterButton.css'
+import styles from './RecenterButton.module.css'
 import { LocateFixed } from 'lucide-react';
 
 /**
@@ -11,7 +11,7 @@ import { LocateFixed } from 'lucide-react';
 function RecenterButton({ onRecenter }) {
   return (
     <button
-      className="map-control-btn recenter-button"
+      className={`map-control-btn ${styles.recenterButton}`}
       onClick={onRecenter}
       aria-label="Recenter map"
       title="Recenter map"

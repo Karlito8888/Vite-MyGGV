@@ -1,12 +1,12 @@
 /* Input Component Styles - MOBILE FIRST (320px+) */
 
-.input-field {
+.inputField {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.input-label {
+.inputLabel {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-primary);
@@ -39,7 +39,7 @@ textarea.input {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
-.input-error {
+.inputError {
   font-size: 0.75rem;
   color: var(--color-error-text);
   margin-top: 0.25rem;

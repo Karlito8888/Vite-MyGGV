@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router'
 import { useUser } from '../contexts'
 import { Menu } from 'lucide-react'
-import './HamburgerButton.css'
+import styles from './HamburgerButton.module.css'
 
 function HamburgerButton({ onToggle, isOpen = false }) {
   const location = useLocation()
@@ -15,7 +15,7 @@ function HamburgerButton({ onToggle, isOpen = false }) {
 
   return (
     <button
-      className={`hamburger-btn ${isOpen ? "open" : ""} ${!user || !isProtectedRoute ? "disabled" : ""}`}
+      className={`${styles.hamburgerBtn} ${isOpen ? "open" : ""} ${!user || !isProtectedRoute ? styles.disabled : ""}`}
       onClick={user && isProtectedRoute ? onToggle : undefined}
       disabled={!user || !isProtectedRoute}
       aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}

@@ -3,7 +3,7 @@ import { BeatLoader } from 'react-spinners'
 import { Camera, Upload } from 'lucide-react'
 import ImageCropper from '../ImageCropper'
 import { avatarService } from '../../services/avatarService'
-import './AvatarUploader.css'
+import styles from './AvatarUploader.module.css'
 
 /**
  * Modern Avatar Uploader Component with drag & drop, preview, and cropping
@@ -37,9 +37,9 @@ function AvatarUploader({
   }, [currentAvatar])
 
   const sizeClasses = {
-    small: 'avatar-uploader--small',
-    medium: 'avatar-uploader--medium',
-    large: 'avatar-uploader--large'
+    small: styles.small,
+    medium: styles.medium,
+    large: styles.large
   }
 
   const iconSizes = {
@@ -149,42 +149,42 @@ function AvatarUploader({
 
   return (
     <>
-      <div className={`avatar-uploader ${sizeClasses[size]}`}>
+      <div className={`${styles.avatarUploader} ${sizeClasses[size]}`}>
         <div
-          className={`avatar-uploader__container ${isDragging ? 'dragging' : ''} ${isUploading ? 'uploading' : ''}`}
+          className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isUploading ? styles.uploading : ''}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={handleClick}
         >
           {/* Avatar Preview */}
-          <div className="avatar-uploader__preview">
+          <div className={styles.preview}>
             {previewUrl && !imageError ? (
               <img
                 src={previewUrl}
                 alt="Avatar preview"
-                className="avatar-uploader__image"
+                className={styles.image}
                 onError={handleImageError}
                 onLoad={handleImageLoad}
               />
             ) : (
-              <div className="avatar-uploader__fallback">
-                <span className="avatar-uploader__fallback-text">{fallbackText}</span>
+              <div className={styles.fallback}>
+                <span className={styles.fallbackText}>{fallbackText}</span>
               </div>
             )}
           </div>
 
           {/* Upload Overlay */}
-          <div className="avatar-uploader__overlay">
+          <div className={styles.overlay}>
             {isUploading ? (
-              <div className="avatar-uploader__loading">
+              <div className={styles.loading}>
                 <BeatLoader color="#ffffff" size={8} />
                 <span>Uploading...</span>
               </div>
             ) : (
-              <div className="avatar-uploader__actions">
-                <Camera className="avatar-uploader__icon" size={iconSizes[size]} />
-                <span className="avatar-uploader__text">
+              <div className={styles.actions}>
+                <Camera className={styles.icon} size={iconSizes[size]} />
+                <span className={styles.text}>
                   {previewUrl ? 'Change' : 'Upload'}
                 </span>
               </div>
@@ -193,8 +193,8 @@ function AvatarUploader({
 
           {/* Drag & Drop Indicator */}
           {isDragging && (
-            <div className="avatar-uploader__drag-indicator">
-              <Upload className="avatar-uploader__drag-icon" size={48} />
+            <div className={styles.dragIndicator}>
+              <Upload className={styles.dragIcon} size={48} />
               <span>Drop image here</span>
             </div>
           )}
@@ -208,7 +208,7 @@ function AvatarUploader({
           type="file"
           accept="image/*"
           onChange={handleInputChange}
-          className="avatar-uploader__input"
+          className={styles.input}
           disabled={isUploading}
           autoComplete="off"
         />

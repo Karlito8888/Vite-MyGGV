@@ -3,7 +3,7 @@
 /* ========================================
    OVERLAY TRÈS PRONONCÉ
    ======================================== */
-.modal-overlay {
+.modalOverlay {
   background-color: rgba(0, 0, 0, 0.85) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -13,26 +13,26 @@
    MOBILE FIRST - 320px+
    ======================================== */
 
-.coin-purchase-modal {
+.coinPurchaseModal {
   max-width: 100%;
   width: 95%;
 }
 
-.modal-description {
+.modalDescription {
   text-align: center;
   color: var(--color-text-secondary);
   margin-bottom: 1rem;
   font-size: 0.875rem;
 }
 
-.coin-packages {
+.coinPackages {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.coin-package {
+.coinPackage {
   position: relative;
   padding: 1rem 0.5rem;
   border: 2px solid var(--color-border);
@@ -44,23 +44,23 @@
   min-height: 48px;
 }
 
-.coin-package:hover {
+.coinPackage:hover {
   border-color: var(--color-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.coin-package.selected {
+.coinPackage.selected {
   border-color: var(--color-primary);
   background: var(--color-surface);
   box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
 }
 
-.coin-package.popular {
+.coinPackage.popular {
   border-color: var(--color-secondary);
 }
 
-.popular-badge {
+.popularBadge {
   position: absolute;
   top: -8px;
   left: 50%;
@@ -74,38 +74,38 @@
   white-space: nowrap;
 }
 
-.package-icon {
+.packageIcon {
   font-size: 1.75rem;
   margin-bottom: 0.25rem;
 }
 
-.package-coins {
+.packageCoins {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: 0.125rem;
 }
 
-.package-price {
+.packagePrice {
   font-size: 1.125rem;
   font-weight: 800;
   color: var(--color-primary);
   margin-bottom: 0.125rem;
 }
 
-.package-rate {
+.packageRate {
   font-size: 0.625rem;
   color: var(--color-text-secondary);
 }
 
-.purchase-summary {
+.purchaseSummary {
   background: var(--color-surface);
   border-radius: 0.75rem;
   padding: 0.75rem;
   margin-top: 1rem;
 }
 
-.summary-row {
+.summaryRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,11 +114,11 @@
   font-size: 0.875rem;
 }
 
-.summary-row:last-of-type {
+.summaryRow:last-of-type {
   border-bottom: none;
 }
 
-.summary-note {
+.summaryNote {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--color-border);
@@ -127,7 +127,7 @@
   font-size: 0.75rem;
 }
 
-.processing-state {
+.processingState {
   text-align: center;
   padding: 2rem 1rem;
 }
@@ -148,14 +148,14 @@
   }
 }
 
-.processing-state p {
+.processingState p {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
-.processing-state small {
+.processingState small {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
@@ -164,67 +164,67 @@
    TABLET - 481px+
    ======================================== */
 @media (min-width: 481px) {
-  .coin-purchase-modal {
+  .coinPurchaseModal {
     width: 90%;
     max-width: 600px;
   }
 
-  .modal-description {
+  .modalDescription {
     margin-bottom: 1.25rem;
     font-size: 0.9375rem;
   }
 
-  .coin-packages {
+  .coinPackages {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
     margin-bottom: 1.25rem;
   }
 
-  .coin-package {
+  .coinPackage {
     padding: 1.25rem 0.75rem;
   }
 
-  .popular-badge {
+  .popularBadge {
     top: -10px;
     padding: 0.25rem 0.625rem;
     font-size: 0.7rem;
   }
 
-  .package-icon {
+  .packageIcon {
     font-size: 2.25rem;
     margin-bottom: 0.375rem;
   }
 
-  .package-coins {
+  .packageCoins {
     font-size: 1.125rem;
     margin-bottom: 0.25rem;
   }
 
-  .package-price {
+  .packagePrice {
     font-size: 1.375rem;
     margin-bottom: 0.25rem;
   }
 
-  .package-rate {
+  .packageRate {
     font-size: 0.7rem;
   }
 
-  .purchase-summary {
+  .purchaseSummary {
     padding: 0.875rem;
     margin-top: 1.25rem;
   }
 
-  .summary-row {
+  .summaryRow {
     font-size: 0.9375rem;
   }
 
-  .summary-note {
+  .summaryNote {
     margin-top: 0.875rem;
     padding-top: 0.875rem;
     font-size: 0.8125rem;
   }
 
-  .processing-state {
+  .processingState {
     padding: 2.5rem 1rem;
   }
 
@@ -233,11 +233,11 @@
     height: 45px;
   }
 
-  .processing-state p {
+  .processingState p {
     font-size: 1.0625rem;
   }
 
-  .processing-state small {
+  .processingState small {
     font-size: 0.9375rem;
   }
 }
@@ -246,60 +246,60 @@
    DESKTOP - 769px+
    ======================================== */
 @media (min-width: 769px) {
-  .coin-purchase-modal {
+  .coinPurchaseModal {
     max-width: 700px;
   }
 
-  .modal-description {
+  .modalDescription {
     margin-bottom: 1.5rem;
     font-size: 1rem;
   }
 
-  .coin-packages {
+  .coinPackages {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
   }
 
-  .coin-package {
+  .coinPackage {
     padding: 1.5rem 1rem;
   }
 
-  .package-icon {
+  .packageIcon {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
   }
 
-  .package-coins {
+  .packageCoins {
     font-size: 1.25rem;
     margin-bottom: 0.25rem;
   }
 
-  .package-price {
+  .packagePrice {
     font-size: 1.5rem;
     margin-bottom: 0.25rem;
   }
 
-  .package-rate {
+  .packageRate {
     font-size: 0.75rem;
   }
 
-  .purchase-summary {
+  .purchaseSummary {
     padding: 1rem;
     margin-top: 1.5rem;
   }
 
-  .summary-row {
+  .summaryRow {
     font-size: 1rem;
   }
 
-  .summary-note {
+  .summaryNote {
     margin-top: 1rem;
     padding-top: 1rem;
     font-size: 0.875rem;
   }
 
-  .processing-state {
+  .processingState {
     padding: 3rem 1rem;
   }
 
@@ -309,11 +309,11 @@
     border-width: 4px;
   }
 
-  .processing-state p {
+  .processingState p {
     font-size: 1.125rem;
   }
 
-  .processing-state small {
+  .processingState small {
     font-size: 1rem;
   }
 }
@@ -322,7 +322,7 @@
    LARGE DESKTOP - 1024px+
    ======================================== */
 @media (min-width: 1024px) {
-  .coin-packages {
+  .coinPackages {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }

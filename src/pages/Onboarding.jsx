@@ -12,7 +12,7 @@ import { useUser } from "../contexts";
 import AvatarUploader from "../components/ui/AvatarUploader";
 import Button from "../components/ui/Button";
 import Picker from "react-mobile-picker";
-import "../styles/Onboarding.css";
+import styles from "../styles/Onboarding.module.css";
 
 function Onboarding() {
   const navigate = useNavigate();
@@ -253,8 +253,8 @@ function Onboarding() {
   }
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <div className={`page-container ${styles.pageContainer}`}>
+      <div className={`page-content ${styles.pageContent}`}>
         <div className="page-header">
           <h2>Welcome to Your PWA App!</h2>
           <p className="page-subtitle">
@@ -263,10 +263,10 @@ function Onboarding() {
         </div>
 
         {errors.root && (
-          <div className="error-message">{errors.root.message}</div>
+          <div className={styles.errorMessage}>{errors.root.message}</div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="onboarding-form">
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.onboardingForm}>
           <div className="form-group">
             <label htmlFor="username">Username *</label>
             <Controller
@@ -290,7 +290,7 @@ function Onboarding() {
               )}
             />
             {errors.username && (
-              <span className="error-text">{errors.username.message}</span>
+              <span className={styles.errorText}>{errors.username.message}</span>
             )}
             <small>
               Required: Letters, numbers, underscores, spaces, and hyphens (min 3 characters)
@@ -299,7 +299,7 @@ function Onboarding() {
 
           <div className="form-group">
             <label>Profile Picture *</label>
-            <div className="avatar-upload-container">
+            <div className={styles.avatarUploadContainer}>
               <AvatarUploader
                 currentAvatar={currentAvatar}
                 userId={user.id}
@@ -307,13 +307,13 @@ function Onboarding() {
                 fallback={watch("username") || "U"}
                 size="large"
               />
-              <div className="avatar-upload-info">
+              <div className={styles.avatarUploadInfo}>
                 <p>Drag & drop or click to upload your profile picture</p>
                 <small>Required: Square image, at least 200x200px, max 5MB</small>
               </div>
             </div>
             {errors.avatar_url && (
-              <span className="error-text">{errors.avatar_url.message}</span>
+              <span className={styles.errorText}>{errors.avatar_url.message}</span>
             )}
             <Controller
               name="avatar_url"
@@ -328,9 +328,9 @@ function Onboarding() {
               name="block"
               control={control}
               render={({ field }) => (
-                <div className="wheel-picker-container">
+                <div className={styles.wheelPickerContainer}>
                   {loadingBlocks ? (
-                    <div className="picker-loading">Loading blocks...</div>
+                    <div className={styles.pickerLoading}>Loading blocks...</div>
                   ) : availableBlocks.length > 0 ? (
                     <Picker
                       value={{ block: field.value || "" }}
@@ -362,7 +362,7 @@ function Onboarding() {
                       </Picker.Column>
                     </Picker>
                   ) : (
-                    <div className="picker-placeholder">
+                    <div className={styles.pickerPlaceholder}>
                       No blocks available
                     </div>
                   )}
@@ -370,10 +370,10 @@ function Onboarding() {
               )}
             />
             {errors.block && (
-              <span className="error-text">{errors.block.message}</span>
+              <span className={styles.errorText}>{errors.block.message}</span>
             )}
             {blocksError && (
-              <span className="error-text">{blocksError}</span>
+              <span className={styles.errorText}>{blocksError}</span>
             )}
             <small>Select your block number from available locations</small>
           </div>
@@ -388,11 +388,11 @@ function Onboarding() {
                   className={`wheel-picker-container ${!selectedBlock ? "disabled" : ""}`}
                 >
                   {!selectedBlock ? (
-                    <div className="picker-placeholder">
+                    <div className={styles.pickerPlaceholder}>
                       Select a block first
                     </div>
                   ) : loadingLots ? (
-                    <div className="picker-loading">Loading lots...</div>
+                    <div className={styles.pickerLoading}>Loading lots...</div>
                   ) : availableLots.length > 0 ? (
                     <Picker
                       value={{ lot: field.value || "" }}
@@ -424,7 +424,7 @@ function Onboarding() {
                       </Picker.Column>
                     </Picker>
                   ) : (
-                    <div className="picker-placeholder">
+                    <div className={styles.pickerPlaceholder}>
                       No lots available
                     </div>
                   )}
@@ -432,10 +432,10 @@ function Onboarding() {
               )}
             />
             {errors.lot && (
-              <span className="error-text">{errors.lot.message}</span>
+              <span className={styles.errorText}>{errors.lot.message}</span>
             )}
             {lotsError && (
-              <span className="error-text">{lotsError}</span>
+              <span className={styles.errorText}>{lotsError}</span>
             )}
             <small>Select your lot number from available locations</small>
           </div>

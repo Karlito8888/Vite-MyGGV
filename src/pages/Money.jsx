@@ -6,7 +6,7 @@ import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../co
 import Button from '../components/ui/Button'
 import ReferralModal from '../components/ReferralModal'
 import ReferralCodeInput from '../components/ReferralCodeInput'
-import '../styles/Money.css'
+import styles from '../styles/Money.module.css'
 
 function Money() {
   const { profile, refreshProfile } = useUser()
@@ -113,9 +113,9 @@ function Money() {
           <p className="page-subtitle">Manage your coins and collect daily rewards</p>
         </div>
 
-        <div className="money-grid">
+        <div className={styles.moneyGrid}>
           {/* Card 1: Coin Balance */}
-          <Card className="money-card balance-card">
+          <Card className={`${styles.moneyCard} ${styles.balanceCard}`}>
             <CardHeader>
               <CardTitle>💰 Your Balance</CardTitle>
               <CardDescription>
@@ -123,16 +123,16 @@ function Money() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="balance-display">
-                <span className="balance-icon">🪙</span>
-                <span className="balance-amount">{userCoins}</span>
-                <span className="balance-label">coins</span>
+              <div className={styles.balanceDisplay}>
+                <span className={styles.balanceIcon}>🪙</span>
+                <span className={styles.balanceAmount}>{userCoins}</span>
+                <span className={styles.balanceLabel}>coins</span>
               </div>
             </CardContent>
           </Card>
 
           {/* Card 2: Daily Collection */}
-          <Card className="money-card collection-card">
+          <Card className={`${styles.moneyCard} ${styles.collectionCard}`}>
             <CardHeader>
               <CardTitle>🎁 Daily Reward</CardTitle>
               <CardDescription>
@@ -141,14 +141,14 @@ function Money() {
             </CardHeader>
             <CardContent>
               {checkingStatus ? (
-                <div className="collection-status">
-                  <p className="status-text">Checking status...</p>
+                <div className={styles.collectionStatus}>
+                  <p className={styles.statusText}>Checking status...</p>
                 </div>
               ) : collectionStatus?.can_collect ? (
-                <div className="collection-available">
-                  <div className="reward-display">
-                    <span className="reward-icon">🎁</span>
-                    <span className="reward-text">+1 coin available!</span>
+                <div className={styles.collectionAvailable}>
+                  <div className={styles.rewardDisplay}>
+                    <span className={styles.rewardIcon}>🎁</span>
+                    <span className={styles.rewardText}>+1 coin available!</span>
                   </div>
                   <Button
                     variant="primary"
@@ -161,18 +161,18 @@ function Money() {
                   </Button>
                 </div>
               ) : (
-                <div className="collection-unavailable">
-                  <div className="status-info">
-                    <p className="status-text">✅ Already collected today</p>
+                <div className={styles.collectionUnavailable}>
+                  <div className={styles.statusInfo}>
+                    <p className={styles.statusText}>✅ Already collected today</p>
                     {collectionStatus?.last_collection && (
-                      <p className="last-collection">
+                      <p className={styles.lastCollection}>
                         Last collection: {new Date(collectionStatus.last_collection).toLocaleString()}
                       </p>
                     )}
                   </div>
-                  <div className="next-collection">
-                    <p className="next-label">Next collection in:</p>
-                    <p className="countdown">{timeUntilNext}</p>
+                  <div className={styles.nextCollection}>
+                    <p className={styles.nextLabel}>Next collection in:</p>
+                    <p className={styles.countdown}>{timeUntilNext}</p>
                   </div>
                   <Button
                     variant="secondary"
@@ -185,7 +185,7 @@ function Money() {
               )}
 
               {!profile && (
-                <p className="warning-text">
+                <p className={styles.warningText}>
                   You must be logged in to collect coins
                 </p>
               )}
@@ -233,7 +233,7 @@ function Money() {
           </Card> */}
 
           {/* Card 4: Referral Program */}
-          <Card className="money-card referral-card">
+          <Card className={`${styles.moneyCard} ${styles.referralCard}`}>
             <CardHeader>
               <CardTitle>🎁 Invite Friends</CardTitle>
               <CardDescription>
@@ -241,21 +241,21 @@ function Money() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="referral-info">
-                <div className="referral-icon">👥</div>
-                <p className="referral-text">
+              <div className={styles.referralInfo}>
+                <div className={styles.referralIcon}>👥</div>
+                <p className={styles.referralText}>
                   Share your referral code with friends. When they complete their profile, you both get bonus coins!
                 </p>
-                <div className="referral-rewards">
-                  <div className="reward-item">
-                    <span className="reward-emoji">🎉</span>
+                <div className={styles.referralRewards}>
+                  <div className={styles.rewardItem}>
+                    <span className={styles.rewardEmoji}>🎉</span>
                     <div>
                       <strong>You get 10 coins</strong>
                       <p>For each successful referral</p>
                     </div>
                   </div>
-                  <div className="reward-item">
-                    <span className="reward-emoji">🎁</span>
+                  <div className={styles.rewardItem}>
+                    <span className={styles.rewardEmoji}>🎁</span>
                     <div>
                       <strong>They get 10 coins</strong>
                       <p>Welcome bonus for new users</p>
@@ -271,51 +271,74 @@ function Money() {
                   📱 Share this app with a QR
                 </Button>
 
-                {/* Only show referral code input if user hasn't been referred yet */}
-                {profile && !profile.referred_by && (
-                  <ReferralCodeInput
-                    onSuccess={() => {
-                      toast.success('🎉 Referral code applied! You\'ll get 10 bonus coins when you complete your profile.');
-                      refreshProfile();
-                    }}
-                  />
-                )}
+                {/* Only show referral code input if user hasn't been referred yet and within 48h window */}
+                {profile && !profile.referred_by && (() => {
+                  const REFERRAL_WINDOW_HOURS = 48;
+                  const createdAt = new Date(profile.created_at);
+                  const now = new Date();
+                  const hoursSinceRegistration = (now - createdAt) / (1000 * 60 * 60);
+                  const isWithinWindow = hoursSinceRegistration <= REFERRAL_WINDOW_HOURS;
+                  const hoursRemaining = Math.max(0, REFERRAL_WINDOW_HOURS - hoursSinceRegistration);
+
+                  return isWithinWindow ? (
+                    <div style={{ marginTop: '1rem' }}>
+                      {hoursRemaining < 24 && (
+                        <p style={{
+                          fontSize: '0.85rem',
+                          color: '#ff6b6b',
+                          textAlign: 'center',
+                          marginBottom: '0.75rem',
+                          fontWeight: '500'
+                        }}>
+                          ⏰ Only {Math.floor(hoursRemaining)} hours left to use a referral code!
+                        </p>
+                      )}
+                      <ReferralCodeInput
+                        onSuccess={() => {
+                          toast.success('🎉 Referral code applied! You both received 10 coins!');
+                          refreshProfile();
+                        }}
+                      />
+                    </div>
+                  ) : null;
+                })()}
               </div>
             </CardContent>
           </Card>
 
-          {/* Card 5: How to Earn */}
-          <Card className="money-card info-card">
+          {/* Card 5: Coming Soon - Rewarded Videos */}
+          <Card className={styles.moneyCard}>
             <CardHeader>
-              <CardTitle>📊 How to Earn Coins</CardTitle>
+              <CardTitle>🎬 Coming Soon</CardTitle>
               <CardDescription>
-                Free ways to get more coins
+                More ways to earn coins
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="earn-list">
-                <li className="earn-item">
-                  <span className="earn-icon">🎁</span>
-                  <div className="earn-details">
-                    <strong>Daily Collection</strong>
-                    <p>Collect 1 free coin every day</p>
+              <div className={styles.comingSoonContent}>
+                <div className={styles.comingSoonIcon}>📺</div>
+                <h3 className={styles.comingSoonTitle}>Rewarded Videos</h3>
+                <p className={styles.comingSoonText}>
+                  Based on the success of this app, we'll introduce rewarded video ads where you can watch short videos to earn bonus coins!
+                </p>
+                <div className={styles.comingSoonFeatures}>
+                  <div className={styles.featureItem}>
+                    <span>🎥</span>
+                    <span>Watch short videos</span>
                   </div>
-                </li>
-                <li className="earn-item">
-                  <span className="earn-icon">👥</span>
-                  <div className="earn-details">
-                    <strong>Refer Friends</strong>
-                    <p>Earn 10 coins per referral</p>
+                  <div className={styles.featureItem}>
+                    <span>🪙</span>
+                    <span>Earn bonus coins</span>
                   </div>
-                </li>
-                <li className="earn-item">
-                  <span className="earn-icon">🏆</span>
-                  <div className="earn-details">
-                    <strong>Achievements</strong>
-                    <p>Complete challenges for rewards</p>
+                  <div className={styles.featureItem}>
+                    <span>⚡</span>
+                    <span>Quick & easy rewards</span>
                   </div>
-                </li>
-              </ul>
+                </div>
+                <div className={styles.comingSoonBadge}>
+                  <span>🚀 Coming Soon</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -8,7 +8,7 @@ import { updateUserPassword } from '../utils/authHelpers'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
-import '../styles/login.css'
+import styles from '../styles/login.module.css'
 
 // Conditional logging for development only
 const log = import.meta.env.DEV ? console.log : () => { }
@@ -153,25 +153,25 @@ export default function UpdatePassword() {
     // Show loading while checking session
     if (!sessionChecked) {
         return (
-            <div className="login-container">
-                <div className="login-wrapper">
-                    <div className="login-header">
-                        <div className="login-logo">
+            <div className={styles.loginContainer}>
+                <div className={styles.loginWrapper}>
+                    <div className={styles.loginHeader}>
+                        <div className={styles.loginLogo}>
                             <img
                                 src="/src/assets/logos/ggv-100.png"
                                 alt="GGV"
                             />
                         </div>
-                        <div className="login-title-section">
-                            <h2 className="login-title">
+                        <div className={styles.loginTitleSection}>
+                            <h2 className={styles.loginTitle}>
                                 MyGGV
                             </h2>
                         </div>
                     </div>
                     <Card>
                         <CardContent>
-                            <div className="login-message">
-                                <div className="login-spinner" />
+                            <div className={styles.loginMessage}>
+                                <div className={styles.loginSpinner} />
                                 Verifying session...
                             </div>
                         </CardContent>
@@ -184,17 +184,17 @@ export default function UpdatePassword() {
     // Show error if no valid session
     if (!isValidSession) {
         return (
-            <div className="login-container">
-                <div className="login-wrapper">
-                    <div className="login-header">
-                        <div className="login-logo">
+            <div className={styles.loginContainer}>
+                <div className={styles.loginWrapper}>
+                    <div className={styles.loginHeader}>
+                        <div className={styles.loginLogo}>
                             <img
                                 src="/src/assets/logos/ggv-100.png"
                                 alt="GGV"
                             />
                         </div>
-                        <div className="login-title-section">
-                            <h2 className="login-title">
+                        <div className={styles.loginTitleSection}>
+                            <h2 className={styles.loginTitle}>
                                 MyGGV
                             </h2>
                         </div>
@@ -207,14 +207,14 @@ export default function UpdatePassword() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="login-message login-message-error">
+                            <div className={`${styles.loginMessage} ${styles.loginMessageError}`}>
                                 Please request a new password reset link from the login page.
                             </div>
                             <Button
                                 onClick={handleBackToLogin}
                                 variant="primary"
                                 fullWidth
-                                className="login-button"
+                                className={styles.loginButton}
                             >
                                 Back to Login
                             </Button>
@@ -226,17 +226,17 @@ export default function UpdatePassword() {
     }
 
     return (
-        <div className="login-container">
-            <div className="login-wrapper">
-                <div className="login-header">
-                    <div className="login-logo">
+        <div className={styles.loginContainer}>
+            <div className={styles.loginWrapper}>
+                <div className={styles.loginHeader}>
+                    <div className={styles.loginLogo}>
                         <img
                             src="/src/assets/logos/ggv-100.png"
                             alt="GGV"
                         />
                     </div>
-                    <div className="login-title-section">
-                        <h2 className="login-title">
+                    <div className={styles.loginTitleSection}>
+                        <h2 className={styles.loginTitle}>
                             MyGGV
                         </h2>
                     </div>
@@ -259,7 +259,7 @@ export default function UpdatePassword() {
                                     onClick={handleBackToLogin}
                                     variant="outline"
                                     fullWidth
-                                    className="login-button"
+                                    className={styles.loginButton}
                                 >
                                     Go to Login Now
                                 </Button>
@@ -283,7 +283,7 @@ export default function UpdatePassword() {
                                     {...register('confirmPassword')}
                                 />
                                 {error && (
-                                    <div className="login-message login-message-error">
+                                    <div className={`${styles.loginMessage} ${styles.loginMessageError}`}>
                                         {error}
                                     </div>
                                 )}
@@ -293,7 +293,7 @@ export default function UpdatePassword() {
                                         variant="primary"
                                         loading={loading}
                                         disabled={loading}
-                                        className="login-button"
+                                        className={styles.loginButton}
                                     >
                                         Update Password
                                     </Button>
@@ -302,7 +302,7 @@ export default function UpdatePassword() {
                                         onClick={handleBackToLogin}
                                         disabled={loading}
                                         variant="outline"
-                                        className="login-button"
+                                        className={styles.loginButton}
                                     >
                                         Cancel
                                     </Button>

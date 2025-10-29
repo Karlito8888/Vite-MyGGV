@@ -1,6 +1,6 @@
 /* Select Component Styles - MOBILE FIRST (320px+) */
 
-.select-input {
+.selectInput {
   width: 100%;
   min-height: 48px;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
@@ -20,42 +20,42 @@
   background-size: 20px;
 }
 
-.select-input:hover:not(:disabled) {
+.selectInput:hover:not(:disabled) {
   border-color: var(--color-primary);
 }
 
-.select-input:focus {
+.selectInput:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(91, 196, 109, 0.1);
 }
 
-.select-input:disabled,
-.select-disabled {
+.selectInput:disabled,
+.selectDisabled {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: var(--color-surface);
 }
 
-.select-error {
+.selectError {
   border-color: var(--color-error-text);
 }
 
-.select-error:focus {
+.selectError:focus {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.select-input option {
+.selectInput option {
   padding: 0.5rem;
   background-color: var(--color-surface);
   color: var(--color-text-primary);
 }
 
-.required-indicator {
+.requiredIndicator {
   color: var(--color-error-text);
   font-weight: 600;
 }
 
-.helper-text {
+.helperText {
   display: block;
   margin-top: 0.25rem;
   font-size: 0.875rem;
@@ -65,14 +65,14 @@
 
 /* Tablet enhancements (481px+) */
 @media (min-width: 481px) {
-  .select-input {
+  .selectInput {
     font-size: 0.9375rem;
   }
 }
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
-  .select-input {
+  .selectInput {
     font-size: 1rem;
   }
 }

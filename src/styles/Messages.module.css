@@ -2,20 +2,20 @@
 /* Common page structure inherited from index.css */
 
 /* Messages Grid */
-.messages-grid {
+.messagesGrid {
     display: grid;
     gap: 1.25rem;
     grid-template-columns: 1fr;
 }
 
-.message-card {
+.messageCard {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 /* Coins Balance */
-.coins-balance {
+.coinsBalance {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -26,53 +26,53 @@
     border: 1px solid var(--color-border);
 }
 
-.coins-icon {
+.coinsIcon {
     font-size: 1.25rem;
 }
 
-.coins-text {
+.coinsText {
     color: var(--color-text-secondary);
     font-size: 0.9375rem;
 }
 
-.coins-text strong {
+.coinsText strong {
     color: var(--color-primary);
     font-weight: 600;
 }
 
 /* Message Form */
-.message-form {
+.messageForm {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.message-form textarea {
+.messageForm textarea {
     min-height: 100px;
     resize: vertical;
     font-family: inherit;
 }
 
 /* Duration Selector */
-.duration-selector {
+.durationSelector {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.duration-label {
+.durationLabel {
     color: var(--color-text-primary);
     font-size: 0.9375rem;
     font-weight: 500;
 }
 
-.duration-options {
+.durationOptions {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.75rem;
 }
 
-.duration-option {
+.durationOption {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,39 +87,39 @@
     min-height: 48px;
 }
 
-.duration-option:hover:not(.disabled) {
+.durationOption:hover:not(.disabled) {
     border-color: var(--color-primary);
     background: rgba(91, 196, 109, 0.05);
 }
 
-.duration-option.active {
+.durationOption.active {
     border-color: var(--color-primary);
     background: rgba(91, 196, 109, 0.1);
 }
 
-.duration-option.disabled {
+.durationOption.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.duration-time {
+.durationTime {
     color: var(--color-text-primary);
     font-size: 0.9375rem;
     font-weight: 500;
 }
 
-.duration-cost {
+.durationCost {
     color: var(--color-text-secondary);
     font-size: 0.8125rem;
 }
 
-.duration-insufficient {
+.durationInsufficient {
     color: var(--color-error-text, #ef4444);
     font-size: 0.75rem;
     font-style: italic;
 }
 
-.message-warning {
+.messageWarning {
     color: var(--color-text-secondary);
     font-size: 0.8125rem;
     text-align: center;
@@ -128,18 +128,18 @@
 }
 
 /* Private Messages Info */
-.private-messages-info {
+.privateMessagesInfo {
     margin-bottom: 1.5rem;
 }
 
-.info-text {
+.infoText {
     color: var(--color-text-secondary);
     font-size: 0.9375rem;
     line-height: 1.6;
     margin-bottom: 1rem;
 }
 
-.features-list {
+.featuresList {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -148,56 +148,19 @@
     gap: 0.5rem;
 }
 
-.features-list li {
+.featuresList li {
     color: var(--color-text-primary);
     font-size: 0.875rem;
     padding-left: 0.25rem;
 }
 
-/* Tablet (481px+) */
-@media (min-width: 481px) {
-    .messages-grid {
-        gap: 1.5rem;
-    }
-
-    .message-form {
-        gap: 1.25rem;
-    }
-
-    .duration-options {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .info-text {
-        font-size: 1rem;
-    }
-
-    .features-list li {
-        font-size: 0.9375rem;
-    }
-}
-
-/* Desktop (769px+) */
-@media (min-width: 769px) {
-    .messages-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
-
-    .message-form {
-        gap: 1.5rem;
-    }
-}
-
-/* Large Desktop (1024px+) - No specific Messages styles needed */
-/*
- Character counter */
-.message-input-wrapper {
+/* Character counter */
+.messageInputWrapper {
   position: relative;
   width: 100%;
 }
 
-.character-counter {
+.characterCounter {
   font-size: 0.875rem;
   color: var(--color-muted, #6c757d);
   text-align: right;
@@ -205,12 +168,47 @@
   transition: color 0.2s ease;
 }
 
-.character-counter.warning {
+.characterCounter.warning {
   color: var(--color-warning, #ffc107);
   font-weight: 500;
 }
 
-.character-counter.error {
+.characterCounter.error {
   color: var(--color-error, #dc3545);
   font-weight: 600;
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+    .messagesGrid {
+        gap: 1.5rem;
+    }
+
+    .messageForm {
+        gap: 1.25rem;
+    }
+
+    .durationOptions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .infoText {
+        font-size: 1rem;
+    }
+
+    .featuresList li {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+    .messagesGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .messageForm {
+        gap: 1.5rem;
+    }
 }

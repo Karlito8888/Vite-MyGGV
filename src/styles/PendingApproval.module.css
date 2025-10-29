@@ -1,15 +1,6 @@
 /* MOBILE FIRST - Base styles for 320px+ */
-/* .page-container défini dans index.css */
 
-/* Variante centrée pour cette page spéciale */
-.page-centered {
-  min-height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.pending-approval-content {
+.pendingApprovalContent {
   max-width: 600px;
   width: 100%;
   text-align: center;
@@ -21,13 +12,13 @@
   animation: fadeInUp 0.4s ease;
 }
 
-.icon-container {
+.iconContainer {
   font-size: 4rem;
   margin-bottom: 1rem;
   animation: pulse-subtle 3s ease-in-out infinite;
 }
 
-.pending-approval-content h1 {
+.pendingApprovalContent h1 {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -46,7 +37,7 @@
   font-weight: 600;
 }
 
-.sub-message {
+.subMessage {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin: 0 0 1.5rem 0;
@@ -61,12 +52,11 @@
   margin-bottom: 1.5rem;
 }
 
-/* Actions - Utilise le composant Button */
-.actions .btn {
+.actions :global(.btn) {
   width: 100%;
 }
 
-.info-box {
+.infoBox {
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
@@ -74,42 +64,42 @@
   text-align: left;
 }
 
-.info-box p {
+.infoBox p {
   margin: 0 0 0.875rem 0;
   font-weight: 600;
   color: var(--color-text-primary);
   font-size: 0.9375rem;
 }
 
-.info-box ul {
+.infoBox ul {
   margin: 0;
   padding-left: 1.25rem;
   list-style-type: disc;
 }
 
-.info-box li {
+.infoBox li {
   margin-bottom: 0.5rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
   font-size: 0.875rem;
 }
 
-.info-box li:last-child {
+.infoBox li:last-child {
   margin-bottom: 0;
 }
 
 /* Small tablets and larger phones (481px+) */
 @media (min-width: 481px) {
-  .pending-approval-content {
+  .pendingApprovalContent {
     padding: 2.5rem 1.75rem;
   }
 
-  .icon-container {
+  .iconContainer {
     font-size: 4.5rem;
     margin-bottom: 1.25rem;
   }
 
-  .pending-approval-content h1 {
+  .pendingApprovalContent h1 {
     font-size: 1.75rem;
     margin-bottom: 1.25rem;
   }
@@ -119,7 +109,7 @@
     margin-bottom: 0.9375rem;
   }
 
-  .sub-message {
+  .subMessage {
     font-size: 0.9375rem;
     margin-bottom: 1.75rem;
   }
@@ -130,38 +120,38 @@
     margin-bottom: 1.75rem;
   }
 
-  .actions .btn {
+  .actions :global(.btn) {
     width: auto;
     min-width: 150px;
     padding: 1rem 1.5rem;
   }
 
-  .info-box {
+  .infoBox {
     padding: 1.375rem;
   }
 
-  .info-box p {
+  .infoBox p {
     font-size: 1rem;
     margin-bottom: 0.9375rem;
   }
 
-  .info-box li {
+  .infoBox li {
     font-size: 0.9375rem;
   }
 }
 
 /* Tablets and larger (769px+) */
 @media (min-width: 769px) {
-  .pending-approval-content {
+  .pendingApprovalContent {
     padding: 3rem 2rem;
   }
 
-  .icon-container {
+  .iconContainer {
     font-size: 5rem;
     margin-bottom: 1.5rem;
   }
 
-  .pending-approval-content h1 {
+  .pendingApprovalContent h1 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
   }
@@ -171,7 +161,7 @@
     margin-bottom: 1rem;
   }
 
-  .sub-message {
+  .subMessage {
     font-size: 1rem;
     margin-bottom: 2rem;
   }
@@ -180,19 +170,19 @@
     margin-bottom: 2rem;
   }
 
-  .actions .btn {
+  .actions :global(.btn) {
     padding: 1rem 2rem;
   }
 
-  .info-box {
+  .infoBox {
     padding: 1.5rem;
   }
 
-  .info-box p {
+  .infoBox p {
     margin-bottom: 1rem;
   }
 
-  .info-box li {
+  .infoBox li {
     font-size: 1rem;
   }
 }

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 import Button from '../components/ui/Button'
-import '../styles/NotFound.css'
+import styles from '../styles/NotFound.module.css'
 
 function NotFound() {
   const navigate = useNavigate()
@@ -11,7 +11,7 @@ function NotFound() {
         <div className="page-not-found">
           <h1>404</h1>
           <p>Page not found</p>
-          <Button 
+          <Button
             onClick={() => navigate('/home')}
             variant="primary"
           >

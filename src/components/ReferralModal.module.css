@@ -1,0 +1,193 @@
+/* Referral Modal Styles - CSS Module */
+/* Suit la politique de style de index.css et CSS-REFERENCE.md */
+/* Utilise les variables CSS globales et les composants UI (Button, Card) */
+
+.referralModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-overlay);
+  padding: 1rem;
+}
+
+.referralModal {
+  background: var(--color-background);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.referralModalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.referralModalClose:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.referralModal h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.referralSubtitle {
+  color: var(--color-text-secondary);
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.referralLoading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+/* QR Code Section */
+.referralQrSection {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.qrCodeContainer {
+  display: inline-block;
+  padding: 1.5rem;
+  background: var(--color-background);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-border);
+}
+
+.qrCodeContainer svg {
+  display: block;
+  border-radius: 8px;
+}
+
+.qrInstruction {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Referral Code Section */
+.referralCodeSection {
+  margin-bottom: 2rem;
+}
+
+.referralCodeSection label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.referralCodeDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.referralCode {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+/* How it works */
+.referralHowItWorks {
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.referralHowItWorks h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.referralHowItWorks ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.referralHowItWorks li {
+  margin-bottom: 0.5rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.referralHowItWorks strong {
+  color: var(--color-primary);
+}
+
+/* Responsive - Mobile First */
+@media (min-width: 481px) {
+  .referralModal {
+    padding: 2rem;
+  }
+
+  .referralModal h2 {
+    font-size: 1.75rem;
+  }
+
+  .referralCode {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .referralModal h2 {
+    font-size: 2rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .referralModal {
+    animation: none;
+    transition: none;
+  }
+}

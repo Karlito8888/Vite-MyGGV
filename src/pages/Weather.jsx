@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { weatherService } from '../services/weatherService'
 import Clock from '../components/ui/Clock'
-import '../styles/Weather.css'
+import styles from '../styles/Weather.module.css'
 
 function Weather() {
   const [weatherData, setWeatherData] = useState(null)
@@ -93,7 +93,7 @@ function Weather() {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="weather-loading">
+        <div className={styles.weatherLoading}>
           <Cloud className="animate-pulse" size={32} />
           <p>Loading weather data...</p>
         </div>
@@ -104,7 +104,7 @@ function Weather() {
   if (error && !weatherData) {
     return (
       <div className="page-container">
-        <div className="weather-error">
+        <div className={styles.weatherError}>
           <p>{error}</p>
         </div>
       </div>
@@ -123,14 +123,14 @@ function Weather() {
         <div className="page-header">
           <div className="page-header-info">
             <h2>Weather</h2>
-            <div className="location-info">
+            <div className={styles.locationInfo}>
               <span>{weatherData.location.name}</span>
             </div>
-            <Clock className="weather-clock" showIcon={false} showDate={true} />
+            <Clock className={styles.weatherClock} showIcon={false} showDate={true} />
           </div>
         </div>
 
-        <div className="weather-tabs">
+        <div className={styles.weatherTabs}>
         <button
           className={`tab-button ${activeTab === 'current' ? 'active' : ''}`}
           onClick={() => setActiveTab('current')}
@@ -151,43 +151,43 @@ function Weather() {
         </button>
       </div>
 
-        <div className="tab-content">
+        <div className={styles.tabContent}>
           {activeTab === 'current' && (
-          <div className="current-weather">
-            <div className="current-main">
-              <div className="temperature-display">
-                <WeatherIcon size={64} className="weather-icon-main" />
-                <div className="temperature-value">
+          <div className={styles.currentWeather}>
+            <div className={styles.currentMain}>
+              <div className={styles.temperatureDisplay}>
+                <WeatherIcon size={64} className={styles.weatherIconMain} />
+                <div className={styles.temperatureValue}>
                   {weatherData.current.temperature}°C
                 </div>
               </div>
-              <div className="weather-description">
+              <div className={styles.weatherDescription}>
                 {weatherData.current.weatherDescription}
               </div>
             </div>
             
-            <div className="current-details">
-              <div className="detail-item">
+            <div className={styles.currentDetails}>
+              <div className={styles.detailItem}>
                 <Thermometer size={20} />
                 <span>Feels like {weatherData.current.feelsLike}°C</span>
               </div>
-              <div className="detail-item">
+              <div className={styles.detailItem}>
                 <Droplets size={20} />
                 <span>Humidity {weatherData.current.humidity}%</span>
               </div>
-              <div className="detail-item">
+              <div className={styles.detailItem}>
                 <Wind size={20} />
                 <span>Wind {weatherData.current.windSpeed} km/h</span>
               </div>
             </div>
             
             {weatherData.daily.sunrise && weatherData.daily.sunset && (
-              <div className="sun-times">
-                <div className="sun-time-item">
+              <div className={styles.sunTimes}>
+                <div className={styles.sunTimeItem}>
                   <Sunrise size={20} />
                   <span>{formatTime(weatherData.daily.sunrise[0])}</span>
                 </div>
-                <div className="sun-time-item">
+                <div className={styles.sunTimeItem}>
                   <Sunset size={20} />
                   <span>{formatTime(weatherData.daily.sunset[0])}</span>
                 </div>

@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
     // Get current user profile
     const { data: currentUser, error: currentUserError } = await supabaseAdmin
       .from('profiles')
-      .select('id, referred_by, onboarding_completed, coins')
+      .select('id, referred_by, onboarding_completed, coins, created_at')
       .eq('id', user.id)
       .single();
 
@@ -110,10 +110,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if onboarding is completed
-    if (!currentUser.onboarding_completed) {
+    // Anti-abuse measure: Check if user is within the 48-hour window after registration
+    // This prevents users from using referral codes long after they've joined
+    // The same check is performed on the frontend to hide the input after 48h
+    const REFERRAL_WINDOW_HOURS = 48;
+    const createdAt = new Date(currentUser.created_at);
+    const now = new Date();
+    const hoursSinceRegistration = (now - createdAt) / (1000 * 60 * 60);
+
+    if (hoursSinceRegistration > REFERRAL_WINDOW_HOURS) {
       return new Response(
-        JSON.stringify({ valid: false, error: 'Please complete your profile setup first before using a referral code.' }),
+        JSON.stringify({ 
+          valid: false, 
+          error: 'The referral code window has expired. You can only use a referral code within 48 hours of registration.' 
+        }),
         {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -121,13 +131,20 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Note: onboarding_completed check removed because user can only access
+    // the Money page (where referral codes are entered) after completing onboarding
+    // This is enforced by the frontend routing protection
+
     const referrerReward = 10;
     const referredReward = 10;
 
-    // Update user profile with referrer
+    // Update user profile with referrer and add coins in one transaction
     const { error: updateError } = await supabaseAdmin
       .from('profiles')
-      .update({ referred_by: referrer.id })
+      .update({
+        referred_by: referrer.id,
+        coins: currentUser.coins + referredReward
+      })
       .eq('id', user.id);
 
     if (updateError) {
@@ -149,16 +166,18 @@ Deno.serve(async (req) => {
 
     if (referrerCoinsError) {
       console.error('Error updating referrer coins:', referrerCoinsError);
-    }
-
-    // Add coins to referred user
-    const { error: referredCoinsError } = await supabaseAdmin
-      .from('profiles')
-      .update({ coins: currentUser.coins + referredReward })
-      .eq('id', user.id);
-
-    if (referredCoinsError) {
-      console.error('Error updating referred coins:', referredCoinsError);
+      // Rollback referred_by if coins update fails
+      await supabaseAdmin
+        .from('profiles')
+        .update({ referred_by: null, coins: currentUser.coins })
+        .eq('id', user.id);
+      return new Response(
+        JSON.stringify({ valid: false, error: 'Something went wrong. Please try again later.' }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     // Create completed referral record

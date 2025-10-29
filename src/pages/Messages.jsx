@@ -7,7 +7,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { createHeaderMessage } from '../services/messagesHeaderService'
 import { useUser } from '../contexts'
-import '../styles/Messages.css'
+import styles from '../styles/Messages.module.css'
 
 const DURATION_OPTIONS = [
   { hours: 12, coins: 1, label: '12 hours' },
@@ -92,9 +92,9 @@ function Messages() {
           <p className="page-subtitle">Publish a message or check your private messages</p>
         </div>
 
-        <div className="messages-grid">
+        <div className={styles.messagesGrid}>
           {/* Card 1: Publish header message */}
-          <Card className="message-card">
+          <Card className={styles.messageCard}>
             <CardHeader>
               <CardTitle>📢 Public Message</CardTitle>
               <CardDescription>
@@ -103,14 +103,14 @@ function Messages() {
             </CardHeader>
             <CardContent>
               {profile && (
-                <div className="coins-balance">
-                  <span className="coins-icon">🪙</span>
-                  <span className="coins-text">Your balance: <strong>{userCoins} coins</strong></span>
+                <div className={styles.coinsBalance}>
+                  <span className={styles.coinsIcon}>🪙</span>
+                  <span className={styles.coinsText}>Your balance: <strong>{userCoins} coins</strong></span>
                 </div>
               )}
 
-              <form onSubmit={handlePublishHeaderMessage} className="message-form">
-                <div className="message-input-wrapper">
+              <form onSubmit={handlePublishHeaderMessage} className={styles.messageForm}>
+                <div className={styles.messageInputWrapper}>
                   <Input
                     as="textarea"
                     label="Your message (max 70 characters)"
@@ -122,28 +122,28 @@ function Messages() {
                     required
                     maxLength={MAX_MESSAGE_LENGTH}
                   />
-                  <div className={`character-counter ${isMessageTooLong ? 'error' : remainingChars < 10 ? 'warning' : ''}`}>
+                  <div className={`${styles.characterCounter} ${isMessageTooLong ? styles.error : remainingChars < 10 ? styles.warning : ''}`}>
                     {remainingChars} / {MAX_MESSAGE_LENGTH} characters remaining
                   </div>
                 </div>
 
-                <div className="duration-selector">
-                  <label className="duration-label">Duration</label>
-                  <div className="duration-options">
+                <div className={styles.durationSelector}>
+                  <label className={styles.durationLabel}>Duration</label>
+                  <div className={styles.durationOptions}>
                     {DURATION_OPTIONS.map((option) => (
                       <button
                         key={option.hours}
                         type="button"
-                        className={`duration-option ${selectedDuration === option.hours ? 'active' : ''} ${userCoins < option.coins ? 'disabled' : ''}`}
+                        className={`${styles.durationOption} ${selectedDuration === option.hours ? styles.active : ''} ${userCoins < option.coins ? styles.disabled : ''}`}
                         onClick={() => setSelectedDuration(option.hours)}
                         disabled={userCoins < option.coins}
                       >
-                        <span className="duration-time">{option.label}</span>
-                        <span className="duration-cost">
+                        <span className={styles.durationTime}>{option.label}</span>
+                        <span className={styles.durationCost}>
                           🪙 {option.coins} {option.coins === 1 ? 'coin' : 'coins'}
                         </span>
                         {userCoins < option.coins && (
-                          <span className="duration-insufficient">Insufficient</span>
+                          <span className={styles.durationInsufficient}>Insufficient</span>
                         )}
                       </button>
                     ))}
@@ -161,13 +161,13 @@ function Messages() {
                 </Button>
 
                 {!profile && (
-                  <p className="message-warning">
+                  <p className={styles.messageWarning}>
                     You must be logged in to publish a message
                   </p>
                 )}
 
                 {profile && !hasEnoughCoins && (
-                  <p className="message-warning">
+                  <p className={styles.messageWarning}>
                     You need {selectedOption?.coins} coins to publish this message
                   </p>
                 )}
@@ -176,7 +176,7 @@ function Messages() {
           </Card>
 
           {/* Card 2: Private messages */}
-          <Card className="message-card" hover>
+          <Card className={styles.messageCard} hover>
             <CardHeader>
               <CardTitle>💬 Private Messages</CardTitle>
               <CardDescription>
@@ -184,11 +184,11 @@ function Messages() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="private-messages-info">
-                <p className="info-text">
+              <div className={styles.privateMessagesInfo}>
+                <p className={styles.infoText}>
                   Access your private messaging to exchange with other users confidentially.
                 </p>
-                <ul className="features-list">
+                <ul className={styles.featuresList}>
                   <li>✓ Real-time conversations</li>
                   <li>✓ New message notifications</li>
                   <li>✓ Complete history</li>
@@ -203,7 +203,7 @@ function Messages() {
                 Open Messaging
               </Button>
               {!profile && (
-                <p className="message-warning">
+                <p className={styles.messageWarning}>
                   You must be logged in to access your messages
                 </p>
               )}

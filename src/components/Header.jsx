@@ -10,7 +10,7 @@ import {
   subscribeToHeaderMessages,
   unsubscribeFromHeaderMessages,
 } from "../services/messagesHeaderService";
-import "../styles/Header.css";
+import styles from "./Header.module.css";
 
 function Header() {
   const { user } = useUser()
@@ -237,15 +237,15 @@ function Header() {
   }, [user, messages.length, currentMessage, transitionState, animateAvatarOpacity]);
 
   return (
-    <header className="header">
-      <div className="header-content df wh100">
+    <header className={styles.header}>
+      <div className={`${styles.headerContent} df wh100`}>
         {/* Avatar positioned absolutely on the left */}
         {user &&
           messages.length > 0 &&
           currentMessage?.user?.id && (
             <div
               ref={avatarElementRef}
-              className="header-avatar header-avatar--clickable"
+              className={`${styles.headerAvatar} ${styles.headerAvatarClickable}`}
               style={{ opacity: 0 }}
               role="button"
               tabIndex={0}
@@ -273,31 +273,31 @@ function Header() {
             </div>
           )}
 
-        <div className="header-main">
+        <div className={styles.headerMain}>
           {user ? (
             loading ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-loading" role="status" aria-live="polite">
+              <div className={styles.headerCarousel}>
+                <div className={`${styles.carouselMessage} ${styles.carouselLoading}`} role="status" aria-live="polite">
                   <span className="sr-only">Loading messages...</span>
                   <BeatLoader color="#ffffff" size={8} margin={2} aria-hidden="true" />
                 </div>
               </div>
             ) : error || subscriptionError ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-error">
+              <div className={styles.headerCarousel}>
+                <div className={`${styles.carouselMessage} ${styles.carouselError}`}>
                   {subscriptionError || "Unable to load messages"}
                 </div>
               </div>
             ) : messages.length === 0 ? (
-              <div className="header-carousel">
-                <div className="carousel-message carousel-empty sr-only">
+              <div className={styles.headerCarousel}>
+                <div className={`${styles.carouselMessage} ${styles.carouselEmpty} sr-only`}>
                   Welcome to MyGGV!
                 </div>
               </div>
             ) : (
-              <div className="header-carousel">
+              <div className={styles.headerCarousel}>
                 <div
-                  className={`carousel-message carousel-active ${transitionState}`}
+                  className={`${styles.carouselMessage} ${styles.carouselActive} ${transitionState}`}
                 >
                   {currentMessage.message}
                 </div>
@@ -305,7 +305,7 @@ function Header() {
             )
           ) : (
             <>
-              <img src={ggvLogo} alt="MyGGV" className="header-logo" />
+              <img src={ggvLogo} alt="MyGGV" className={styles.headerLogo} />
               <h1 className="sr-only">MyGGV</h1>
             </>
           )}

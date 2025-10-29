@@ -1,0 +1,161 @@
+/* User Profile Modal - Mobile First - CSS Module */
+.userProfileModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+  animation: fadeInUp 0.3s ease;
+}
+
+.userProfileModal {
+  background-color: var(--color-background);
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.3s ease;
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--color-surface);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.close:hover {
+  background-color: var(--color-button-secondary-hover);
+  color: var(--color-text-primary);
+  transform: scale(1.05);
+}
+
+.close:active {
+  transform: scale(0.98);
+}
+
+.loading {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
+.header :global(.avatar) {
+  margin: 0 auto 1rem;
+}
+
+.username {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem;
+  letter-spacing: 2px;
+}
+
+.bio {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+/* Empty State */
+.empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+  .content {
+    padding: 2rem;
+  }
+
+  .username {
+    font-size: 1.75rem;
+  }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+  .content {
+    padding: 2.5rem;
+  }
+
+  .username {
+    font-size: 2rem;
+  }
+}
+
+/* Scrollbar styling */
+.userProfileModal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.userProfileModal::-webkit-scrollbar-track {
+  background: var(--color-surface);
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.userProfileModal::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 0.25rem;
+}
+
+.userProfileModal::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .userProfileModalOverlay,
+  .userProfileModal,
+  .close {
+    animation: none;
+    transition: none;
+  }
+}

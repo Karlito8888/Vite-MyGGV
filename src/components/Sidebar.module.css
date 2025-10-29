@@ -1,0 +1,444 @@
+/* ========================================
+SIDEBAR WITH INTEGRATED NAVIGATION - CSS MODULE
+   ======================================== */
+
+/* Overlay */
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--overlay-z-index);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.sidebarOverlay.open {
+  opacity: 1;
+}
+
+/* Sidebar Container - Mobile First (320px+) */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100%;
+  background-color: var(--color-background);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: var(--sidebar-z-index);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* Close Button */
+.sidebarCloseBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  z-index: var(--z-sticky);
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.sidebarCloseBtn:hover {
+  background-color: var(--color-surface);
+  transform: scale(1.05);
+}
+
+.sidebarCloseBtn:active {
+  background-color: var(--color-border);
+  transform: scale(0.95);
+}
+
+.sidebarCloseIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+/* Navigation Container */
+.navigation {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  padding: 1rem;
+  position: relative;
+}
+
+/* Scroll Container */
+.navScrollContainer {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  -webkit-overflow-scrolling: touch;
+  padding: 4rem 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.navScrollContainer.dragging {
+  cursor: grabbing;
+}
+
+/* Scrollbar Styling */
+.navScrollContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navScrollContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.navScrollContainer::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 3px;
+}
+
+.navScrollContainer::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary);
+}
+
+/* Scroll Content - Mobile First (320px+) - TOUJOURS 3 COLONNES */
+.navScrollContent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  width: 100%;
+  min-height: max-content;
+  margin: 0;
+  max-width: 100%;
+  padding: 0.25rem;
+}
+
+/* Navigation Links - Mobile First (320px+) */
+.navLink {
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  min-height: 48px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.navLink:hover {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.navLink.active {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(80, 170, 97, 0.1);
+}
+
+/* Focus States */
+.navLink:focus,
+.navLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
+}
+
+.navLink:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Icons - Mobile First (320px+) */
+.navIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.navLink:hover .navIcon {
+  transform: scale(1.1);
+}
+
+.navLink.active .navIcon {
+  color: var(--color-primary);
+}
+
+/* Link Text - Mobile First (320px+) */
+.navLink span {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* External Links */
+.navLink.externalLink {
+  position: relative;
+}
+
+.navLink.externalLink::after {
+  content: "↗";
+  position: absolute;
+  right: 1rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Touch interactions */
+@media (hover: none) and (pointer: coarse) {
+  .sidebarCloseBtn:hover {
+    transform: scale(1);
+  }
+
+  .sidebarCloseBtn:active {
+    transform: scale(0.95);
+    background-color: var(--color-surface);
+  }
+
+  .navLink:hover {
+    transform: translateX(0);
+  }
+
+  .navLink:active {
+    transform: scale(0.98);
+    background-color: var(--color-surface);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink {
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .navLink {
+    border: 1px solid var(--color-border);
+  }
+
+  .navLink.active {
+    border-color: var(--color-primary);
+    border-width: 2px;
+  }
+}
+
+/* Small phones (360px+) */
+@media (min-width: 360px) {
+  .sidebar {
+    width: 300px;
+  }
+
+  .navScrollContent {
+    padding: 0.375rem;
+  }
+
+  .navLink {
+    padding: 0.875rem 0.5rem;
+    gap: 0.625rem;
+  }
+
+  .navLink span {
+    font-size: 0.7rem;
+  }
+}
+
+/* Large phones (481px+) */
+@media (min-width: 481px) {
+  .sidebar {
+    width: 320px;
+    max-width: 90vw;
+  }
+
+  .navigation {
+    padding: 1.25rem;
+  }
+
+  .navScrollContent {
+    padding: 0.5rem;
+  }
+
+  .navLink {
+    padding: 1rem 0.625rem;
+    gap: 0.75rem;
+  }
+
+  .navIcon {
+    width: 1.625rem;
+    height: 1.625rem;
+  }
+
+  .navLink span {
+    font-size: 0.75rem;
+    letter-spacing: 0.75px;
+  }
+}
+
+/* Tablets (640px+) - Sidebar plus large */
+@media (min-width: 640px) {
+  .sidebar {
+    width: 380px;
+    max-width: 380px;
+  }
+
+  .navScrollContent {
+    padding: 0.75rem;
+  }
+
+  .navLink {
+    padding: 1.125rem 0.875rem;
+  }
+
+  .navIcon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .navLink span {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+}
+
+/* Desktop (769px+) - Sidebar encore plus large */
+@media (min-width: 769px) {
+  .sidebar {
+    width: 420px;
+    max-width: 420px;
+  }
+
+  .navigation {
+    padding: 1.5rem;
+  }
+
+  .navScrollContent {
+    padding: 1rem;
+  }
+
+  .navLink {
+    padding: 1.25rem 1rem;
+  }
+
+  .navIcon {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
+
+  .navLink span {
+    font-size: 0.85rem;
+  }
+}
+
+/* Large Desktop (1024px+) - Sidebar maximum */
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 480px;
+    max-width: 480px;
+  }
+
+  .navScrollContent {
+    padding: 1.25rem;
+  }
+
+  .navLink {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .navIcon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .navLink span {
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra Large Desktop (1280px+) - Sidebar très large */
+@media (min-width: 1280px) {
+  .sidebar {
+    width: 520px;
+    max-width: 520px;
+  }
+
+  .navScrollContent {
+    padding: 1.5rem;
+  }
+
+  .navLink {
+    padding: 1.625rem 1.375rem;
+  }
+
+  .navIcon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .navLink span {
+    font-size: 0.95rem;
+  }
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+  .sidebar {
+    background-color: var(--color-background);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebarCloseBtn:hover {
+    background-color: var(--color-surface);
+  }
+
+  .sidebarCloseIcon {
+    color: var(--color-text-primary);
+  }
+
+  .navLink {
+    color: var(--color-text-primary);
+    border-color: transparent;
+  }
+
+  .navLink:hover,
+  .navLink.active {
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+  }
+
+  .navLink.active {
+    box-shadow: 0 2px 4px rgba(91, 196, 109, 0.1);
+  }
+}

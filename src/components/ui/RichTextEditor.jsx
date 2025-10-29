@@ -1,7 +1,7 @@
 import { useId, useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
-import './RichTextEditor.css';
+import styles from './RichTextEditor.module.css';
 
 const RichTextEditor = ({
     label,
@@ -154,7 +154,7 @@ const RichTextEditor = ({
     }, [value]);
 
     return (
-        <div className={`rich-text-editor-field ${className}`}>
+        <div className={`${styles.richTextEditorField} ${className}`}>
             {label && (
                 <div id={`${inputId}-label`} className="input-label">
                     {label}
@@ -163,7 +163,7 @@ const RichTextEditor = ({
             <div
                 ref={editorRef}
                 id={inputId}
-                className={error ? 'has-error' : ''}
+                className={error ? styles.hasError : ''}
                 role="textbox"
                 aria-multiline="true"
                 aria-labelledby={label ? `${inputId}-label` : undefined}

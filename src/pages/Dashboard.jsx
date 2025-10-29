@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUser } from "../contexts";
 import { ProfileForm, ServicesManager, BusinessInsideManager, BusinessOutsideManager } from "../components/dashboard";
-import "../styles/Dashboard.css";
+import styles from "../styles/Dashboard.module.css";
 
 function Dashboard() {
     const { profile, refreshProfile } = useUser();
@@ -27,34 +27,34 @@ function Dashboard() {
                     <h2>My Dashboard</h2>
                 </div>
 
-                <div className="dashboard-tabs">
+                <div className={styles.dashboardTabs}>
                     <button
-                        className={`tab-button ${activeTab === "profile" ? "active" : ""}`}
+                        className={`${styles.tabButton} ${activeTab === "profile" ? styles.active : ""}`}
                         onClick={() => setActiveTab("profile")}
                     >
                         Profile
                     </button>
                     <button
-                        className={`tab-button ${activeTab === "services" ? "active" : ""}`}
+                        className={`${styles.tabButton} ${activeTab === "services" ? styles.active : ""}`}
                         onClick={() => setActiveTab("services")}
                     >
                         Services
                     </button>
                     <button
-                        className={`tab-button ${activeTab === "business-inside" ? "active" : ""}`}
+                        className={`${styles.tabButton} ${activeTab === "business-inside" ? styles.active : ""}`}
                         onClick={() => setActiveTab("business-inside")}
                     >
                         Business Inside
                     </button>
                     <button
-                        className={`tab-button ${activeTab === "business-outside" ? "active" : ""}`}
+                        className={`${styles.tabButton} ${activeTab === "business-outside" ? styles.active : ""}`}
                         onClick={() => setActiveTab("business-outside")}
                     >
                         Business Outside
                     </button>
                 </div>
 
-                <div className="tab-content">
+                <div className={styles.tabContent}>
                     {activeTab === "profile" && (
                         <ProfileForm profile={profile} refreshProfile={refreshProfile} />
                     )}

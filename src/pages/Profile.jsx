@@ -10,7 +10,7 @@ import Card, {
 import Button from "../components/ui/Button";
 import RichTextDisplay from "../components/ui/RichTextDisplay";
 import { LayoutDashboard, X, ChevronLeft, ChevronRight } from "lucide-react";
-import "../styles/Profile.css";
+import styles from "../styles/Profile.module.css";
 import { BeatLoader } from "react-spinners";
 import viberLogo from "../assets/logos/viber.png";
 import whatsappLogo from "../assets/logos/whatsapp.png";
@@ -104,7 +104,7 @@ function Profile() {
   return (
     <div className="page-container">
       <div className="page-content">
-        <div className="profile-header">
+        <div className={styles.profileHeader}>
           <div className="page-header">
             <h2>My Profile</h2>
           </div>
@@ -123,7 +123,7 @@ function Profile() {
             <CardTitle>Avatar</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="profile-avatar">
+            <div className={styles.profileAvatar}>
               <Avatar
                 src={profile.avatar_url}
                 alt="Profile avatar"
@@ -139,7 +139,7 @@ function Profile() {
           </CardHeader>
           <CardContent>
             {profileLoading ? (
-              <div className="profile-field">
+              <div className={styles.profileField}>
                 <span className="sr-only">Loading location information...</span>
                 <BeatLoader
                   color="#ffffff"
@@ -150,25 +150,25 @@ function Profile() {
               </div>
             ) : locationAssociations && locationAssociations.length > 0 ? (
               locationAssociations.map((association, index) => (
-                <div key={association.id} className="location-association">
-                  <div className="profile-field">
+                <div key={association.id} className={styles.locationAssociation}>
+                  <div className={styles.profileField}>
                     <label>Block:</label>
                     <span>
                       {association.location?.block || "Not specified"}
                     </span>
                   </div>
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Lot:</label>
                     <span>{association.location?.lot || "Not specified"}</span>
                   </div>
                   {locationAssociations.length > 1 &&
                     index < locationAssociations.length - 1 && (
-                      <hr className="location-divider" />
+                      <hr className={styles.locationDivider} />
                     )}
                 </div>
               ))
             ) : (
-              <div className="profile-field">
+              <div className={styles.profileField}>
                 <span>No location associations found</span>
               </div>
             )}
@@ -180,17 +180,17 @@ function Profile() {
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="profile-field">
+            <div className={styles.profileField}>
               <label>Username:</label>
               <span>{profile.username || "Not provided"}</span>
             </div>
 
-            <div className="profile-field">
+            <div className={styles.profileField}>
               <label>Occupation:</label>
               <span>{profile.occupation || "Not provided"}</span>
             </div>
 
-            <div className="profile-field">
+            <div className={styles.profileField}>
               <label>Description:</label>
               {profile.description ? (
                 <RichTextDisplay content={profile.description} />
@@ -206,16 +206,16 @@ function Profile() {
             <CardTitle>Contact Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="contact-links">
+            <div className={styles.contactLinks}>
               {profile.viber_number && (
                 <a
                   href={profile.viber_number}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Contact via Viber"
                 >
-                  <img src={viberLogo} alt="Viber" className="contact-logo" />
+                  <img src={viberLogo} alt="Viber" className={styles.contactLogo} />
                 </a>
               )}
 
@@ -224,13 +224,13 @@ function Profile() {
                   href={profile.whatsapp_number}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Contact via WhatsApp"
                 >
                   <img
                     src={whatsappLogo}
                     alt="WhatsApp"
-                    className="contact-logo"
+                    className={styles.contactLogo}
                   />
                 </a>
               )}
@@ -240,13 +240,13 @@ function Profile() {
                   href={profile.facebook_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Visit Facebook profile"
                 >
                   <img
                     src={facebookLogo}
                     alt="Facebook"
-                    className="contact-logo"
+                    className={styles.contactLogo}
                   />
                 </a>
               )}
@@ -256,13 +256,13 @@ function Profile() {
                   href={profile.messenger_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Contact via Messenger"
                 >
                   <img
                     src={messengerLogo}
                     alt="Messenger"
-                    className="contact-logo"
+                    className={styles.contactLogo}
                   />
                 </a>
               )}
@@ -272,13 +272,13 @@ function Profile() {
                   href={profile.instagram_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Visit Instagram profile"
                 >
                   <img
                     src={instagramLogo}
                     alt="Instagram"
-                    className="contact-logo"
+                    className={styles.contactLogo}
                   />
                 </a>
               )}
@@ -288,13 +288,13 @@ function Profile() {
                   href={profile.tiktok_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-link"
+                  className={styles.contactLink}
                   title="Visit TikTok profile"
                 >
                   <img
                     src={tiktokLogo}
                     alt="TikTok"
-                    className="contact-logo"
+                    className={styles.contactLogo}
                   />
                 </a>
               )}
@@ -306,7 +306,7 @@ function Profile() {
               !profile.messenger_url &&
               !profile.instagram_url &&
               !profile.tiktok_url && (
-                <div className="profile-field">
+                <div className={styles.profileField}>
                   <span>No contact information provided</span>
                 </div>
               )}
@@ -318,9 +318,9 @@ function Profile() {
             <CardTitle>Coins</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="profile-field">
+            <div className={styles.profileField}>
               <label>Balance:</label>
-              <span className="coins-balance">{profile.coins || 0} coins</span>
+              <span className={styles.coinsBalance}>{profile.coins || 0} coins</span>
             </div>
           </CardContent>
         </Card>
@@ -328,7 +328,7 @@ function Profile() {
         {dataLoading ? (
           <Card>
             <CardContent>
-              <div className="profile-field" style={{ textAlign: "center" }}>
+              <div className={styles.profileField} style={{ textAlign: "center" }}>
                 <BeatLoader color="#ffffff" size={8} margin={2} />
               </div>
             </CardContent>
@@ -341,34 +341,34 @@ function Profile() {
                   <CardTitle>My Service</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Category:</label>
                     <span>{userService.category?.name || "N/A"}</span>
                   </div>
 
                   {userService.description && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Description:</label>
                       <RichTextDisplay content={userService.description} />
                     </div>
                   )}
 
                   {userService.price_range && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Price Range:</label>
                       <span>{userService.price_range}</span>
                     </div>
                   )}
 
                   {userService.availability && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Availability:</label>
                       <span>{userService.availability}</span>
                     </div>
                   )}
 
                   {userService.service_location_type && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Service Location:</label>
                       <span>
                         {userService.service_location_type === "at_provider" && "My Location"}
@@ -380,37 +380,37 @@ function Profile() {
 
                   {(userService.facebook_url || userService.messenger_url || userService.viber_number ||
                     userService.whatsapp_number || userService.tiktok_url || userService.instagram_url) && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Contact:</label>
-                        <div className="contact-links">
+                        <div className={styles.contactLinks}>
                           {userService.viber_number && (
-                            <a href={userService.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
-                              <img src={viberLogo} alt="Viber" className="contact-logo" />
+                            <a href={userService.viber_number} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Viber">
+                              <img src={viberLogo} alt="Viber" className={styles.contactLogo} />
                             </a>
                           )}
                           {userService.whatsapp_number && (
-                            <a href={userService.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
-                              <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
+                            <a href={userService.whatsapp_number} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="WhatsApp">
+                              <img src={whatsappLogo} alt="WhatsApp" className={styles.contactLogo} />
                             </a>
                           )}
                           {userService.facebook_url && (
-                            <a href={userService.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
-                              <img src={facebookLogo} alt="Facebook" className="contact-logo" />
+                            <a href={userService.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Facebook">
+                              <img src={facebookLogo} alt="Facebook" className={styles.contactLogo} />
                             </a>
                           )}
                           {userService.messenger_url && (
-                            <a href={userService.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
-                              <img src={messengerLogo} alt="Messenger" className="contact-logo" />
+                            <a href={userService.messenger_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Messenger">
+                              <img src={messengerLogo} alt="Messenger" className={styles.contactLogo} />
                             </a>
                           )}
                           {userService.instagram_url && (
-                            <a href={userService.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
-                              <img src={instagramLogo} alt="Instagram" className="contact-logo" />
+                            <a href={userService.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Instagram">
+                              <img src={instagramLogo} alt="Instagram" className={styles.contactLogo} />
                             </a>
                           )}
                           {userService.tiktok_url && (
-                            <a href={userService.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
-                              <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
+                            <a href={userService.tiktok_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="TikTok">
+                              <img src={tiktokLogo} alt="TikTok" className={styles.contactLogo} />
                             </a>
                           )}
                         </div>
@@ -420,9 +420,9 @@ function Profile() {
                   {[userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
                   userService.photo_4_url, userService.photo_5_url, userService.photo_6_url]
                     .filter(Boolean).length > 0 && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Photos:</label>
-                        <div className="photo-grid">
+                        <div className={styles.photoGrid}>
                           {(() => {
                             const photos = [userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
                             userService.photo_4_url, userService.photo_5_url, userService.photo_6_url].filter(Boolean);
@@ -431,7 +431,7 @@ function Profile() {
                                 key={index}
                                 src={photo}
                                 alt={`Service photo ${index + 1}`}
-                                className="service-photo"
+                                className={styles.servicePhoto}
                                 onClick={() => openImageModal(photo, photos)}
                               />
                             ));
@@ -449,25 +449,25 @@ function Profile() {
                   <CardTitle>My Business Inside</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Business Name:</label>
                     <span>{businessInside.business_name}</span>
                   </div>
 
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Category:</label>
                     <span>{businessInside.category?.name || "N/A"}</span>
                   </div>
 
                   {businessInside.description && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Description:</label>
                       <RichTextDisplay content={businessInside.description} />
                     </div>
                   )}
 
                   {(businessInside.block || businessInside.lot) && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Location:</label>
                       <span>
                         {businessInside.block && `Block ${businessInside.block}`}
@@ -478,14 +478,14 @@ function Profile() {
                   )}
 
                   {businessInside.availability && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Availability:</label>
                       <span>{businessInside.availability}</span>
                     </div>
                   )}
 
                   {businessInside.email && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Email:</label>
                       <a href={`mailto:${businessInside.email}`}>
                         {businessInside.email}
@@ -494,7 +494,7 @@ function Profile() {
                   )}
 
                   {businessInside.website_url && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Website:</label>
                       <a href={businessInside.website_url} target="_blank" rel="noopener noreferrer">
                         {businessInside.website_url}
@@ -504,37 +504,37 @@ function Profile() {
 
                   {(businessInside.facebook_url || businessInside.messenger_url || businessInside.viber_number ||
                     businessInside.whatsapp_number || businessInside.tiktok_url || businessInside.instagram_url) && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Contact:</label>
-                        <div className="contact-links">
+                        <div className={styles.contactLinks}>
                           {businessInside.viber_number && (
-                            <a href={businessInside.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
-                              <img src={viberLogo} alt="Viber" className="contact-logo" />
+                            <a href={businessInside.viber_number} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Viber">
+                              <img src={viberLogo} alt="Viber" className={styles.contactLogo} />
                             </a>
                           )}
                           {businessInside.whatsapp_number && (
-                            <a href={businessInside.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
-                              <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
+                            <a href={businessInside.whatsapp_number} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="WhatsApp">
+                              <img src={whatsappLogo} alt="WhatsApp" className={styles.contactLogo} />
                             </a>
                           )}
                           {businessInside.facebook_url && (
-                            <a href={businessInside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
-                              <img src={facebookLogo} alt="Facebook" className="contact-logo" />
+                            <a href={businessInside.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Facebook">
+                              <img src={facebookLogo} alt="Facebook" className={styles.contactLogo} />
                             </a>
                           )}
                           {businessInside.messenger_url && (
-                            <a href={businessInside.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
-                              <img src={messengerLogo} alt="Messenger" className="contact-logo" />
+                            <a href={businessInside.messenger_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Messenger">
+                              <img src={messengerLogo} alt="Messenger" className={styles.contactLogo} />
                             </a>
                           )}
                           {businessInside.instagram_url && (
-                            <a href={businessInside.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
-                              <img src={instagramLogo} alt="Instagram" className="contact-logo" />
+                            <a href={businessInside.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Instagram">
+                              <img src={instagramLogo} alt="Instagram" className={styles.contactLogo} />
                             </a>
                           )}
                           {businessInside.tiktok_url && (
-                            <a href={businessInside.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
-                              <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
+                            <a href={businessInside.tiktok_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="TikTok">
+                              <img src={tiktokLogo} alt="TikTok" className={styles.contactLogo} />
                             </a>
                           )}
                         </div>
@@ -544,9 +544,9 @@ function Profile() {
                   {[businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
                   businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url]
                     .filter(Boolean).length > 0 && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Photos:</label>
-                        <div className="photo-grid">
+                        <div className={styles.photoGrid}>
                           {(() => {
                             const photos = [businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
                             businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url].filter(Boolean);
@@ -555,7 +555,7 @@ function Profile() {
                                 key={index}
                                 src={photo}
                                 alt={`Business photo ${index + 1}`}
-                                className="service-photo"
+                                className={styles.servicePhoto}
                                 onClick={() => openImageModal(photo, photos)}
                               />
                             ));
@@ -573,18 +573,18 @@ function Profile() {
                   <CardTitle>My Business Outside</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Business Name:</label>
                     <span>{businessOutside.business_name}</span>
                   </div>
 
-                  <div className="profile-field">
+                  <div className={styles.profileField}>
                     <label>Category:</label>
                     <span>{businessOutside.category?.name || "N/A"}</span>
                   </div>
 
                   {businessOutside.description && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Description:</label>
                       <RichTextDisplay content={businessOutside.description} />
                     </div>
@@ -592,7 +592,7 @@ function Profile() {
 
                   {(businessOutside.address || businessOutside.barangay || businessOutside.city ||
                     businessOutside.province || businessOutside.postal_code) && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Address:</label>
                         <span>
                           {businessOutside.address && `${businessOutside.address}, `}
@@ -605,7 +605,7 @@ function Profile() {
                     )}
 
                   {businessOutside.google_maps_link && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Google Maps:</label>
                       <a href={businessOutside.google_maps_link} target="_blank" rel="noopener noreferrer">
                         View on Map
@@ -614,14 +614,14 @@ function Profile() {
                   )}
 
                   {businessOutside.hours && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Hours:</label>
                       <span>{businessOutside.hours}</span>
                     </div>
                   )}
 
                   {businessOutside.phone_number && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Phone:</label>
                       <span>
                         {businessOutside.phone_number}
@@ -631,7 +631,7 @@ function Profile() {
                   )}
 
                   {businessOutside.email && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Email:</label>
                       <a href={`mailto:${businessOutside.email}`}>
                         {businessOutside.email}
@@ -640,7 +640,7 @@ function Profile() {
                   )}
 
                   {businessOutside.website_url && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Website:</label>
                       <a href={businessOutside.website_url} target="_blank" rel="noopener noreferrer">
                         {businessOutside.website_url}
@@ -649,11 +649,11 @@ function Profile() {
                   )}
 
                   {businessOutside.facebook_url && (
-                    <div className="profile-field">
+                    <div className={styles.profileField}>
                       <label>Facebook:</label>
-                      <div className="contact-links">
-                        <a href={businessOutside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
-                          <img src={facebookLogo} alt="Facebook" className="contact-logo" />
+                      <div className={styles.contactLinks}>
+                        <a href={businessOutside.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.contactLink} title="Facebook">
+                          <img src={facebookLogo} alt="Facebook" className={styles.contactLogo} />
                         </a>
                       </div>
                     </div>
@@ -662,9 +662,9 @@ function Profile() {
                   {[businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
                   businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url]
                     .filter(Boolean).length > 0 && (
-                      <div className="profile-field">
+                      <div className={styles.profileField}>
                         <label>Photos:</label>
-                        <div className="photo-grid">
+                        <div className={styles.photoGrid}>
                           {(() => {
                             const photos = [businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
                             businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url].filter(Boolean);
@@ -673,7 +673,7 @@ function Profile() {
                                 key={index}
                                 src={photo}
                                 alt={`Business photo ${index + 1}`}
-                                className="service-photo"
+                                className={styles.servicePhoto}
                                 onClick={() => openImageModal(photo, photos)}
                               />
                             ));
@@ -688,24 +688,24 @@ function Profile() {
         )}
 
         {selectedImage && (
-          <div className="image-modal-overlay" onClick={closeImageModal}>
-            <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="image-modal-close" onClick={closeImageModal} aria-label="Close">
+          <div className={styles.imageModalOverlay} onClick={closeImageModal}>
+            <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.imageModalClose} onClick={closeImageModal} aria-label="Close">
                 <X size={24} />
               </button>
               {imageGallery.length > 1 && (
                 <>
-                  <button className="image-modal-nav image-modal-prev" onClick={goToPreviousImage} aria-label="Previous image">
+                  <button className={`${styles.imageModalNav} ${styles.imageModalPrev}`} onClick={goToPreviousImage} aria-label="Previous image">
                     <ChevronLeft size={32} />
                   </button>
-                  <button className="image-modal-nav image-modal-next" onClick={goToNextImage} aria-label="Next image">
+                  <button className={`${styles.imageModalNav} ${styles.imageModalNext}`} onClick={goToNextImage} aria-label="Next image">
                     <ChevronRight size={32} />
                   </button>
                 </>
               )}
-              <img src={selectedImage} alt="Full size" className="image-modal-img" />
+              <img src={selectedImage} alt="Full size" className={styles.imageModalImg} />
               {imageGallery.length > 1 && (
-                <div className="image-modal-counter">
+                <div className={styles.imageModalCounter}>
                   {currentImageIndex + 1} / {imageGallery.length}
                 </div>
               )}

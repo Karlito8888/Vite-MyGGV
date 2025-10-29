@@ -9,7 +9,7 @@ import { useUser } from '../contexts'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card'
 import Input from './ui/Input'
 import Button from './ui/Button'
-import '../styles/login.css'
+import styles from '../styles/login.module.css'
 
 // Conditional logging for development only
 const log = import.meta.env.DEV ? console.log : () => { }

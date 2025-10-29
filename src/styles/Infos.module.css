@@ -1,0 +1,133 @@
+/* Mobile First (320px+) */
+
+.pageTitleIcon {
+  font-size: 1.75rem;
+}
+
+/* Grid des cartes d'informations */
+.infoCardsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Icône de carte */
+.infoCardIcon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  color: var(--color-text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+}
+
+/* Item d'information */
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.infoItemIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.infoItemText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.infoValue {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Icône Viber */
+.viberIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: middle;
+}
+
+/* Lien Viber */
+.viberLink {
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.viberLink:hover {
+  color: var(--color-button-primary-hover);
+}
+
+/* Couleurs spécifiques par carte */
+.infoCard.guardPost :global(.card-header) {
+  border-bottom-color: #ef4444;
+}
+
+.infoCard.clubhouseOffice :global(.card-header) {
+  border-bottom-color: #3b82f6;
+}
+
+.infoCard.swimmingPool :global(.card-header) {
+  border-bottom-color: #06b6d4;
+}
+
+.infoCard.villageChurch :global(.card-header) {
+  border-bottom-color: #8b5cf6;
+}
+
+.infoCard.mygvvContact :global(.card-header) {
+  border-bottom-color: var(--color-primary);
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+  .pageTitleIcon {
+    font-size: 2rem;
+  }
+
+  .infoCardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .cardTitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* Desktop (769px+) */
+@media (min-width: 769px) {
+  .pageTitleIcon {
+    font-size: 2.25rem;
+  }
+
+  .infoCardsGrid {
+    gap: 1.5rem;
+  }
+}
+
+/* Large Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .infoCardsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

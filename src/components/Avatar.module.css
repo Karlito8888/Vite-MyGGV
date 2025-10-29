@@ -1,0 +1,219 @@
+/* Avatar Component Styles - CSS Module */
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border: 2px solid #e0e0e0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+    position: relative;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* Force online status to override default border */
+.avatar.online {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Size variants - MOBILE FIRST (320px+) */
+.small {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 12px;
+}
+
+.medium {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+}
+
+.large {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+}
+
+/* Image styling */
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+.imageLoading {
+    opacity: 0;
+}
+
+/* Loading placeholder */
+.loadingPlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: opacity 0.3s ease;
+}
+
+.avatar.loading .loadingPlaceholder {
+    opacity: 1;
+}
+
+.avatar:not(.loading) .loadingPlaceholder {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fallback styling */
+.fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.fallbackText {
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Hover effects */
+.avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar.fallbackStyle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* No hover effect for header avatar */
+.headerAvatar:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.headerAvatar.online:hover {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Fixed size for header avatar - same on all devices */
+.headerAvatar {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    font-size: 14px !important;
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+    .small {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        font-size: 13px;
+    }
+
+    .medium {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+
+    .large {
+        width: 72px;
+        height: 72px;
+        font-size: 28px;
+    }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+    .small {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 14px;
+    }
+
+    .medium {
+        width: 64px;
+        height: 64px;
+        font-size: 24px;
+    }
+
+    .large {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+    }
+}
+
+/* Large Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .large {
+        width: 96px;
+        height: 96px;
+        font-size: 36px;
+    }
+}
+
+/* Loading state */
+.avatar:not(.fallbackStyle) .image:not([src]) {
+    opacity: 0;
+}
+
+/* Focus styles for accessibility */
+.avatar:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.avatar.online:hover {
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Override for header avatar - keep online indicator only */
+.headerAvatar.online:hover {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .avatar {
+        transition: none;
+    }
+
+    .avatar:hover {
+        transform: none;
+    }
+
+    .online {
+        transition: none;
+    }
+}
