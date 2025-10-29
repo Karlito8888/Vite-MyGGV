@@ -490,3 +490,133 @@ body.sidebar-open {
     font-size: 1.25rem;
   }
 }
+
+/*
+ ============================================
+   REACT-TOASTIFY CUSTOMIZATION
+   Adaptation au thème dark/light
+   ============================================ */
+
+/* Container principal des toasts */
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+/* Toast de base - Light mode */
+:root.light .Toastify__toast {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  font-family: inherit;
+}
+
+/* Toast de base - Dark mode */
+:root.dark .Toastify__toast {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border-radius: 0.75rem;
+  font-family: inherit;
+}
+
+/* Toast Success */
+:root.light .Toastify__toast--success {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+:root.dark .Toastify__toast--success {
+  background-color: #14532d;
+  border-color: #166534;
+  color: #86efac;
+}
+
+/* Toast Error */
+:root.light .Toastify__toast--error {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error-border);
+  color: var(--color-error-text);
+}
+
+:root.dark .Toastify__toast--error {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error-border);
+  color: var(--color-error-text);
+}
+
+/* Toast Warning */
+:root.light .Toastify__toast--warning {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+:root.dark .Toastify__toast--warning {
+  background-color: #451a03;
+  border-color: #78350f;
+  color: #fde68a;
+}
+
+/* Toast Info */
+:root.light .Toastify__toast--info {
+  background-color: #eff6ff;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+:root.dark .Toastify__toast--info {
+  background-color: #1e3a8a;
+  border-color: #1e40af;
+  color: #93c5fd;
+}
+
+/* Icônes des toasts */
+.Toastify__toast-icon {
+  width: 20px;
+  margin-right: 0.75rem;
+}
+
+/* Barre de progression */
+:root.light .Toastify__progress-bar {
+  background: linear-gradient(to right, var(--color-primary), var(--color-button-primary-hover));
+}
+
+:root.dark .Toastify__progress-bar {
+  background: linear-gradient(to right, var(--color-primary), var(--color-button-primary-hover));
+}
+
+/* Bouton de fermeture */
+.Toastify__close-button {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+  color: var(--color-text-primary);
+}
+
+/* Body du toast */
+.Toastify__toast-body {
+  padding: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+  .Toastify__toast-container {
+    width: calc(100vw - 2rem);
+    padding: 0;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .Toastify__toast {
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+  }
+}

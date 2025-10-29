@@ -70,7 +70,13 @@ function Messages() {
     } else if (data && data.success) {
       setHeaderMessage('')
       await refreshProfile()
-      toast.success(`Message published successfully! New balance: ${data.new_balance} coins`)
+      toast.success(
+        <div>
+          Message published successfully!
+          <br />
+          New balance: {data.new_balance} coins
+        </div>
+      )
     } else {
       setError(data?.error || 'Failed to publish message')
       toast.error(data?.error || 'Failed to publish message')

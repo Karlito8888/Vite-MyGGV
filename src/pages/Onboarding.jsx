@@ -71,7 +71,13 @@ function Onboarding() {
         console.error("Error fetching blocks:", error);
         const errorMsg = "Failed to load blocks. Please refresh the page.";
         setBlocksError(errorMsg);
-        toast.error(errorMsg);
+        toast.error(
+          <div>
+            Failed to load blocks.
+            <br />
+            Please refresh the page.
+          </div>
+        );
       } finally {
         setLoadingBlocks(false);
       }
@@ -111,7 +117,13 @@ function Onboarding() {
         console.error("Error fetching lots:", error);
         const errorMsg = "Failed to load lots. Please try selecting another block.";
         setLotsError(errorMsg);
-        toast.error(errorMsg);
+        toast.error(
+          <div>
+            Failed to load lots.
+            <br />
+            Please try selecting another block.
+          </div>
+        );
       } finally {
         setLoadingLots(false);
       }
@@ -163,7 +175,13 @@ function Onboarding() {
 
       } catch (error) {
         console.error("Error checking onboarding status:", error);
-        toast.error("Failed to load onboarding data. Please refresh the page.");
+        toast.error(
+          <div>
+            Failed to load onboarding data.
+            <br />
+            Please refresh the page.
+          </div>
+        );
 
         // Still respect 3-second minimum on error
         await ensureMinimumLoadingTime(startTime);
@@ -202,12 +220,22 @@ function Onboarding() {
 
         if (locationType === "direct_assignment") {
           // Location was assigned directly and onboarding completed
-          toast.success("🎉 Onboarding completed successfully! Welcome to your app!");
+          toast.success(
+            <div>
+              🎉 Onboarding completed successfully!
+              <br />
+              Welcome to your app!
+            </div>
+          );
           setTimeout(() => navigate("/home", { replace: true }), 1500);
         } else if (locationType === "pending_approval") {
           // Location request sent - MUST WAIT for owner approval
           toast.info(
-            "📬 Your location request has been sent to the owner. You will be notified once approved.",
+            <div>
+              📬 Your location request has been sent to the owner.
+              <br />
+              You will be notified once approved.
+            </div>,
             { autoClose: 3000 }
           );
           // Redirect to pending approval page
@@ -216,7 +244,13 @@ function Onboarding() {
           }, 3000);
         } else {
           // Fallback - onboarding completed
-          toast.success("🎉 Onboarding completed successfully! Welcome to your app!");
+          toast.success(
+            <div>
+              🎉 Onboarding completed successfully!
+              <br />
+              Welcome to your app!
+            </div>
+          );
           setTimeout(() => navigate("/home", { replace: true }), 1500);
         }
       } else {

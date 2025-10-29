@@ -18,9 +18,7 @@
   z-index: var(--z-header);
 }
 
-:root.dark .header {
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
+
 
 .headerContent {
   flex-direction: row;
@@ -74,6 +72,15 @@
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Text shadow pour meilleure lisibilité */
+:global(:root.light) .carouselMessage {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global(:root.dark) .carouselMessage {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 .carouselActive {

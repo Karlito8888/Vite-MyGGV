@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
 import UserProfileModal from "./UserProfileModal";
@@ -18,65 +19,71 @@ function Header() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [transitionState, setTransitionState] = useState("idle"); // 'idle', 'fading-out', 'fading-in'
   const subscriptionRef = useRef(null);
   const [subscriptionError, setSubscriptionError] = useState(null);
   const loadingStartTimeRef = useRef(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const pendingMessagesRef = useRef(null); // Queue for new messages during current cycle
 
-  // Avatar refs and state
+  // Avatar refs
   const avatarElementRef = useRef(null);
-  const avatarTransitionRef = useRef(null);
-  const messageTimerRef = useRef(null);
 
-  // Check for reduced motion preference
-  const prefersReducedMotion = useMemo(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+
+  const fetchMessages = useCallback(async (isInitialLoad = false) => {
+    if (isInitialLoad) {
+      setLoading(true);
+      setError(null);
+      loadingStartTimeRef.current = Date.now();
     }
-    return false;
-  }, []);
-
-
-
-  const fetchMessages = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    loadingStartTimeRef.current = Date.now();
 
     try {
       const { data, error } = await listActiveHeaderMessages();
       if (error) {
-        setError(error);
-        setMessages([]);
+        if (isInitialLoad) {
+          setError(error);
+          setMessages([]);
+        }
       } else {
-        setMessages(data || []);
+        const newMessages = data || [];
+
+        // If messages are currently displaying, queue the update for next cycle
+        if (!isInitialLoad && messages.length > 0) {
+          pendingMessagesRef.current = newMessages;
+        } else {
+          // Initial load or no messages yet - apply immediately
+          setMessages(newMessages);
+        }
       }
     } catch (err) {
-      setError(err);
-      setMessages([]);
+      if (isInitialLoad) {
+        setError(err);
+        setMessages([]);
+      }
     } finally {
-      // Ensure minimum 2-second loading duration
-      const loadingDuration = Date.now() - loadingStartTimeRef.current;
-      const remainingTime = Math.max(0, 2000 - loadingDuration);
+      if (isInitialLoad) {
+        // Ensure minimum 2-second loading duration
+        const loadingDuration = Date.now() - loadingStartTimeRef.current;
+        const remainingTime = Math.max(0, 2000 - loadingDuration);
 
-      if (remainingTime > 0) {
-        setTimeout(() => {
+        if (remainingTime > 0) {
+          setTimeout(() => {
+            setLoading(false);
+          }, remainingTime);
+        } else {
           setLoading(false);
-        }, remainingTime);
-      } else {
-        setLoading(false);
+        }
       }
     }
-  }, []);
+  }, [messages.length]);
 
   useEffect(() => {
     if (user) {
-      fetchMessages();
+      fetchMessages(true); // Initial load
 
       // Setup realtime subscription for messages
       const subscription = subscribeToHeaderMessages(
-        fetchMessages, // onMessageChange callback
+        () => fetchMessages(false), // onMessageChange callback - queue updates
         (status) => {
           // onStatusChange callback
           if (status === "SUBSCRIBED") {
@@ -139,29 +146,37 @@ function Header() {
     }
   }, [user, fetchMessages]);
 
-  // Message rotation effect with transitions
+  // Message rotation effect
   useEffect(() => {
-    if (messages.length > 1) {
+    if (messages.length <= 1) {
+      // Single message: just check for pending updates
       const interval = setInterval(() => {
-        // Start fade-out transition
-        setTransitionState("fading-out");
-
-        // After fade-out completes, change message and start fade-in
-        setTimeout(() => {
-          setCurrentMessageIndex(
-            (prevIndex) => (prevIndex + 1) % messages.length
-          );
-          setTransitionState("fading-in");
-
-          // After fade-in completes, return to idle
-          setTimeout(() => {
-            setTransitionState("idle");
-          }, 300); // fade-in duration
-        }, 300); // fade-out duration
-      }, 4000); // 4 seconds per message
-
+        if (pendingMessagesRef.current) {
+          setMessages(pendingMessagesRef.current);
+          pendingMessagesRef.current = null;
+          setCurrentMessageIndex(0);
+        }
+      }, 4000);
       return () => clearInterval(interval);
     }
+
+    // Multiple messages: rotate through them
+    const interval = setInterval(() => {
+      setCurrentMessageIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % messages.length;
+
+        // Apply pending messages when cycle completes
+        if (nextIndex === 0 && pendingMessagesRef.current) {
+          setMessages(pendingMessagesRef.current);
+          pendingMessagesRef.current = null;
+          return 0;
+        }
+
+        return nextIndex;
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, [messages.length]);
 
   const currentMessage = useMemo(() => {
@@ -169,84 +184,16 @@ function Header() {
     return messages[currentMessageIndex];
   }, [messages, currentMessageIndex]);
 
-  // JavaScript-only transition functions with ref instead of querySelector
-  const animateAvatarOpacity = useCallback((targetOpacity) => {
-    if (!avatarElementRef.current) return;
-
-    // Cancel any ongoing animation
-    if (avatarTransitionRef.current) {
-      cancelAnimationFrame(avatarTransitionRef.current);
-    }
-
-    // Skip animation if reduced motion is preferred
-    if (prefersReducedMotion) {
-      avatarElementRef.current.style.opacity = targetOpacity;
-      return;
-    }
-
-    const startOpacity = parseFloat(avatarElementRef.current.style.opacity) || 0;
-    const startTime = performance.now();
-    const duration = 300;
-
-    const animate = (currentTime) => {
-      // Check if element still exists before animating
-      if (!avatarElementRef.current) {
-        avatarTransitionRef.current = null;
-        return;
-      }
-
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const opacity = startOpacity + (targetOpacity - startOpacity) * progress;
-
-      avatarElementRef.current.style.opacity = opacity;
-
-      if (progress < 1) {
-        avatarTransitionRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    avatarTransitionRef.current = requestAnimationFrame(animate);
-  }, [prefersReducedMotion]);
-
-  // Cleanup transitions and timers on unmount
-  useEffect(() => {
-    const timer = messageTimerRef.current;
-    return () => {
-      if (avatarTransitionRef.current) {
-        cancelAnimationFrame(avatarTransitionRef.current);
-      }
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, []);
-
-  // Handle avatar visibility synchronized with message display
-  useEffect(() => {
-    const messageHasUser = currentMessage?.user?.id;
-    const shouldShowAvatar = user && messages.length > 0 && messageHasUser;
-
-    if (shouldShowAvatar && transitionState === "idle") {
-      // Show avatar immediately when message appears
-      animateAvatarOpacity(1);
-    } else if (!shouldShowAvatar) {
-      // Hide avatar when conditions not met
-      animateAvatarOpacity(0);
-    }
-  }, [user, messages.length, currentMessage, transitionState, animateAvatarOpacity]);
-
   return (
     <header className={styles.header}>
       <div className={`${styles.headerContent} df wh100`}>
-        {/* Avatar positioned absolutely on the left */}
-        {user &&
-          messages.length > 0 &&
-          currentMessage?.user?.id && (
-            <div
+        {/* Avatar with Framer Motion */}
+        <AnimatePresence mode="wait">
+          {user && messages.length > 0 && currentMessage?.user?.id && (
+            <motion.div
+              key={currentMessage.user.id}
               ref={avatarElementRef}
               className={`${styles.headerAvatar} ${styles.headerAvatarClickable}`}
-              style={{ opacity: 0 }}
               role="button"
               tabIndex={0}
               onClick={() => setSelectedUserId(currentMessage?.user?.id)}
@@ -257,21 +204,42 @@ function Header() {
                 }
               }}
               aria-label={`View ${currentMessage.user.username || "User"}'s profile`}
+              initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                rotate: 0,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20
+                }
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.5,
+                rotate: 10,
+                transition: { duration: 0.2 }
+              }}
+              whileHover={{
+                scale: 1.1,
+                rotate: 5,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.95 }}
             >
               <Avatar
                 src={currentMessage?.user?.avatar_url || null}
                 userId={currentMessage?.user?.id}
                 alt={`${currentMessage?.user?.username || "User"} avatar`}
                 size="small"
-                fallback={
-                  currentMessage?.user?.username ||
-                  "U"
-                }
+                fallback={currentMessage?.user?.username || "U"}
                 showPresence={true}
                 className="header-avatar-component"
               />
-            </div>
+            </motion.div>
           )}
+        </AnimatePresence>
 
         <div className={styles.headerMain}>
           {user ? (
@@ -295,12 +263,22 @@ function Header() {
                 </div>
               </div>
             ) : (
-              <div className={styles.headerCarousel}>
-                <div
-                  className={`${styles.carouselMessage} ${styles.carouselActive} ${transitionState}`}
-                >
-                  {currentMessage.message}
-                </div>
+              <div className={styles.headerCarousel} style={{ overflow: 'hidden', position: 'relative' }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentMessageIndex}
+                    className={`${styles.carouselMessage} ${styles.carouselActive}`}
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -50, opacity: 0 }}
+                    transition={{
+                      duration: 0.5,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                  >
+                    {currentMessage.message}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             )
           ) : (
