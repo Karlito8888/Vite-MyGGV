@@ -9,6 +9,7 @@
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 
 .profileAvatar {
@@ -38,6 +39,17 @@
 .profileField span {
   color: var(--color-text-secondary);
   font-size: 1rem;
+}
+
+.profileField a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.profileField a:hover {
+  color: var(--color-button-primary-hover);
+  text-decoration: underline;
 }
 
 .coinsBalance {

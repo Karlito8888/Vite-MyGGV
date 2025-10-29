@@ -9,6 +9,11 @@
     backdrop-filter: blur(8px);
     background-color: color-mix(in srgb, var(--color-background) 95%, transparent);
     z-index: 1;
+    margin-bottom: 1.5rem;
+}
+
+.card:last-child {
+    margin-bottom: 0;
 }
 
 .cardHover:hover {

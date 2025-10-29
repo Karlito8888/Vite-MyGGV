@@ -118,9 +118,9 @@ function Money() {
           <Card className={`${styles.moneyCard} ${styles.balanceCard}`}>
             <CardHeader>
               <CardTitle>💰 Your Balance</CardTitle>
-              <CardDescription>
+              {/* <CardDescription>
                 Current coin balance
-              </CardDescription>
+              </CardDescription> */}
             </CardHeader>
             <CardContent>
               <div className={styles.balanceDisplay}>
