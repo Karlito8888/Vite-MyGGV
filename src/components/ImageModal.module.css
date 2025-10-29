@@ -1,0 +1,120 @@
+/* Image Modal - MOBILE FIRST (320px+) - CSS Module */
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 0.625rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Content wrapper */
+.content {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image */
+.image {
+  max-width: 100%;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Close button */
+.closeButton {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background-color: white;
+  transform: scale(1.05);
+}
+
+.closeButton:active {
+  transform: scale(0.98);
+}
+
+.closeIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #000;
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .overlay {
+    padding: 1rem;
+  }
+
+  .image {
+    max-height: 90vh;
+    border-radius: 0.75rem;
+  }
+}
+
+/* Desktop enhancements (769px+) */
+@media (min-width: 769px) {
+  .overlay {
+    padding: 1.25rem;
+  }
+
+  .closeButton {
+    top: -3.125rem;
+    right: 0;
+  }
+
+  .image {
+    max-height: 90vh;
+  }
+}

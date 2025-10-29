@@ -75,64 +75,10 @@ function Header() {
         }
       }
     }
-  }, [messages.length]);
+  }, []); // Removed messages.length dependency to prevent re-subscriptions
 
   useEffect(() => {
-    if (user) {
-      fetchMessages(true); // Initial load
-
-      // Setup realtime subscription for messages
-      const subscription = subscribeToHeaderMessages(
-        () => fetchMessages(false), // onMessageChange callback - queue updates
-        (status) => {
-          // onStatusChange callback
-          if (status === "SUBSCRIBED") {
-            setSubscriptionError(null);
-          } else if (status === "CHANNEL_ERROR") {
-            setSubscriptionError("Realtime connection failed");
-          }
-        }
-      );
-
-      // Setup realtime subscription for profile changes
-      const profileChannel = supabase
-        .channel('profile-avatar-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-          },
-          (payload) => {
-            // When a profile changes, update messages in memory
-            setMessages(prevMessages =>
-              prevMessages.map(msg => {
-                if (msg.user?.id === payload.new.id) {
-                  return {
-                    ...msg,
-                    user: {
-                      ...msg.user,
-                      avatar_url: payload.new.avatar_url,
-                      username: payload.new.username,
-                      full_name: payload.new.full_name
-                    }
-                  }
-                }
-                return msg
-              })
-            )
-          }
-        )
-        .subscribe()
-
-      subscriptionRef.current = subscription;
-
-      return () => {
-        unsubscribeFromHeaderMessages(subscription);
-        supabase.removeChannel(profileChannel);
-      };
-    } else {
+    if (!user) {
       // Cleanup when user logs out
       if (subscriptionRef.current) {
         unsubscribeFromHeaderMessages(subscriptionRef.current);
@@ -143,8 +89,67 @@ function Header() {
       setSubscriptionError(null);
       setLoading(false);
       setCurrentMessageIndex(0);
+      return;
     }
-  }, [user, fetchMessages]);
+
+    fetchMessages(true); // Initial load
+
+    // Setup realtime subscription for messages
+    const subscription = subscribeToHeaderMessages(
+      () => fetchMessages(false), // onMessageChange callback - queue updates
+      (status) => {
+        // onStatusChange callback
+        if (status === "SUBSCRIBED") {
+          setSubscriptionError(null);
+        } else if (status === "CHANNEL_ERROR") {
+          setSubscriptionError("Connection failed, Please refresh");
+        }
+      }
+    );
+
+    // Setup realtime subscription for profile changes
+    console.log('[REALTIME] 🔌 Subscribing to profile-avatar-changes channel')
+    const profileChannel = supabase
+      .channel('profile-avatar-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+        },
+        (payload) => {
+          // When a profile changes, update messages in memory
+          setMessages(prevMessages =>
+            prevMessages.map(msg => {
+              if (msg.user?.id === payload.new.id) {
+                return {
+                  ...msg,
+                  user: {
+                    ...msg.user,
+                    avatar_url: payload.new.avatar_url,
+                    username: payload.new.username,
+                    full_name: payload.new.full_name
+                  }
+                }
+              }
+              return msg
+            })
+          )
+        }
+      )
+      .subscribe((status) => {
+        console.log('[REALTIME] 📡 Profile avatar changes channel status:', status)
+      })
+
+    subscriptionRef.current = subscription;
+
+    return () => {
+      console.log('[REALTIME] 🔌 Unsubscribing from header messages and profile-avatar-changes')
+      unsubscribeFromHeaderMessages(subscription);
+      supabase.removeChannel(profileChannel);
+    };
+  }, [user]); // Only depend on user, not fetchMessages
 
   // Message rotation effect
   useEffect(() => {
@@ -227,6 +232,12 @@ function Header() {
                 transition: { duration: 0.2 }
               }}
               whileTap={{ scale: 0.95 }}
+              style={{
+                willChange: 'opacity, transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
             >
               <Avatar
                 src={currentMessage?.user?.avatar_url || null}
@@ -263,7 +274,7 @@ function Header() {
                 </div>
               </div>
             ) : (
-              <div className={styles.headerCarousel} style={{ overflow: 'hidden', position: 'relative' }}>
+              <div className={styles.headerCarousel}>
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentMessageIndex}
@@ -274,6 +285,12 @@ function Header() {
                     transition={{
                       duration: 0.5,
                       ease: [0.4, 0, 0.2, 1]
+                    }}
+                    style={{
+                      willChange: 'opacity, transform',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                      transform: 'translateZ(0)'
                     }}
                   >
                     {currentMessage.message}

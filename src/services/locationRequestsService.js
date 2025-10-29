@@ -188,6 +188,7 @@ export const locationRequestsService = {
    * @returns {Object} Subscription object with unsubscribe method
    */
   subscribeToRequests(ownerId, callback) {
+    console.log('[REALTIME] 🔌 Subscribing to location_requests_changes channel for owner:', ownerId)
     const subscription = supabase
       .channel('location_requests_changes')
       .on(
@@ -203,10 +204,13 @@ export const locationRequestsService = {
           callback(payload)
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('[REALTIME] 📡 Location requests changes channel status:', status, 'owner:', ownerId)
+      })
 
     return {
       unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from location_requests_changes channel for owner:', ownerId)
         subscription.unsubscribe()
       }
     }

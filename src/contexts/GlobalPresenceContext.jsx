@@ -14,6 +14,7 @@ export function GlobalPresenceProvider({ children }) {
 
   useEffect(() => {
     // Create a single global presence channel
+    console.log('[REALTIME] 🔌 Subscribing to global_presence channel')
     const presenceChannel = supabase.channel('global_presence')
 
     presenceChannel
@@ -55,8 +56,10 @@ export function GlobalPresenceProvider({ children }) {
         })
       })
       .subscribe(async (status) => {
+        console.log('[REALTIME] 📡 Global presence channel status:', status)
         if (status === 'SUBSCRIBED' && user) {
           // Track current user's presence
+          console.log('[REALTIME] 👤 Tracking user presence:', user.id)
           await presenceChannel.track({
             user_id: user.id,
             email: user.email,
@@ -68,6 +71,7 @@ export function GlobalPresenceProvider({ children }) {
     // Cleanup
     return () => {
       if (presenceChannel) {
+        console.log('[REALTIME] 🔌 Unsubscribing from global_presence channel')
         presenceChannel.untrack()
         supabase.removeChannel(presenceChannel)
       }

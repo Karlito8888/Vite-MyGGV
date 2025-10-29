@@ -64,6 +64,7 @@ export function useUserLocations() {
     fetchUserLocations()
 
     // S'abonner aux changements en temps réel
+    console.log('[REALTIME] 🔌 Subscribing to user_locations_changes channel')
     const subscription = supabase
       .channel('user_locations_changes')
       .on(
@@ -78,9 +79,12 @@ export function useUserLocations() {
           fetchUserLocations()
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('[REALTIME] 📡 User locations changes channel status:', status)
+      })
 
     return () => {
+      console.log('[REALTIME] 🔌 Unsubscribing from user_locations_changes channel')
       subscription.unsubscribe()
     }
   }, [])

@@ -179,6 +179,7 @@ export async function deletePrivateMessage(messageId) {
  * @returns {Object} Subscription object with unsubscribe method
  */
 export function subscribeToPrivateMessages(userId, onMessage) {
+  console.log('[REALTIME] 🔌 Subscribing to private_messages channel:', `private_messages:${userId}`)
   const subscription = supabase
     .channel(`private_messages:${userId}`)
     .on(
@@ -191,9 +192,14 @@ export function subscribeToPrivateMessages(userId, onMessage) {
       },
       (payload) => onMessage(payload.new)
     )
-    .subscribe()
+    .subscribe((status) => {
+      console.log('[REALTIME] 📡 Private messages channel status:', status, `private_messages:${userId}`)
+    })
 
   return {
-    unsubscribe: () => subscription.unsubscribe()
+    unsubscribe: () => {
+      console.log('[REALTIME] 🔌 Unsubscribing from private_messages channel:', `private_messages:${userId}`)
+      subscription.unsubscribe()
+    }
   }
 }

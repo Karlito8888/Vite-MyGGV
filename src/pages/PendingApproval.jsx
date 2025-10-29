@@ -62,6 +62,7 @@ function PendingApproval() {
     checkApprovalStatus()
 
     // Set up real-time subscription to check for approval
+    console.log('[REALTIME] 🔌 Subscribing to approval_status channel')
     const subscription = supabase
       .channel('approval_status')
       .on(
@@ -78,9 +79,12 @@ function PendingApproval() {
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('[REALTIME] 📡 Approval status channel status:', status)
+      })
 
     return () => {
+      console.log('[REALTIME] 🔌 Unsubscribing from approval_status channel')
       subscription.unsubscribe()
     }
   }, [user, navigate])

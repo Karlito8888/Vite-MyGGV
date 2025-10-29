@@ -21,6 +21,7 @@
 
 
 .headerContent {
+  height: 100%;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
@@ -29,6 +30,7 @@
 }
 
 .headerMain {
+  height: 100%;
   flex: 1;
   display: flex;
   justify-content: center;
@@ -54,15 +56,10 @@
 }
 
 .carouselMessage {
-  padding: 0 0.5rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--color-text-primary);
   text-align: center;
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  will-change: opacity, transform;
   letter-spacing: 1px;
   overflow: hidden;
   display: -webkit-box;
@@ -87,18 +84,6 @@
   font-style: italic;
 }
 
-/* Transition states */
-.carouselMessage.fadingOut {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.carouselMessage.fadingIn {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: messageFadeIn 0.3s ease forwards;
-}
-
 .carouselError {
   color: var(--color-error, #dc3545);
   font-style: italic;
@@ -114,61 +99,15 @@
   font-weight: 600;
 }
 
-/* Message fade in animation */
-@keyframes messageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Header Avatar Positioning - MOBILE FIRST (320px+) */
 .headerAvatar {
   position: absolute;
   left: 5px;
   bottom: -26px;
   z-index: var(--z-dropdown);
-  opacity: 0;
-  transform: translateZ(0);
   isolation: isolate;
-}
-
-.headerAvatarVisible {
-  opacity: 1;
-}
-
-.headerAvatarHidden {
-  opacity: 0;
 }
 
 .headerAvatarClickable {
   cursor: pointer;
-  transition: opacity 0.3s ease;
-}
-
-.headerAvatarClickable:hover {
-  opacity: 0.9;
-}
-
-/* Tablet enhancements (481px+) */
-@media (min-width: 481px) {
-  .headerContent {
-    gap: 1rem;
-  }
-
-  .carouselMessage {
-    font-size: 0.9375rem;
-  }
-}
-
-/* Desktop enhancements (769px+) */
-@media (min-width: 769px) {
-  .carouselMessage {
-    font-size: 1rem;
-  }
 }

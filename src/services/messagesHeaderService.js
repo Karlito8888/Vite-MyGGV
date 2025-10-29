@@ -154,6 +154,7 @@ export async function extendHeaderMessageExpiration(id, daysToAdd) {
  * @returns {Object} Subscription object with cleanup function
  */
 export function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
+  console.log('[REALTIME] 🔌 Subscribing to header-messages channel')
   const channel = supabase
     .channel("header-messages")
     .on(
@@ -171,6 +172,7 @@ export function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
       }
     )
     .subscribe((status) => {
+      console.log('[REALTIME] 📡 Header messages channel status:', status)
       if (onStatusChange) {
         onStatusChange(status);
       }
@@ -179,6 +181,7 @@ export function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
   return {
     channel,
     unsubscribe: () => {
+      console.log('[REALTIME] 🔌 Unsubscribing from header-messages channel')
       supabase.removeChannel(channel);
     }
   };

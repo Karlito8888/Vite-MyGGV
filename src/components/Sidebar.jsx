@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router'
 import {
   XMarkIcon,
   HomeIcon,
-  ChatBubbleLeftRightIcon,
   PuzzlePieceIcon,
   InformationCircleIcon,
   CurrencyDollarIcon,
@@ -12,7 +11,9 @@ import {
   MapPinIcon,
   UserIcon,
   BellIcon,
-  ArrowRightStartOnRectangleIcon
+  ArrowRightStartOnRectangleIcon,
+  EnvelopeIcon,
+  ChatBubbleOvalLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
@@ -21,7 +22,8 @@ import styles from './Sidebar.module.css'
 // Navigation links configuration
 const NAV_LINKS = [
   { to: '/home', icon: HomeIcon, label: 'Home' },
-  { to: '/messages', icon: ChatBubbleLeftRightIcon, label: 'Messages' },
+  { to: '/messages', icon: EnvelopeIcon, label: 'Messages' },
+  { to: '/chat', icon: ChatBubbleOvalLeftEllipsisIcon, label: 'Chat' },
   { to: '/games', icon: PuzzlePieceIcon, label: 'Games' },
   { to: '/infos', icon: InformationCircleIcon, label: 'Infos' },
   { to: '/money', icon: CurrencyDollarIcon, label: 'Money' },

@@ -1,0 +1,165 @@
+/* Confirm Modal - MOBILE FIRST (320px+) - CSS Module */
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal */
+.modal {
+  background-color: var(--color-background);
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close button */
+.closeButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background-color: var(--color-button-secondary-hover);
+  transform: scale(1.05);
+}
+
+.closeButton:active {
+  transform: scale(0.98);
+}
+
+.closeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-text-secondary);
+}
+
+/* Content */
+.content {
+  padding: 1.5rem;
+  padding-top: 2.5rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.message {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.cancelButton,
+.confirmButton {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-height: 44px;
+}
+
+.cancelButton {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.cancelButton:hover {
+  background-color: var(--color-button-secondary-hover);
+}
+
+.confirmButton {
+  background-color: rgb(239, 68, 68);
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: rgb(220, 38, 38);
+}
+
+.cancelButton:active,
+.confirmButton:active {
+  transform: scale(0.98);
+}
+
+/* Tablet enhancements (481px+) */
+@media (min-width: 481px) {
+  .content {
+    padding: 2rem;
+    padding-top: 3rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .message {
+    font-size: 1rem;
+  }
+
+  .actions {
+    padding: 0 2rem 2rem;
+  }
+}

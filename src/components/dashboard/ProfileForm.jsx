@@ -11,6 +11,7 @@ import Button from "../ui/Button";
 import AvatarUploader from "../ui/AvatarUploader";
 import { toast } from "react-toastify";
 import { User } from "lucide-react";
+import styles from "./ProfileForm.module.css";
 
 // Helper to normalize phone numbers
 const normalizePhoneNumber = (value) => {
@@ -239,7 +240,7 @@ function ProfileForm({ profile, refreshProfile }) {
     return (
         <Card>
             <CardHeader>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+                <div className={styles.cardHeaderContainer}>
                     <CardTitle>Edit Profile</CardTitle>
                     <Button
                         className="btn-dashboard"
@@ -262,9 +263,9 @@ function ProfileForm({ profile, refreshProfile }) {
                     }, (errors) => {
                         console.log("❌ [FORM] Validation failed", { duration: `${(performance.now() - validationStart).toFixed(2)}ms`, errors });
                     })(e);
-                }} className="dashboard-form">
-                    <div className="dashboard-avatar-section">
-                        <div className="dashboard-avatar-label" role="heading" aria-level="3">Profile Picture *</div>
+                }} className={styles.dashboardForm}>
+                    <div className={styles.dashboardAvatarSection}>
+                        <div className={styles.dashboardAvatarLabel} role="heading" aria-level="3">Profile Picture *</div>
                         <AvatarUploader
                             currentAvatar={form.watch("avatar_url")}
                             userId={profile?.id}

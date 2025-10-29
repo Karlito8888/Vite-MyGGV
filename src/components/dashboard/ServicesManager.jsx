@@ -13,6 +13,7 @@ import Button from "../ui/Button";
 import ImageUploader from "../ui/ImageUploader";
 import { toast } from "react-toastify";
 import { User } from "lucide-react";
+import styles from "./ServicesManager.module.css";
 
 // Helper to normalize phone numbers
 const normalizePhoneNumber = (value) => {
@@ -295,7 +296,7 @@ function ServicesManager({ profileId }) {
         <>
         <Card>
             <CardHeader>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+                <div className={styles.cardHeaderContainer}>
                     <CardTitle>My Services</CardTitle>
                     <Button
                         className="btn-dashboard"
@@ -309,7 +310,7 @@ function ServicesManager({ profileId }) {
                 </div>
             </CardHeader>
             <CardContent>
-                <form onSubmit={form.handleSubmit(handleSave)} className="dashboard-form">
+                <form onSubmit={form.handleSubmit(handleSave)} className={styles.dashboardForm}>
                     <div style={{ display: "grid", gap: "0.5rem" }}>
                         <Select
                             id="service-category"
