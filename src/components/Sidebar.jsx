@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   XMarkIcon,
   HomeIcon,
@@ -45,30 +46,9 @@ function Sidebar({ isOpen, onClose }) {
   const location = useLocation()
   const closeButtonRef = useRef(null)
   const scrollContainerRef = useRef(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const [shouldRender, setShouldRender] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [startY, setStartY] = useState(0)
   const [scrollTop, setScrollTop] = useState(0)
-
-  // Handle opening/closing animations
-  useEffect(() => {
-    const timers = []
-
-    if (isOpen) {
-      timers.push(
-        setTimeout(() => setShouldRender(true), 0),
-        setTimeout(() => setIsVisible(true), 10)
-      )
-    } else {
-      timers.push(
-        setTimeout(() => setIsVisible(false), 0),
-        setTimeout(() => setShouldRender(false), 300)
-      )
-    }
-
-    return () => timers.forEach(timer => clearTimeout(timer))
-  }, [isOpen])
 
   // Handle Escape key press and focus management
   useEffect(() => {
@@ -81,7 +61,9 @@ function Sidebar({ isOpen, onClose }) {
     if (isOpen) {
       document.addEventListener('keydown', handleEscape)
       document.body.style.overflow = 'hidden'
-      setTimeout(() => closeButtonRef.current?.focus(), 100)
+      setTimeout(() => closeButtonRef.current?.focus(), 50)
+    } else {
+      document.body.style.overflow = ''
     }
 
     return () => {
@@ -135,92 +117,113 @@ function Sidebar({ isOpen, onClose }) {
     }
   }, [isDragging, handleMouseMove, handleDragEnd])
 
-  if (!shouldRender) return null
-
   return (
-    <>
-      {/* Backdrop overlay */}
-      <div
-        className={`${styles.sidebarOverlay} ${isVisible ? styles.open : ''}`}
-        onClick={onClose}
-        aria-label="Close navigation menu"
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            onClose()
-          }
-        }}
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop overlay */}
+          <motion.div
+            className={styles.sidebarOverlay}
+            onClick={onClose}
+            aria-label="Close navigation menu"
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onClose()
+              }
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              willChange: 'opacity',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
+          />
 
-      {/* Sidebar */}
-      <div
-        className={`${styles.sidebar} ${isVisible ? styles.open : ''}`}
-        role="navigation"
-        aria-label="Main navigation menu"
-        aria-modal="true"
-      >
-        {/* Close button */}
-        <button
-          ref={closeButtonRef}
-          className={styles.sidebarCloseBtn}
-          onClick={onClose}
-          aria-label="Close navigation menu"
-        >
-          <XMarkIcon className={styles.sidebarCloseIcon} />
-        </button>
-
-        {/* Navigation content */}
-        {user && (
-          <nav className={styles.navigation}>
-            <div
-              className={`${styles.navScrollContainer} ${isDragging ? styles.dragging : ''}`}
-              ref={scrollContainerRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleDragEnd}
-              onMouseLeave={handleDragEnd}
+          {/* Sidebar */}
+          <motion.div
+            className={styles.sidebar}
+            role="navigation"
+            aria-label="Main navigation menu"
+            aria-modal="true"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              willChange: 'transform',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'translateZ(0)'
+            }}
+          >
+            {/* Close button */}
+            <button
+              ref={closeButtonRef}
+              className={styles.sidebarCloseBtn}
+              onClick={onClose}
+              aria-label="Close navigation menu"
             >
-              <div className={styles.navScrollContent}>
-                {/* Internal navigation links */}
-                {NAV_LINKS.map(({ to, icon: Icon, label }) => (
-                  <Link
-                    key={to}
-                    to={to}
-                    className={`${styles.navLink} ${location.pathname === to ? styles.active : ''}`}
-                    onClick={onClose}
-                  >
-                    <Icon className={styles.navIcon} />
-                    <span>{label}</span>
-                  </Link>
-                ))}
+              <XMarkIcon className={styles.sidebarCloseIcon} />
+            </button>
 
-                {/* External GPS link */}
-                <a
-                  href={EXTERNAL_LINK.href}
-                  className={`${styles.navLink} ${styles.externalLink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={onClose}
+            {/* Navigation content */}
+            {user && (
+              <nav className={styles.navigation}>
+                <div
+                  className={`${styles.navScrollContainer} ${isDragging ? styles.dragging : ''}`}
+                  ref={scrollContainerRef}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleDragEnd}
+                  onMouseLeave={handleDragEnd}
                 >
-                  <EXTERNAL_LINK.icon className={styles.navIcon} />
-                  <span>{EXTERNAL_LINK.label}</span>
-                </a>
+                  <div className={styles.navScrollContent}>
+                    {/* Internal navigation links */}
+                    {NAV_LINKS.map(({ to, icon: Icon, label }) => (
+                      <Link
+                        key={to}
+                        to={to}
+                        className={`${styles.navLink} ${location.pathname === to ? styles.active : ''}`}
+                        onClick={onClose}
+                      >
+                        <Icon className={styles.navIcon} />
+                        <span>{label}</span>
+                      </Link>
+                    ))}
 
-                {/* Logout button */}
-                <button
-                  className={styles.navLink}
-                  onClick={handleLogout}
-                >
-                  <ArrowRightStartOnRectangleIcon className={styles.navIcon} />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </div>
-          </nav>
-        )}
-      </div>
-    </>
+                    {/* External GPS link */}
+                    <a
+                      href={EXTERNAL_LINK.href}
+                      className={`${styles.navLink} ${styles.externalLink}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={onClose}
+                    >
+                      <EXTERNAL_LINK.icon className={styles.navIcon} />
+                      <span>{EXTERNAL_LINK.label}</span>
+                    </a>
+
+                    {/* Logout button */}
+                    <button
+                      className={styles.navLink}
+                      onClick={handleLogout}
+                    >
+                      <ArrowRightStartOnRectangleIcon className={styles.navIcon} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   )
 }
 

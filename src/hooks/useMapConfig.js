@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { blocks } from '../data/blocks'
 import { getDeviceZoom } from '../utils/deviceDetection'
 
@@ -7,8 +8,8 @@ const DEFAULT_COORDS = {
 }
 
 export function useMapConfig(userLocation, mapType = 'osm') {
-  // Pas de cache - recalculer à chaque fois
-  const initialViewState = {
+  // Mémoriser initialViewState
+  const initialViewState = useMemo(() => ({
     center: [
       userLocation?.longitude || DEFAULT_COORDS.longitude,
       userLocation?.latitude || DEFAULT_COORDS.latitude,
@@ -17,9 +18,10 @@ export function useMapConfig(userLocation, mapType = 'osm') {
     pitch: 0,
     bearing: 0,
     minZoom: 2,
-  }
+  }), [userLocation?.longitude, userLocation?.latitude])
 
-  const blocksGeoJSON = {
+  // Mémoriser blocksGeoJSON (ne change jamais)
+  const blocksGeoJSON = useMemo(() => ({
     type: 'FeatureCollection',
     features: blocks
       .filter((block) => block.coords.length > 0)
@@ -34,9 +36,10 @@ export function useMapConfig(userLocation, mapType = 'osm') {
           color: block.color || '#E0DFDF',
         },
       })),
-  }
+  }), []) // Pas de dépendances - blocks est statique
 
-  const mapStyle = {
+  // Mémoriser mapStyle (change seulement avec mapType)
+  const mapStyle = useMemo(() => ({
     version: 8,
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
@@ -66,7 +69,7 @@ export function useMapConfig(userLocation, mapType = 'osm') {
         source: mapType,
       },
     ],
-  }
+  }), [mapType])
 
   return {
     initialViewState,

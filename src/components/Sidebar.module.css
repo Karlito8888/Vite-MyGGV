@@ -11,12 +11,6 @@ SIDEBAR WITH INTEGRATED NAVIGATION - CSS MODULE
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: var(--overlay-z-index);
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
-}
-
-.sidebarOverlay.open {
-  opacity: 1;
 }
 
 /* Sidebar Container - Mobile First (320px+) */
@@ -30,14 +24,8 @@ SIDEBAR WITH INTEGRATED NAVIGATION - CSS MODULE
   background-color: var(--color-background);
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   z-index: var(--sidebar-z-index);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-out;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-.sidebar.open {
-  transform: translateX(0);
 }
 
 /* Close Button */

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import '../styles/Home.css'
-import '../components/Avatar.module.css'
 import { useMapConfig, useUserLocations } from '../hooks'
 import { useUser } from '../contexts/UserContext'
 import { useGlobalPresence } from '../contexts/GlobalPresenceContext'
@@ -19,13 +18,14 @@ function Home() {
   const [currentCenter, setCurrentCenter] = useState(null)
   const [currentZoom, setCurrentZoom] = useState(null)
   const [selectedUserId, setSelectedUserId] = useState(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
 
   const { user } = useUser()
   const { locations, loading: locationsLoading } = useUserLocations()
   const { initialViewState, blocksGeoJSON, mapStyle, DEFAULT_COORDS } = useMapConfig(null, mapType)
   const { isUserOnline } = useGlobalPresence()
 
-  // Reconstruire la carte complètement à chaque changement de mapType
+  // Créer/détruire la carte seulement quand mapType ou mapStyle change
   useEffect(() => {
     if (!mapContainer.current) return
 
@@ -97,8 +97,33 @@ function Home() {
         },
       })
 
-      // Ajouter les markers
-      if (locations.length > 0 && !locationsLoading) {
+      // Signaler que la map est chargée
+      setMapLoaded(true)
+    })
+
+    return () => {
+      if (map.current) {
+        map.current.remove()
+        map.current = null
+      }
+      setMapLoaded(false)
+    }
+  }, [mapType, mapStyle, blocksGeoJSON, currentCenter, currentZoom, initialViewState])
+
+  // Ajouter/mettre à jour les markers quand les locations changent OU quand la map est chargée
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return
+    if (locationsLoading) return
+
+    // Supprimer tous les markers existants
+    const existingMarkers = document.querySelectorAll('.user-location-marker')
+    existingMarkers.forEach(marker => {
+      const parent = marker.parentElement
+      if (parent) parent.remove()
+    })
+
+    // Ajouter les nouveaux markers
+    if (locations.length > 0) {
         // Grouper les locations par coordonnées
         const locationsByCoords = {}
         locations.forEach(({ profileId, location, profile }) => {
@@ -143,15 +168,13 @@ function Home() {
             const fallbackText = username[0].toUpperCase()
             const isOnline = isUserOnline(profileId)
 
-            // Générer l'avatar avec les classes du composant Avatar
+            // Générer l'avatar pour le popup
             const avatarHTML = avatarUrl
-              ? `<div class="avatar avatar--small ${isOnline ? 'avatar--online' : ''}">
-                   <img src="${avatarUrl}" alt="${username}" class="avatar__image" />
+              ? `<div class="popup-avatar ${isOnline ? 'popup-avatar--online' : ''}">
+                   <img src="${avatarUrl}" alt="${username}" class="popup-avatar-image" />
                  </div>`
-              : `<div class="avatar avatar--small avatar--fallback ${isOnline ? 'avatar--online' : ''}">
-                   <div class="avatar__fallback">
-                     <span class="avatar__fallback-text">${fallbackText}</span>
-                   </div>
+              : `<div class="popup-avatar popup-avatar--fallback ${isOnline ? 'popup-avatar--online' : ''}">
+                   <span class="popup-avatar-fallback-text">${fallbackText}</span>
                  </div>`
 
             return `
@@ -212,16 +235,8 @@ function Home() {
             .setPopup(popup)
             .addTo(map.current)
         })
-      }
-    })
-
-    return () => {
-      if (map.current) {
-        map.current.remove()
-        map.current = null
-      }
     }
-  }, [mapType, mapStyle, blocksGeoJSON, locations, locationsLoading, user, currentCenter, currentZoom, initialViewState, isUserOnline])
+  }, [locations, locationsLoading, user, isUserOnline, mapLoaded])
 
 
 
