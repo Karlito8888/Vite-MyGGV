@@ -89,7 +89,7 @@ function Messages() {
       <div className="page-content">
         <div className="page-header">
           <h2>Messages</h2>
-          <p className="page-subtitle">Publish a message or check your private messages</p>
+          <p className="page-subtitle">Post a message, or check your private messages</p>
         </div>
 
         <div className={styles.messagesGrid}>
@@ -98,7 +98,7 @@ function Messages() {
             <CardHeader>
               <CardTitle>📢 Public Message</CardTitle>
               <CardDescription>
-                Publish a message visible to all users in the header
+                Post a public message in the banner ☝️
               </CardDescription>
             </CardHeader>
             <CardContent>

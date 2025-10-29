@@ -8,7 +8,7 @@ import { updateUserPassword } from '../utils/authHelpers'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
-import styles from '../styles/login.module.css'
+import styles from '../components/Login.module.css'
 
 // Conditional logging for development only
 const log = import.meta.env.DEV ? console.log : () => { }
