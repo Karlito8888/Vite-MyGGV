@@ -2,12 +2,18 @@
 /* Classes globales (.page-container, .page-content, .page-header) dans index.css */
 /* Boutons centralisés dans src/components/ui/Button.css */
 
-/* Header */
-.pageHeaderInfo {
+/* Header - Classe globale pour le JSX */
+:global(.page-header-info) {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+}
+
+:global(.page-header-info h2) {
+  text-align: center;
+  width: 100%;
 }
 
 .locationInfo {
@@ -17,6 +23,8 @@
   gap: 0.5rem;
   color: var(--color-text-secondary);
   font-size: 0.85rem;
+  width: 100%;
+  text-align: center;
 }
 
 .weatherClock {
@@ -27,30 +35,36 @@
   color: var(--color-text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
+  width: 100%;
 }
 
-.clock {
+:global(.clock) {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  width: 100%;
 }
 
-.clockContent {
+:global(.clock-content) {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+  width: 100%;
 }
 
-.clockTime {
+:global(.clock-time) {
   font-family: 'Courier New', monospace;
   font-weight: 600;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
-.clockDate {
+:global(.clock-date) {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
+  text-align: center;
 }
 
 /* Tabs */
@@ -175,18 +189,18 @@
   flex-shrink: 0;
 }
 
-/* Hourly Forecast */
-.hourlyForecast {
+/* Hourly Forecast - Classes globales pour le JSX */
+:global(.hourly-forecast) {
   width: 100%;
 }
 
-.forecastScroll {
+:global(.forecast-scroll) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
 }
 
-.hourlyItem {
+:global(.hourly-item) {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,36 +212,36 @@
   transition: all 0.2s ease;
 }
 
-.hourlyItem:hover {
+:global(.hourly-item:hover) {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.hourlyTime {
+:global(.hourly-time) {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
-.hourlyIcon {
+:global(.hourly-icon) {
   color: var(--color-primary);
   margin: 0.5rem 0;
   transition: transform 0.2s ease;
 }
 
-.hourlyItem:hover .hourlyIcon {
+:global(.hourly-item:hover .hourly-icon) {
   transform: scale(1.1);
 }
 
-.hourlyTemp {
+:global(.hourly-temp) {
   font-size: 0.95rem;
   font-weight: bold;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
-.hourlyPrecip {
+:global(.hourly-precip) {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -238,46 +252,48 @@
   border-radius: 1rem;
 }
 
-/* Daily Forecast */
-.dailyForecast {
+/* Daily Forecast - Classes globales pour le JSX */
+:global(.daily-forecast) {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
 }
 
-.dailyItem {
+:global(.daily-item) {
   background: var(--color-background);
   border-radius: 0.75rem;
   border: 1px solid var(--color-border);
   padding: 1rem;
   text-align: center;
   transition: all 0.2s ease;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.dailyItem:hover {
+:global(.daily-item:hover) {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.dailyDate {
+:global(.daily-date) {
   font-weight: bold;
   color: var(--color-text-primary);
   margin-bottom: 0.75rem;
   font-size: 0.9rem;
 }
 
-.dailyIcon {
+:global(.daily-icon) {
   color: var(--color-primary);
   margin: 0.75rem 0;
   transition: transform 0.2s ease;
 }
 
-.dailyItem:hover .dailyIcon {
+:global(.daily-item:hover .daily-icon) {
   transform: scale(1.1);
 }
 
-.dailyDescription {
+:global(.daily-description) {
   color: var(--color-text-secondary);
   font-size: 0.8rem;
   margin-bottom: 1rem;
@@ -288,25 +304,25 @@
   justify-content: center;
 }
 
-.dailyTemps {
+:global(.daily-temps) {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
 
-.tempHigh {
+:global(.temp-high) {
   font-weight: bold;
   color: var(--color-text-primary);
   font-size: 1.05rem;
 }
 
-.tempLow {
+:global(.temp-low) {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-.dailyPrecip {
+:global(.daily-precip) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,9 +332,7 @@
   background: rgba(91, 196, 109, 0.1);
   padding: 0.25rem 0.5rem;
   border-radius: 1rem;
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 /* Loading and Error States */
@@ -345,10 +359,13 @@
 
 /* Animations */
 @keyframes pulseSubtle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.8;
@@ -357,18 +374,19 @@
 
 /* Tablet (481px+) */
 @media (min-width: 481px) {
-  .pageHeaderInfo {
-    align-items: flex-start;
-  }
 
+  /* TOUJOURS CENTRÉ - pas d'override */
   .locationInfo {
-    justify-content: flex-start;
     font-size: 0.9rem;
   }
 
   .weatherClock {
-    justify-content: flex-start;
     font-size: 0.9rem;
+  }
+
+  :global(.clock-time),
+  :global(.clock-date) {
+    text-align: left;
   }
 
   .tabContent {
@@ -415,32 +433,32 @@
     font-size: 0.9rem;
   }
 
-  .dailyForecast {
+  :global(.daily-forecast) {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
-  .dailyItem {
+  :global(.daily-item) {
     padding: 1.25rem;
   }
 
-  .dailyDate {
+  :global(.daily-date) {
     font-size: 0.95rem;
   }
 
-  .dailyDescription {
+  :global(.daily-description) {
     font-size: 0.85rem;
   }
 
-  .tempHigh {
+  :global(.temp-high) {
     font-size: 1.1rem;
   }
 
-  .tempLow {
+  :global(.temp-low) {
     font-size: 0.9rem;
   }
 
-  .dailyPrecip {
+  :global(.daily-precip) {
     font-size: 0.8rem;
   }
 }
@@ -455,21 +473,21 @@
     font-size: 3.5rem;
   }
 
-  .dailyForecast {
+  :global(.daily-forecast) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 /* Large Desktop (1024px+) */
 @media (min-width: 1024px) {
-  .dailyForecast {
+  :global(.daily-forecast) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 /* Extra Large Desktop (1280px+) */
 @media (min-width: 1280px) {
-  .dailyForecast {
+  :global(.daily-forecast) {
     grid-template-columns: repeat(7, 1fr);
   }
 }

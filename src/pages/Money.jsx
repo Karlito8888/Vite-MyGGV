@@ -319,7 +319,7 @@ function Money() {
                 <div className={styles.comingSoonIcon}>📺</div>
                 <h3 className={styles.comingSoonTitle}>Rewarded Videos</h3>
                 <p className={styles.comingSoonText}>
-                  Based on the success of this app, we'll introduce rewarded video ads where you can watch short videos to earn bonus coins!
+                  Based on the success of this app, we'll introduce rewarded video ads where you can watch short videos to earn coins... and maybe more !
                 </p>
                 <div className={styles.comingSoonFeatures}>
                   <div className={styles.featureItem}>
@@ -328,7 +328,7 @@ function Money() {
                   </div>
                   <div className={styles.featureItem}>
                     <span>🪙</span>
-                    <span>Earn bonus coins</span>
+                    <span>Earn bonus coins...</span>
                   </div>
                   <div className={styles.featureItem}>
                     <span>⚡</span>
