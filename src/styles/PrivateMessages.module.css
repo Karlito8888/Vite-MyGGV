@@ -1,0 +1,211 @@
+/* PrivateMessages Page Styles - MOBILE FIRST */
+/* Common page structure inherited from index.css */
+
+/* Conversations List */
+.conversationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.conversationCard {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.conversationCard :global(.cardContent) {
+  position: relative;
+}
+
+.conversationItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.5rem 0.75rem;
+  align-items: start;
+  cursor: pointer;
+}
+
+.conversationItem > :first-child {
+  /* Avatar */
+  grid-row: 1 / 3;
+  grid-column: 1;
+}
+
+.conversationInfo {
+  grid-row: 1;
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.messagePreview {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+.conversationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conversationName {
+  color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messageTime {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Message Preview */
+.messagePreview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.lastMessage {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border-radius: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  border: 1px solid var(--color-border);
+}
+
+/* Text shadow for better readability */
+:global(:root.light) .lastMessage {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global(:root.dark) .lastMessage {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.imagePreview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  width: 100%;
+}
+
+.previewThumbnail {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.imageLabel {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Text shadow for image label */
+:global(:root.light) .imageLabel {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global(:root.dark) .imageLabel {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.unreadBadge {
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+  min-width: 1.25rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.emptyText {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+}
+
+.emptySubtext {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Delete Conversation Button */
+.deleteConversationBtn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  min-height: 1rem;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.deleteConversationBtn svg {
+  color: rgb(255, 0, 0);
+}
+
+/* Tablet (481px+) */
+@media (min-width: 481px) {
+  .conversationsList {
+    gap: 1rem;
+  }
+
+  .conversationName {
+    font-size: 1rem;
+  }
+
+  .lastMessage {
+    font-size: 0.9375rem;
+  }
+
+  .deleteConversationBtn {
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+  }
+}

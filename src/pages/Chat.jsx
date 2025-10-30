@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useUser } from '../contexts'
 import { toast } from 'react-toastify'
 import { PaperAirplaneIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/solid'
@@ -14,13 +14,10 @@ import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
 import UserProfileModal from '../components/UserProfileModal'
 import PageTransition from '../components/PageTransition'
-import { usePageVisibility } from '../hooks/usePageVisibility'
-import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from '../styles/Chat.module.css'
 
 function Chat() {
   const { user, profile } = useUser()
-  const isPageVisible = usePageVisibility()
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -28,12 +25,10 @@ function Chat() {
   const [uploading, setUploading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
-  const [longPressedMessageId, setLongPressedMessageId] = useState(null)
   const [messageToDelete, setMessageToDelete] = useState(null)
   const [selectedUserId, setSelectedUserId] = useState(null)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
-  const longPressTimer = useRef(null)
   const channelId = 'general' // General channel for all users
 
   // Auto scroll to bottom
@@ -45,39 +40,37 @@ function Chat() {
     scrollToBottom()
   }, [messages])
 
-  const loadMessages = useCallback(async () => {
-    setLoading(true)
-    try {
-      const { data, error } = await listChannelMessages(channelId, 100)
+  // Load existing messages - simple, no callback needed
+  useEffect(() => {
+    const loadMessages = async () => {
+      console.log('[CHAT] 📥 Loading messages...')
+      setLoading(true)
+      try {
+        const { data, error } = await listChannelMessages(channelId, 100)
 
-      if (error) throw error
+        if (error) {
+          console.error('[CHAT] ❌ Error loading messages:', error)
+          throw error
+        }
 
-      // Reverse to show oldest first
-      setMessages(data ? data.reverse() : [])
-    } catch (error) {
-      console.error('Error loading messages:', error)
-      toast.error('Error loading messages')
-    } finally {
-      setLoading(false)
+        console.log('[CHAT] ✅ Messages loaded:', data?.length || 0)
+        // Reverse to show oldest first
+        setMessages(data ? data.reverse() : [])
+      } catch (error) {
+        console.error('[CHAT] ❌ Failed to load messages:', error)
+        toast.error('Error loading messages')
+      } finally {
+        console.log('[CHAT] 🏁 Loading complete')
+        setLoading(false)
+      }
     }
-  }, []) // Stable reference
 
-  // Store loadMessages in a ref to avoid recreating subscriptions
-  const loadMessagesRef = useRef(loadMessages)
-  useEffect(() => {
-    loadMessagesRef.current = loadMessages
-  }, [loadMessages])
-
-  // Load existing messages
-  useEffect(() => {
     loadMessages()
-  }, [loadMessages])
+  }, [])
 
-  // Fonction de souscription au chat
-  const subscribeToChatChannel = useCallback(() => {
-    if (!user) return null
-
-    console.log('[REALTIME] 🔌 Setting up chat subscription')
+  // Setup realtime subscription - simple and direct
+  useEffect(() => {
+    if (!user) return
 
     const channel = supabase
       .channel(`chat-${channelId}`)
@@ -109,44 +102,12 @@ function Chat() {
           })
         }
       )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 Chat channel status:', status)
-      })
+      .subscribe()
 
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from chat')
-        supabase.removeChannel(channel)
-      }
+    return () => {
+      supabase.removeChannel(channel)
     }
-  }, [user]) // Stable reference, channelId is constant
-
-  // Utiliser le hook de connexion
-  useRealtimeConnection(
-    subscribeToChatChannel,
-    [user],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 1000,
-      onReconnect: () => {
-        console.log('[REALTIME] ✅ Chat reconnected')
-        loadMessagesRef.current()
-      }
-    }
-  )
-
-  // Recharger les messages quand la page redevient visible
-  const wasPageVisibleRef = useRef(isPageVisible)
-  useEffect(() => {
-    const becameVisible = !wasPageVisibleRef.current && isPageVisible
-    wasPageVisibleRef.current = isPageVisible
-
-    if (becameVisible && user && !loading) {
-      console.log('[REALTIME] 👁️ Page visible, refreshing chat')
-      loadMessages()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPageVisible, user, loading])
+  }, [user])
 
   const handleSendMessage = async (e) => {
     e.preventDefault()
@@ -254,7 +215,6 @@ function Chat() {
 
       // Remove from local state immediately
       setMessages((current) => current.filter(msg => msg.id !== messageToDelete))
-      setLongPressedMessageId(null)
       toast.success('Message deleted')
     } catch (error) {
       console.error('Error deleting message:', error)
@@ -262,17 +222,7 @@ function Chat() {
     }
   }
 
-  const handleTouchStart = (messageId) => {
-    longPressTimer.current = setTimeout(() => {
-      setLongPressedMessageId(messageId)
-    }, 1000) // 1000ms long press
-  }
 
-  const handleTouchEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current)
-    }
-  }
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp)
@@ -372,12 +322,7 @@ function Chat() {
                           {!isOwnMessage && (
                             <div className={styles.messageSender}>{displayName}</div>
                           )}
-                          <div
-                            className={styles.messageWrapper}
-                            onTouchStart={() => isOwnMessage && handleTouchStart(message.id)}
-                            onTouchEnd={handleTouchEnd}
-                            onTouchCancel={handleTouchEnd}
-                          >
+                          <div className={styles.messageWrapper}>
                             <div className={styles.messageBubble}>
                               {message.message_type === 'image' && message.attachment_url && (
                                 <div className={styles.imageMessage}>
@@ -396,7 +341,7 @@ function Chat() {
                             </div>
                             {isOwnMessage && (
                               <button
-                                className={`${styles.deleteButton} ${longPressedMessageId === message.id ? styles.visible : ''}`}
+                                className={styles.deleteButton}
                                 onClick={() => setMessageToDelete(message.id)}
                                 title="Delete message"
                               >

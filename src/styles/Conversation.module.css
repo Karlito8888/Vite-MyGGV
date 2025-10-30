@@ -1,4 +1,6 @@
-/* Chat Page Layout - MOBILE FIRST (320px+) - CSS Module */
+/* Conversation Page Layout - MOBILE FIRST (320px+) - CSS Module */
+/* Same style as Chat.module.css */
+
 .chatPageContainer {
   height: 100%;
   display: flex;
@@ -135,21 +137,6 @@
   align-items: flex-start;
 }
 
-.messageSender {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  padding: 0 12px;
-}
-
-:global(:root.light) .messageSender {
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-:global(:root.dark) .messageSender {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
-}
-
 .messageWrapper {
   display: flex;
   align-items: center;
@@ -206,26 +193,6 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Delete button */
-.deleteButton {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  background: rgba(239, 68, 68, 0.1);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.deleteIcon {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: rgb(239, 68, 68);
-}
-
 .inputContainer {
   display: flex;
   justify-content: space-between;
@@ -245,6 +212,7 @@
   transition: border-color 0.2s;
   background: var(--color-background);
   color: var(--color-text);
+  font-family: inherit;
 }
 
 .messageInput:focus {
@@ -280,11 +248,6 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: scale(1);
-}
-
-.sendIcon {
-  width: 20px;
-  height: 20px;
 }
 
 .emptyState {
@@ -332,13 +295,53 @@
   }
 }
 
-.loginPrompt {
-  padding: 12px;
-  text-align: center;
-  background: var(--color-warning-light, #fff3cd);
-  color: var(--color-warning-dark, #856404);
-  font-size: 14px;
-  border-top: 1px solid var(--color-border);
+.uploadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Delete button */
+.deleteButton {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.deleteIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: rgb(239, 68, 68);
+}
+
+/* Back button */
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s ease;
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.backButton:hover {
+  background: var(--color-surface);
 }
 
 /* Image messages */
@@ -463,24 +466,13 @@
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.7;
   }
-}
-
-.uploadingSpinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
 }
 
 /* Tablet enhancements (481px+) */

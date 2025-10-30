@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { z } from 'zod'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
@@ -25,7 +25,6 @@ const headerMessageSchema = z.object({
 })
 
 function Messages() {
-  const navigate = useNavigate()
   const { profile, refreshProfile } = useUser()
   const [headerMessage, setHeaderMessage] = useState('')
   const [selectedDuration, setSelectedDuration] = useState(12)
@@ -87,10 +86,6 @@ function Messages() {
   const remainingChars = MAX_MESSAGE_LENGTH - headerMessage.length
   const isMessageTooLong = headerMessage.length > MAX_MESSAGE_LENGTH
 
-  const handleGoToPrivateMessages = () => {
-    navigate('/private-messages')
-  }
-
   return (
     <PageTransition>
       <div className="page-container">
@@ -101,123 +96,128 @@ function Messages() {
           </div>
 
           <div className={styles.messagesGrid}>
-          {/* Card 1: Publish header message */}
-          <Card className={styles.messageCard}>
-            <CardHeader>
-              <CardTitle>📢 Public Message</CardTitle>
-              <CardDescription>
-                Post a public message in the banner ☝️
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {profile && (
-                <div className={styles.coinsBalance}>
-                  <span className={styles.coinsIcon}>🪙</span>
-                  <span className={styles.coinsText}>Your balance: <strong>{userCoins} coins</strong></span>
-                </div>
-              )}
-
-              <form onSubmit={handlePublishHeaderMessage} className={styles.messageForm}>
-                <div className={styles.messageInputWrapper}>
-                  <Input
-                    as="textarea"
-                    label="Your message (max 70 characters)"
-                    placeholder="Write your message here..."
-                    value={headerMessage}
-                    onChange={(e) => setHeaderMessage(e.target.value)}
-                    error={error}
-                    rows={4}
-                    required
-                    maxLength={MAX_MESSAGE_LENGTH}
-                  />
-                  <div className={`${styles.characterCounter} ${isMessageTooLong ? styles.error : remainingChars < 10 ? styles.warning : ''}`}>
-                    {remainingChars} / {MAX_MESSAGE_LENGTH} characters remaining
+            {/* Card 1: Publish header message */}
+            <Card className={styles.messageCard}>
+              <CardHeader>
+                <CardTitle>📢 Public Message</CardTitle>
+                <CardDescription>
+                  Post a public message in the banner ☝️
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {profile && (
+                  <div className={styles.coinsBalance}>
+                    <span className={styles.coinsIcon}>🪙</span>
+                    <span className={styles.coinsText}>Your balance: <strong>{userCoins} coins</strong></span>
                   </div>
-                </div>
+                )}
 
-                <div className={styles.durationSelector}>
-                  <label className={styles.durationLabel}>Duration</label>
-                  <div className={styles.durationOptions}>
-                    {DURATION_OPTIONS.map((option) => (
-                      <button
-                        key={option.hours}
-                        type="button"
-                        className={`${styles.durationOption} ${selectedDuration === option.hours ? styles.active : ''} ${userCoins < option.coins ? styles.disabled : ''}`}
-                        onClick={() => setSelectedDuration(option.hours)}
-                        disabled={userCoins < option.coins}
-                      >
-                        <span className={styles.durationTime}>{option.label}</span>
-                        <span className={styles.durationCost}>
-                          🪙 {option.coins} {option.coins === 1 ? 'coin' : 'coins'}
-                        </span>
-                        {userCoins < option.coins && (
-                          <span className={styles.durationInsufficient}>Insufficient</span>
-                        )}
-                      </button>
-                    ))}
+                <form onSubmit={handlePublishHeaderMessage} className={styles.messageForm}>
+                  <div className={styles.messageInputWrapper}>
+                    <Input
+                      as="textarea"
+                      label="Your message (max 70 characters)"
+                      placeholder="Write your message here..."
+                      value={headerMessage}
+                      onChange={(e) => setHeaderMessage(e.target.value)}
+                      error={error}
+                      rows={4}
+                      required
+                      maxLength={MAX_MESSAGE_LENGTH}
+                    />
+                    <div className={`${styles.characterCounter} ${isMessageTooLong ? styles.error : remainingChars < 10 ? styles.warning : ''}`}>
+                      {remainingChars} / {MAX_MESSAGE_LENGTH} characters remaining
+                    </div>
                   </div>
+
+                  <div className={styles.durationSelector}>
+                    <label className={styles.durationLabel}>Duration</label>
+                    <div className={styles.durationOptions}>
+                      {DURATION_OPTIONS.map((option) => (
+                        <button
+                          key={option.hours}
+                          type="button"
+                          className={`${styles.durationOption} ${selectedDuration === option.hours ? styles.active : ''} ${userCoins < option.coins ? styles.disabled : ''}`}
+                          onClick={() => setSelectedDuration(option.hours)}
+                          disabled={userCoins < option.coins}
+                        >
+                          <span className={styles.durationTime}>{option.label}</span>
+                          <span className={styles.durationCost}>
+                            🪙 {option.coins} {option.coins === 1 ? 'coin' : 'coins'}
+                          </span>
+                          {userCoins < option.coins && (
+                            <span className={styles.durationInsufficient}>Insufficient</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={loading}
+                    disabled={!profile || !hasEnoughCoins || isMessageTooLong || !headerMessage.trim()}
+                  >
+                    Publish for {selectedOption?.coins} {selectedOption?.coins === 1 ? 'coin' : 'coins'}
+                  </Button>
+
+                  {!profile && (
+                    <p className={styles.messageWarning}>
+                      You must be logged in to publish a message
+                    </p>
+                  )}
+
+                  {profile && !hasEnoughCoins && (
+                    <p className={styles.messageWarning}>
+                      You need {selectedOption?.coins} coins to publish this message
+                    </p>
+                  )}
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Card 2: Private messages */}
+            <Card className={styles.messageCard} hover>
+              <CardHeader>
+                <CardTitle>💬 Private Messages</CardTitle>
+                <CardDescription>
+                  View and manage your private conversations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className={styles.privateMessagesInfo}>
+                  <p className={styles.infoText}>
+                    Access your private messaging to exchange with other users confidentially.
+                  </p>
+                  <ul className={styles.featuresList}>
+                    <li>✓ Real-time conversations</li>
+                    <li>✓ New message notifications</li>
+                    <li>✓ Complete history</li>
+                  </ul>
                 </div>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  fullWidth
-                  loading={loading}
-                  disabled={!profile || !hasEnoughCoins || isMessageTooLong || !headerMessage.trim()}
-                >
-                  Publish for {selectedOption?.coins} {selectedOption?.coins === 1 ? 'coin' : 'coins'}
-                </Button>
-
+                {profile ? (
+                  <Link to="/private-messages" className="btn btn-secondary btn-full">
+                    Open Messaging
+                  </Link>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    disabled
+                  >
+                    Open Messaging
+                  </Button>
+                )}
                 {!profile && (
                   <p className={styles.messageWarning}>
-                    You must be logged in to publish a message
+                    You must be logged in to access your messages
                   </p>
                 )}
-
-                {profile && !hasEnoughCoins && (
-                  <p className={styles.messageWarning}>
-                    You need {selectedOption?.coins} coins to publish this message
-                  </p>
-                )}
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Card 2: Private messages */}
-          <Card className={styles.messageCard} hover>
-            <CardHeader>
-              <CardTitle>💬 Private Messages</CardTitle>
-              <CardDescription>
-                View and manage your private conversations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className={styles.privateMessagesInfo}>
-                <p className={styles.infoText}>
-                  Access your private messaging to exchange with other users confidentially.
-                </p>
-                <ul className={styles.featuresList}>
-                  <li>✓ Real-time conversations</li>
-                  <li>✓ New message notifications</li>
-                  <li>✓ Complete history</li>
-                </ul>
-              </div>
-              <Button
-                variant="secondary"
-                fullWidth
-                onClick={handleGoToPrivateMessages}
-                disabled={!profile}
-              >
-                Open Messaging
-              </Button>
-              {!profile && (
-                <p className={styles.messageWarning}>
-                  You must be logged in to access your messages
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </PageTransition>

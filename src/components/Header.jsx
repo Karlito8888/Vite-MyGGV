@@ -10,13 +10,11 @@ import {
   listActiveHeaderMessages,
   subscribeToHeaderMessages,
 } from "../services/messagesHeaderService";
-import { usePageVisibility } from '../hooks/usePageVisibility'
 import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from "./Header.module.css";
 
 function Header() {
   const { user } = useUser()
-  const isPageVisible = usePageVisibility()
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -195,18 +193,7 @@ function Header() {
     }
   )
 
-  // Recharger les messages quand la page redevient visible
-  const wasPageVisibleRef = useRef(isPageVisible)
-  useEffect(() => {
-    const becameVisible = !wasPageVisibleRef.current && isPageVisible
-    wasPageVisibleRef.current = isPageVisible
-    
-    if (becameVisible && user && !loading) {
-      console.log('[REALTIME] 👁️ Page visible, refreshing messages')
-      fetchMessages(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPageVisible, user, loading])
+  // Le rechargement lors du retour de visibilité est géré par useRealtimeConnection via onReconnect
 
   // Message rotation effect
   useEffect(() => {

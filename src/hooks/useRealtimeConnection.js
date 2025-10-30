@@ -116,11 +116,16 @@ export function useRealtimeConnection(
     if (becameVisible && isConnectedRef.current) {
       console.log('[REALTIME] 👁️ Page became visible, scheduling reconnection...')
       
-      // Délai avant reconnexion pour éviter les reconnexions multiples
+      // Ajouter un délai aléatoire (0-200ms) pour étaler les reconnexions
+      const staggerDelay = Math.random() * 200
+      const totalDelay = reconnectDelay + staggerDelay
+      
       reconnectTimeoutRef.current = setTimeout(() => {
         console.log('[REALTIME] 🔄 Reconnecting after visibility change')
+        // Nettoyer d'abord la connexion existante avant de reconnecter
+        cleanup()
         connect()
-      }, reconnectDelay)
+      }, totalDelay)
     }
 
     return () => {

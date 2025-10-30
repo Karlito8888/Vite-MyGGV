@@ -32,8 +32,8 @@ const NAV_LINKS = [
   { to: '/weather', icon: CloudIcon, label: 'Weather' },
   { to: '/marketplace', icon: ShoppingBagIcon, label: 'Marketplace' },
   { to: '/location-requests', icon: BellIcon, label: 'Requests' },
-  { to: '/install-app', icon: ArrowDownTrayIcon, label: 'Install App' },
-  { to: '/profile', icon: UserIcon, label: 'Profile' }
+  { to: '/profile', icon: UserIcon, label: 'Profile' },
+  { to: '/install-app', icon: ArrowDownTrayIcon, label: 'Install App' }
 ]
 
 // External link

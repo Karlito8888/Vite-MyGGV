@@ -15,6 +15,8 @@ const Home = lazy(() => import("./pages/Home"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Messages = lazy(() => import("./pages/Messages"));
+const PrivateMessages = lazy(() => import("./pages/PrivateMessages"));
+const Conversation = lazy(() => import("./pages/Conversation"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Games = lazy(() => import("./pages/Games"));
 const Infos = lazy(() => import("./pages/Infos"));
@@ -30,6 +32,8 @@ const protectedRoutes = [
   { path: "profile", element: Profile },
   { path: "dashboard", element: Dashboard },
   { path: "messages", element: Messages },
+  { path: "private-messages", element: PrivateMessages },
+  { path: "private-messages/:userId", element: Conversation },
   { path: "chat", element: Chat },
   { path: "games", element: Games },
   { path: "infos", element: Infos },

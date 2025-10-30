@@ -83,6 +83,40 @@
   letter-spacing: 2px;
 }
 
+/* Send Message Button */
+.sendMessageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  font-family: inherit;
+}
+
+.sendMessageBtn:hover {
+  background: var(--color-button-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(91, 196, 109, 0.3);
+}
+
+.sendMessageBtn:active {
+  transform: translateY(0);
+}
+
+.sendMessageBtn svg {
+  flex-shrink: 0;
+}
+
 .bio {
   font-size: 1rem;
   color: var(--color-text-secondary);

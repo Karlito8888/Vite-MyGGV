@@ -25,8 +25,7 @@ export async function getConversationMessages(userId, otherUserId, limit = 50) {
       .select(`
         *,
         sender:profiles!private_messages_sender_id_fkey(*),
-        receiver:profiles!private_messages_receiver_id_fkey(*),
-        reply_to_message:private_messages!private_messages_reply_to_fkey(*)
+        receiver:profiles!private_messages_receiver_id_fkey(*)
       `)
       .is('deleted_at', null)
       .or(`and(sender_id.eq.${userId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${userId})`)
@@ -156,7 +155,7 @@ export async function updatePrivateMessage(id, message) {
 }
 
 /**
- * Soft delete a private message
+ * Delete a private message
  * RLS ensures user is the sender
  * @param {string} messageId - Message UUID
  * @returns {Promise<{data: Object|null, error: Error|null}>}
@@ -165,11 +164,111 @@ export async function deletePrivateMessage(messageId) {
   return executeQuery(
     supabase
       .from('private_messages')
-      .update({ deleted_at: new Date().toISOString() })
+      .delete()
       .eq('id', messageId)
-      .select()
-      .single()
   )
+}
+
+/**
+ * Delete entire conversation with a user
+ * Deletes all messages where current user is sender or receiver
+ * @param {string} userId - Current user UUID
+ * @param {string} otherUserId - Other user UUID
+ * @returns {Promise<{data: Object|null, error: Error|null}>}
+ */
+export async function deleteConversation(userId, otherUserId) {
+  return executeQuery(
+    supabase
+      .from('private_messages')
+      .delete()
+      .or(`and(sender_id.eq.${userId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${userId})`)
+  )
+}
+
+/**
+ * Upload an image to private messages storage
+ * @param {File} file - Image file to upload
+ * @param {string} receiverId - Receiver UUID
+ * @returns {Promise<{data: {url: string, path: string}|null, error: Error|null}>}
+ */
+export async function uploadPrivateMessageImage(file, receiverId) {
+  const { userId, error: authError } = await getAuthenticatedUserId()
+  if (authError) {
+    return { data: null, error: authError }
+  }
+
+  // Validate file type
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+  if (!validTypes.includes(file.type)) {
+    return {
+      data: null,
+      error: new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.')
+    }
+  }
+
+  // Validate file size (5MB)
+  const maxSize = 5 * 1024 * 1024
+  if (file.size > maxSize) {
+    return {
+      data: null,
+      error: new Error('File too large. Maximum size is 5MB.')
+    }
+  }
+
+  // Create unique filename
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${userId}/${receiverId}/${Date.now()}.${fileExt}`
+
+  // Upload to storage
+  const { data, error } = await supabase.storage
+    .from('private-messages-images')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    })
+
+  if (error) {
+    return { data: null, error }
+  }
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('private-messages-images')
+    .getPublicUrl(data.path)
+
+  return {
+    data: {
+      url: publicUrl,
+      path: data.path
+    },
+    error: null
+  }
+}
+
+/**
+ * Send an image message
+ * @param {Object} params - Parameters
+ * @param {string} params.receiver_id - Receiver UUID
+ * @param {File} params.image - Image file to upload
+ * @param {string} [params.message] - Optional caption
+ * @returns {Promise<{data: Object|null, error: Error|null}>}
+ */
+export async function sendPrivateImageMessage({ receiver_id, image, message = '' }) {
+  // Upload image first
+  const { data: uploadData, error: uploadError } = await uploadPrivateMessageImage(image, receiver_id)
+
+  if (uploadError) {
+    return { data: null, error: uploadError }
+  }
+
+  // Send message with image
+  return sendPrivateMessage({
+    receiver_id,
+    message: message || '📷 Image',
+    attachment_url: uploadData.url,
+    attachment_type: image.type,
+    message_type: 'image'
+  })
 }
 
 /**

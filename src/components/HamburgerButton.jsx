@@ -11,7 +11,8 @@ function HamburgerButton({ onToggle, isOpen = false }) {
   const protectedRoutes = ['/home', '/dashboard', '/install-app', '/profile', '/messages', '/games', '/infos', '/money', '/weather', '/chat', '/marketplace', '/location-requests']
 
   // Check if current route is protected
-  const isProtectedRoute = protectedRoutes.includes(location.pathname)
+  const isProtectedRoute = protectedRoutes.includes(location.pathname) ||
+    location.pathname.startsWith('/private-messages')
 
   return (
     <button

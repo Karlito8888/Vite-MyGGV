@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react'
 import Avatar from './Avatar'
 import Card, { CardHeader, CardTitle, CardContent } from './ui/Card'
 import RichTextDisplay from './ui/RichTextDisplay'
+import { useUser } from '../contexts'
 import styles from './UserProfileModal.module.css'
 import { supabase } from '../utils/supabase'
 import viberLogo from '../assets/logos/viber.png'
@@ -15,6 +17,8 @@ import tiktokLogo from '../assets/logos/tiktok.png'
 import instagramLogo from '../assets/logos/instagram.png'
 
 function UserProfileModal({ userId, onClose }) {
+  const navigate = useNavigate()
+  const { user } = useUser()
   const [profile, setProfile] = useState(null)
   const [locationAssociations, setLocationAssociations] = useState([])
   const [userService, setUserService] = useState(null)
@@ -165,482 +169,497 @@ function UserProfileModal({ userId, onClose }) {
                 transform: 'translateZ(0)'
               }}
             >
-          <button className={styles.close} onClick={onClose} aria-label="Close">
-            <X size={24} />
-          </button>
+              <button className={styles.close} onClick={onClose} aria-label="Close">
+                <X size={24} />
+              </button>
 
-          {loading ? (
-            <div className={styles.loading}>Loading...</div>
-          ) : (
-            <div className={styles.content}>
-              {/* Header with Avatar */}
-              <div className={styles.header}>
-                <Avatar
-                  src={profile?.avatar_url}
-                  userId={userId}
-                  size="large"
-                  fallback={profile?.username?.[0] || 'U'}
-                  showPresence={true}
-                />
-                <h2 className={styles.username}>@{profile?.username || 'User'}</h2>
-              </div>
+              {loading ? (
+                <div className={styles.loading}>Loading...</div>
+              ) : (
+                <div className={styles.content}>
+                  {/* Header with Avatar */}
+                  <div className={styles.header}>
+                    <Avatar
+                      src={profile?.avatar_url}
+                      userId={userId}
+                      size="large"
+                      fallback={profile?.username?.[0] || 'U'}
+                      showPresence={true}
+                    />
+                    <h2 className={styles.username}>@{profile?.username || 'User'}</h2>
 
-              {/* Location Information */}
-              {locationAssociations && locationAssociations.length > 0 && (
-                <Card className={styles.section}>
-                  <CardHeader>
-                    <CardTitle>Location Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {locationAssociations.map((association, index) => (
-                      <div key={association.id} className="location-association">
+                    {/* Send Message Button */}
+                    {user && user.id !== userId && (
+                      <button
+                        className={styles.sendMessageBtn}
+                        onClick={() => {
+                          navigate(`/private-messages/${userId}`)
+                          onClose()
+                        }}
+                        title="Send private message"
+                      >
+                        <MessageCircle size={20} />
+                        <span>Send Message</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Location Information */}
+                  {locationAssociations && locationAssociations.length > 0 && (
+                    <Card className={styles.section}>
+                      <CardHeader>
+                        <CardTitle>Location Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {locationAssociations.map((association, index) => (
+                          <div key={association.id} className="location-association">
+                            <div className="profile-field">
+                              <label>Block:</label>
+                              <span>{association.location?.block || 'Not specified'}</span>
+                            </div>
+                            <div className="profile-field">
+                              <label>Lot:</label>
+                              <span>{association.location?.lot || 'Not specified'}</span>
+                            </div>
+                            {locationAssociations.length > 1 && index < locationAssociations.length - 1 && (
+                              <hr className="location-divider" />
+                            )}
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Personal Information */}
+                  {(profile?.username || profile?.occupation || profile?.description) && (
+                    <Card className={styles.section}>
+                      <CardHeader>
+                        <CardTitle>Personal Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="profile-field">
-                          <label>Block:</label>
-                          <span>{association.location?.block || 'Not specified'}</span>
+                          <label>Username:</label>
+                          <span>{profile?.username || 'Not provided'}</span>
                         </div>
-                        <div className="profile-field">
-                          <label>Lot:</label>
-                          <span>{association.location?.lot || 'Not specified'}</span>
-                        </div>
-                        {locationAssociations.length > 1 && index < locationAssociations.length - 1 && (
-                          <hr className="location-divider" />
+
+                        {profile?.occupation && (
+                          <div className="profile-field">
+                            <label>Occupation:</label>
+                            <span>{profile.occupation}</span>
+                          </div>
                         )}
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
 
-              {/* Personal Information */}
-              {(profile?.username || profile?.occupation || profile?.description) && (
-                <Card className={styles.section}>
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="profile-field">
-                      <label>Username:</label>
-                      <span>{profile?.username || 'Not provided'}</span>
-                    </div>
-
-                    {profile?.occupation && (
-                      <div className="profile-field">
-                        <label>Occupation:</label>
-                        <span>{profile.occupation}</span>
-                      </div>
-                    )}
-
-                    {profile?.description && (
-                      <div className="profile-field">
-                        <label>Description:</label>
-                        <RichTextDisplay content={profile.description} />
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Contact Information */}
-              {(profile?.viber_number || profile?.whatsapp_number || profile?.facebook_url ||
-                profile?.messenger_url || profile?.instagram_url || profile?.tiktok_url) && (
-                  <Card className={styles.section}>
-                    <CardHeader>
-                      <CardTitle>Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="contact-links">
-                        {profile.viber_number && (
-                          <a href={profile.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via Viber">
-                            <img src={viberLogo} alt="Viber" className="contact-logo" />
-                          </a>
+                        {profile?.description && (
+                          <div className="profile-field">
+                            <label>Description:</label>
+                            <RichTextDisplay content={profile.description} />
+                          </div>
                         )}
-                        {profile.whatsapp_number && (
-                          <a href={profile.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via WhatsApp">
-                            <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
-                          </a>
-                        )}
-                        {profile.facebook_url && (
-                          <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit Facebook profile">
-                            <img src={facebookLogo} alt="Facebook" className="contact-logo" />
-                          </a>
-                        )}
-                        {profile.messenger_url && (
-                          <a href={profile.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via Messenger">
-                            <img src={messengerLogo} alt="Messenger" className="contact-logo" />
-                          </a>
-                        )}
-                        {profile.instagram_url && (
-                          <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit Instagram profile">
-                            <img src={instagramLogo} alt="Instagram" className="contact-logo" />
-                          </a>
-                        )}
-                        {profile.tiktok_url && (
-                          <a href={profile.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit TikTok profile">
-                            <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
-                          </a>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                      </CardContent>
+                    </Card>
+                  )}
 
-              {/* User Service */}
-              {userService && (
-                <Card className={styles.section}>
-                  <CardHeader>
-                    <CardTitle>Service</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="profile-field">
-                      <label>Category:</label>
-                      <span>{userService.category?.name || 'N/A'}</span>
-                    </div>
-
-                    {userService.description && (
-                      <div className="profile-field">
-                        <label>Description:</label>
-                        <RichTextDisplay content={userService.description} />
-                      </div>
-                    )}
-
-                    {userService.price_range && (
-                      <div className="profile-field">
-                        <label>Price Range:</label>
-                        <span>{userService.price_range}</span>
-                      </div>
-                    )}
-
-                    {userService.availability && (
-                      <div className="profile-field">
-                        <label>Availability:</label>
-                        <span>{userService.availability}</span>
-                      </div>
-                    )}
-
-                    {userService.service_location_type && (
-                      <div className="profile-field">
-                        <label>Service Location:</label>
-                        <span>
-                          {userService.service_location_type === 'at_provider' && 'My Location'}
-                          {userService.service_location_type === 'mobile' && 'Your Location'}
-                          {userService.service_location_type === 'both' && 'My Location & Your Location'}
-                        </span>
-                      </div>
-                    )}
-
-                    {(userService.facebook_url || userService.messenger_url || userService.viber_number ||
-                      userService.whatsapp_number || userService.tiktok_url || userService.instagram_url) && (
-                        <div className="profile-field">
-                          <label>Contact:</label>
+                  {/* Contact Information */}
+                  {(profile?.viber_number || profile?.whatsapp_number || profile?.facebook_url ||
+                    profile?.messenger_url || profile?.instagram_url || profile?.tiktok_url) && (
+                      <Card className={styles.section}>
+                        <CardHeader>
+                          <CardTitle>Contact Information</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                           <div className="contact-links">
-                            {userService.viber_number && (
-                              <a href={userService.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
+                            {profile.viber_number && (
+                              <a href={profile.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via Viber">
                                 <img src={viberLogo} alt="Viber" className="contact-logo" />
                               </a>
                             )}
-                            {userService.whatsapp_number && (
-                              <a href={userService.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
+                            {profile.whatsapp_number && (
+                              <a href={profile.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via WhatsApp">
                                 <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
                               </a>
                             )}
-                            {userService.facebook_url && (
-                              <a href={userService.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
+                            {profile.facebook_url && (
+                              <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit Facebook profile">
                                 <img src={facebookLogo} alt="Facebook" className="contact-logo" />
                               </a>
                             )}
-                            {userService.messenger_url && (
-                              <a href={userService.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
+                            {profile.messenger_url && (
+                              <a href={profile.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Contact via Messenger">
                                 <img src={messengerLogo} alt="Messenger" className="contact-logo" />
                               </a>
                             )}
-                            {userService.instagram_url && (
-                              <a href={userService.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
+                            {profile.instagram_url && (
+                              <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit Instagram profile">
                                 <img src={instagramLogo} alt="Instagram" className="contact-logo" />
                               </a>
                             )}
-                            {userService.tiktok_url && (
-                              <a href={userService.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
+                            {profile.tiktok_url && (
+                              <a href={profile.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Visit TikTok profile">
                                 <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
                               </a>
                             )}
                           </div>
-                        </div>
-                      )}
+                        </CardContent>
+                      </Card>
+                    )}
 
-                    {[userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
-                    userService.photo_4_url, userService.photo_5_url, userService.photo_6_url]
-                      .filter(Boolean).length > 0 && (
+                  {/* User Service */}
+                  {userService && (
+                    <Card className={styles.section}>
+                      <CardHeader>
+                        <CardTitle>Service</CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="profile-field">
-                          <label>Photos:</label>
-                          <div className="photo-grid">
-                            {(() => {
-                              const photos = [userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
-                              userService.photo_4_url, userService.photo_5_url, userService.photo_6_url].filter(Boolean)
-                              return photos.map((photo, index) => (
-                                <img
-                                  key={index}
-                                  src={photo}
-                                  alt={`Service photo ${index + 1}`}
-                                  className="service-photo"
-                                  onClick={() => openImageModal(photo, photos)}
-                                />
-                              ))
-                            })()}
+                          <label>Category:</label>
+                          <span>{userService.category?.name || 'N/A'}</span>
+                        </div>
+
+                        {userService.description && (
+                          <div className="profile-field">
+                            <label>Description:</label>
+                            <RichTextDisplay content={userService.description} />
                           </div>
-                        </div>
-                      )}
-                  </CardContent>
-                </Card>
-              )}
+                        )}
 
-              {/* Business Inside */}
-              {businessInside && (
-                <Card className={styles.section}>
-                  <CardHeader>
-                    <CardTitle>Business Inside</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="profile-field">
-                      <label>Business Name:</label>
-                      <span>{businessInside.business_name}</span>
-                    </div>
+                        {userService.price_range && (
+                          <div className="profile-field">
+                            <label>Price Range:</label>
+                            <span>{userService.price_range}</span>
+                          </div>
+                        )}
 
-                    <div className="profile-field">
-                      <label>Category:</label>
-                      <span>{businessInside.category?.name || 'N/A'}</span>
-                    </div>
+                        {userService.availability && (
+                          <div className="profile-field">
+                            <label>Availability:</label>
+                            <span>{userService.availability}</span>
+                          </div>
+                        )}
 
-                    {businessInside.description && (
-                      <div className="profile-field">
-                        <label>Description:</label>
-                        <RichTextDisplay content={businessInside.description} />
-                      </div>
-                    )}
+                        {userService.service_location_type && (
+                          <div className="profile-field">
+                            <label>Service Location:</label>
+                            <span>
+                              {userService.service_location_type === 'at_provider' && 'My Location'}
+                              {userService.service_location_type === 'mobile' && 'Your Location'}
+                              {userService.service_location_type === 'both' && 'My Location & Your Location'}
+                            </span>
+                          </div>
+                        )}
 
-                    {(businessInside.block || businessInside.lot) && (
-                      <div className="profile-field">
-                        <label>Location:</label>
-                        <span>
-                          {businessInside.block && `Block ${businessInside.block}`}
-                          {businessInside.block && businessInside.lot && ', '}
-                          {businessInside.lot && `Lot ${businessInside.lot}`}
-                        </span>
-                      </div>
-                    )}
+                        {(userService.facebook_url || userService.messenger_url || userService.viber_number ||
+                          userService.whatsapp_number || userService.tiktok_url || userService.instagram_url) && (
+                            <div className="profile-field">
+                              <label>Contact:</label>
+                              <div className="contact-links">
+                                {userService.viber_number && (
+                                  <a href={userService.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
+                                    <img src={viberLogo} alt="Viber" className="contact-logo" />
+                                  </a>
+                                )}
+                                {userService.whatsapp_number && (
+                                  <a href={userService.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
+                                    <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
+                                  </a>
+                                )}
+                                {userService.facebook_url && (
+                                  <a href={userService.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
+                                    <img src={facebookLogo} alt="Facebook" className="contact-logo" />
+                                  </a>
+                                )}
+                                {userService.messenger_url && (
+                                  <a href={userService.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
+                                    <img src={messengerLogo} alt="Messenger" className="contact-logo" />
+                                  </a>
+                                )}
+                                {userService.instagram_url && (
+                                  <a href={userService.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
+                                    <img src={instagramLogo} alt="Instagram" className="contact-logo" />
+                                  </a>
+                                )}
+                                {userService.tiktok_url && (
+                                  <a href={userService.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
+                                    <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
 
-                    {businessInside.availability && (
-                      <div className="profile-field">
-                        <label>Availability:</label>
-                        <span>{businessInside.availability}</span>
-                      </div>
-                    )}
+                        {[userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
+                        userService.photo_4_url, userService.photo_5_url, userService.photo_6_url]
+                          .filter(Boolean).length > 0 && (
+                            <div className="profile-field">
+                              <label>Photos:</label>
+                              <div className="photo-grid">
+                                {(() => {
+                                  const photos = [userService.photo_1_url, userService.photo_2_url, userService.photo_3_url,
+                                  userService.photo_4_url, userService.photo_5_url, userService.photo_6_url].filter(Boolean)
+                                  return photos.map((photo, index) => (
+                                    <img
+                                      key={index}
+                                      src={photo}
+                                      alt={`Service photo ${index + 1}`}
+                                      className="service-photo"
+                                      onClick={() => openImageModal(photo, photos)}
+                                    />
+                                  ))
+                                })()}
+                              </div>
+                            </div>
+                          )}
+                      </CardContent>
+                    </Card>
+                  )}
 
-                    {businessInside.email && (
-                      <div className="profile-field">
-                        <label>Email:</label>
-                        <a href={`mailto:${businessInside.email}`}>{businessInside.email}</a>
-                      </div>
-                    )}
-
-                    {businessInside.website_url && (
-                      <div className="profile-field">
-                        <label>Website:</label>
-                        <a href={businessInside.website_url} target="_blank" rel="noopener noreferrer">
-                          {businessInside.website_url}
-                        </a>
-                      </div>
-                    )}
-
-                    {(businessInside.facebook_url || businessInside.messenger_url || businessInside.viber_number ||
-                      businessInside.whatsapp_number || businessInside.tiktok_url || businessInside.instagram_url) && (
+                  {/* Business Inside */}
+                  {businessInside && (
+                    <Card className={styles.section}>
+                      <CardHeader>
+                        <CardTitle>Business Inside</CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="profile-field">
-                          <label>Contact:</label>
-                          <div className="contact-links">
-                            {businessInside.viber_number && (
-                              <a href={businessInside.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
-                                <img src={viberLogo} alt="Viber" className="contact-logo" />
-                              </a>
-                            )}
-                            {businessInside.whatsapp_number && (
-                              <a href={businessInside.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
-                                <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
-                              </a>
-                            )}
-                            {businessInside.facebook_url && (
-                              <a href={businessInside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
+                          <label>Business Name:</label>
+                          <span>{businessInside.business_name}</span>
+                        </div>
+
+                        <div className="profile-field">
+                          <label>Category:</label>
+                          <span>{businessInside.category?.name || 'N/A'}</span>
+                        </div>
+
+                        {businessInside.description && (
+                          <div className="profile-field">
+                            <label>Description:</label>
+                            <RichTextDisplay content={businessInside.description} />
+                          </div>
+                        )}
+
+                        {(businessInside.block || businessInside.lot) && (
+                          <div className="profile-field">
+                            <label>Location:</label>
+                            <span>
+                              {businessInside.block && `Block ${businessInside.block}`}
+                              {businessInside.block && businessInside.lot && ', '}
+                              {businessInside.lot && `Lot ${businessInside.lot}`}
+                            </span>
+                          </div>
+                        )}
+
+                        {businessInside.availability && (
+                          <div className="profile-field">
+                            <label>Availability:</label>
+                            <span>{businessInside.availability}</span>
+                          </div>
+                        )}
+
+                        {businessInside.email && (
+                          <div className="profile-field">
+                            <label>Email:</label>
+                            <a href={`mailto:${businessInside.email}`}>{businessInside.email}</a>
+                          </div>
+                        )}
+
+                        {businessInside.website_url && (
+                          <div className="profile-field">
+                            <label>Website:</label>
+                            <a href={businessInside.website_url} target="_blank" rel="noopener noreferrer">
+                              {businessInside.website_url}
+                            </a>
+                          </div>
+                        )}
+
+                        {(businessInside.facebook_url || businessInside.messenger_url || businessInside.viber_number ||
+                          businessInside.whatsapp_number || businessInside.tiktok_url || businessInside.instagram_url) && (
+                            <div className="profile-field">
+                              <label>Contact:</label>
+                              <div className="contact-links">
+                                {businessInside.viber_number && (
+                                  <a href={businessInside.viber_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="Viber">
+                                    <img src={viberLogo} alt="Viber" className="contact-logo" />
+                                  </a>
+                                )}
+                                {businessInside.whatsapp_number && (
+                                  <a href={businessInside.whatsapp_number} target="_blank" rel="noopener noreferrer" className="contact-link" title="WhatsApp">
+                                    <img src={whatsappLogo} alt="WhatsApp" className="contact-logo" />
+                                  </a>
+                                )}
+                                {businessInside.facebook_url && (
+                                  <a href={businessInside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
+                                    <img src={facebookLogo} alt="Facebook" className="contact-logo" />
+                                  </a>
+                                )}
+                                {businessInside.messenger_url && (
+                                  <a href={businessInside.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
+                                    <img src={messengerLogo} alt="Messenger" className="contact-logo" />
+                                  </a>
+                                )}
+                                {businessInside.instagram_url && (
+                                  <a href={businessInside.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
+                                    <img src={instagramLogo} alt="Instagram" className="contact-logo" />
+                                  </a>
+                                )}
+                                {businessInside.tiktok_url && (
+                                  <a href={businessInside.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
+                                    <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                        {[businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
+                        businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url]
+                          .filter(Boolean).length > 0 && (
+                            <div className="profile-field">
+                              <label>Photos:</label>
+                              <div className="photo-grid">
+                                {(() => {
+                                  const photos = [businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
+                                  businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url].filter(Boolean)
+                                  return photos.map((photo, index) => (
+                                    <img
+                                      key={index}
+                                      src={photo}
+                                      alt={`Business photo ${index + 1}`}
+                                      className="service-photo"
+                                      onClick={() => openImageModal(photo, photos)}
+                                    />
+                                  ))
+                                })()}
+                              </div>
+                            </div>
+                          )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Business Outside */}
+                  {businessOutside && (
+                    <Card className={styles.section}>
+                      <CardHeader>
+                        <CardTitle>Business Outside</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="profile-field">
+                          <label>Business Name:</label>
+                          <span>{businessOutside.business_name}</span>
+                        </div>
+
+                        <div className="profile-field">
+                          <label>Category:</label>
+                          <span>{businessOutside.category?.name || 'N/A'}</span>
+                        </div>
+
+                        {businessOutside.description && (
+                          <div className="profile-field">
+                            <label>Description:</label>
+                            <RichTextDisplay content={businessOutside.description} />
+                          </div>
+                        )}
+
+                        {(businessOutside.address || businessOutside.barangay || businessOutside.city ||
+                          businessOutside.province || businessOutside.postal_code) && (
+                            <div className="profile-field">
+                              <label>Address:</label>
+                              <span>
+                                {businessOutside.address && `${businessOutside.address}, `}
+                                {businessOutside.barangay && `${businessOutside.barangay}, `}
+                                {businessOutside.city && `${businessOutside.city}, `}
+                                {businessOutside.province && `${businessOutside.province} `}
+                                {businessOutside.postal_code}
+                              </span>
+                            </div>
+                          )}
+
+                        {businessOutside.google_maps_link && (
+                          <div className="profile-field">
+                            <label>Google Maps:</label>
+                            <a href={businessOutside.google_maps_link} target="_blank" rel="noopener noreferrer">
+                              View on Map
+                            </a>
+                          </div>
+                        )}
+
+                        {businessOutside.hours && (
+                          <div className="profile-field">
+                            <label>Hours:</label>
+                            <span>{businessOutside.hours}</span>
+                          </div>
+                        )}
+
+                        {businessOutside.phone_number && (
+                          <div className="profile-field">
+                            <label>Phone:</label>
+                            <span>
+                              {businessOutside.phone_number}
+                              {businessOutside.phone_type && ` (${businessOutside.phone_type})`}
+                            </span>
+                          </div>
+                        )}
+
+                        {businessOutside.email && (
+                          <div className="profile-field">
+                            <label>Email:</label>
+                            <a href={`mailto:${businessOutside.email}`}>{businessOutside.email}</a>
+                          </div>
+                        )}
+
+                        {businessOutside.website_url && (
+                          <div className="profile-field">
+                            <label>Website:</label>
+                            <a href={businessOutside.website_url} target="_blank" rel="noopener noreferrer">
+                              {businessOutside.website_url}
+                            </a>
+                          </div>
+                        )}
+
+                        {businessOutside.facebook_url && (
+                          <div className="profile-field">
+                            <label>Facebook:</label>
+                            <div className="contact-links">
+                              <a href={businessOutside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
                                 <img src={facebookLogo} alt="Facebook" className="contact-logo" />
                               </a>
-                            )}
-                            {businessInside.messenger_url && (
-                              <a href={businessInside.messenger_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Messenger">
-                                <img src={messengerLogo} alt="Messenger" className="contact-logo" />
-                              </a>
-                            )}
-                            {businessInside.instagram_url && (
-                              <a href={businessInside.instagram_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Instagram">
-                                <img src={instagramLogo} alt="Instagram" className="contact-logo" />
-                              </a>
-                            )}
-                            {businessInside.tiktok_url && (
-                              <a href={businessInside.tiktok_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="TikTok">
-                                <img src={tiktokLogo} alt="TikTok" className="contact-logo" />
-                              </a>
-                            )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                    {[businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
-                    businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url]
-                      .filter(Boolean).length > 0 && (
-                        <div className="profile-field">
-                          <label>Photos:</label>
-                          <div className="photo-grid">
-                            {(() => {
-                              const photos = [businessInside.photo_1_url, businessInside.photo_2_url, businessInside.photo_3_url,
-                              businessInside.photo_4_url, businessInside.photo_5_url, businessInside.photo_6_url].filter(Boolean)
-                              return photos.map((photo, index) => (
-                                <img
-                                  key={index}
-                                  src={photo}
-                                  alt={`Business photo ${index + 1}`}
-                                  className="service-photo"
-                                  onClick={() => openImageModal(photo, photos)}
-                                />
-                              ))
-                            })()}
-                          </div>
-                        </div>
-                      )}
-                  </CardContent>
-                </Card>
-              )}
+                        {[businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
+                        businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url]
+                          .filter(Boolean).length > 0 && (
+                            <div className="profile-field">
+                              <label>Photos:</label>
+                              <div className="photo-grid">
+                                {(() => {
+                                  const photos = [businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
+                                  businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url].filter(Boolean)
+                                  return photos.map((photo, index) => (
+                                    <img
+                                      key={index}
+                                      src={photo}
+                                      alt={`Business photo ${index + 1}`}
+                                      className="service-photo"
+                                      onClick={() => openImageModal(photo, photos)}
+                                    />
+                                  ))
+                                })()}
+                              </div>
+                            </div>
+                          )}
+                      </CardContent>
+                    </Card>
+                  )}
 
-              {/* Business Outside */}
-              {businessOutside && (
-                <Card className={styles.section}>
-                  <CardHeader>
-                    <CardTitle>Business Outside</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="profile-field">
-                      <label>Business Name:</label>
-                      <span>{businessOutside.business_name}</span>
+                  {/* Empty State */}
+                  {!loading && !userService && !businessInside && !businessOutside && (
+                    <div className={styles.empty}>
+                      <p>No services or businesses listed yet.</p>
                     </div>
-
-                    <div className="profile-field">
-                      <label>Category:</label>
-                      <span>{businessOutside.category?.name || 'N/A'}</span>
-                    </div>
-
-                    {businessOutside.description && (
-                      <div className="profile-field">
-                        <label>Description:</label>
-                        <RichTextDisplay content={businessOutside.description} />
-                      </div>
-                    )}
-
-                    {(businessOutside.address || businessOutside.barangay || businessOutside.city ||
-                      businessOutside.province || businessOutside.postal_code) && (
-                        <div className="profile-field">
-                          <label>Address:</label>
-                          <span>
-                            {businessOutside.address && `${businessOutside.address}, `}
-                            {businessOutside.barangay && `${businessOutside.barangay}, `}
-                            {businessOutside.city && `${businessOutside.city}, `}
-                            {businessOutside.province && `${businessOutside.province} `}
-                            {businessOutside.postal_code}
-                          </span>
-                        </div>
-                      )}
-
-                    {businessOutside.google_maps_link && (
-                      <div className="profile-field">
-                        <label>Google Maps:</label>
-                        <a href={businessOutside.google_maps_link} target="_blank" rel="noopener noreferrer">
-                          View on Map
-                        </a>
-                      </div>
-                    )}
-
-                    {businessOutside.hours && (
-                      <div className="profile-field">
-                        <label>Hours:</label>
-                        <span>{businessOutside.hours}</span>
-                      </div>
-                    )}
-
-                    {businessOutside.phone_number && (
-                      <div className="profile-field">
-                        <label>Phone:</label>
-                        <span>
-                          {businessOutside.phone_number}
-                          {businessOutside.phone_type && ` (${businessOutside.phone_type})`}
-                        </span>
-                      </div>
-                    )}
-
-                    {businessOutside.email && (
-                      <div className="profile-field">
-                        <label>Email:</label>
-                        <a href={`mailto:${businessOutside.email}`}>{businessOutside.email}</a>
-                      </div>
-                    )}
-
-                    {businessOutside.website_url && (
-                      <div className="profile-field">
-                        <label>Website:</label>
-                        <a href={businessOutside.website_url} target="_blank" rel="noopener noreferrer">
-                          {businessOutside.website_url}
-                        </a>
-                      </div>
-                    )}
-
-                    {businessOutside.facebook_url && (
-                      <div className="profile-field">
-                        <label>Facebook:</label>
-                        <div className="contact-links">
-                          <a href={businessOutside.facebook_url} target="_blank" rel="noopener noreferrer" className="contact-link" title="Facebook">
-                            <img src={facebookLogo} alt="Facebook" className="contact-logo" />
-                          </a>
-                        </div>
-                      </div>
-                    )}
-
-                    {[businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
-                    businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url]
-                      .filter(Boolean).length > 0 && (
-                        <div className="profile-field">
-                          <label>Photos:</label>
-                          <div className="photo-grid">
-                            {(() => {
-                              const photos = [businessOutside.photo_1_url, businessOutside.photo_2_url, businessOutside.photo_3_url,
-                              businessOutside.photo_4_url, businessOutside.photo_5_url, businessOutside.photo_6_url].filter(Boolean)
-                              return photos.map((photo, index) => (
-                                <img
-                                  key={index}
-                                  src={photo}
-                                  alt={`Business photo ${index + 1}`}
-                                  className="service-photo"
-                                  onClick={() => openImageModal(photo, photos)}
-                                />
-                              ))
-                            })()}
-                          </div>
-                        </div>
-                      )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Empty State */}
-              {!loading && !userService && !businessInside && !businessOutside && (
-                <div className={styles.empty}>
-                  <p>No services or businesses listed yet.</p>
+                  )}
                 </div>
               )}
-            </div>
-          )}
             </motion.div>
           </motion.div>
 
@@ -674,25 +693,25 @@ function UserProfileModal({ userId, onClose }) {
                     transform: 'translateZ(0)'
                   }}
                 >
-            <button className="image-modal-close" onClick={closeImageModal} aria-label="Close">
-              <X size={24} />
-            </button>
-            {imageGallery.length > 1 && (
-              <>
-                <button className="image-modal-nav image-modal-prev" onClick={goToPreviousImage} aria-label="Previous image">
-                  <ChevronLeft size={32} />
-                </button>
-                <button className="image-modal-nav image-modal-next" onClick={goToNextImage} aria-label="Next image">
-                  <ChevronRight size={32} />
-                </button>
-              </>
-            )}
-            <img src={selectedImage} alt="Full size" className="image-modal-img" />
-            {imageGallery.length > 1 && (
-              <div className="image-modal-counter">
-                {currentImageIndex + 1} / {imageGallery.length}
-              </div>
-            )}
+                  <button className="image-modal-close" onClick={closeImageModal} aria-label="Close">
+                    <X size={24} />
+                  </button>
+                  {imageGallery.length > 1 && (
+                    <>
+                      <button className="image-modal-nav image-modal-prev" onClick={goToPreviousImage} aria-label="Previous image">
+                        <ChevronLeft size={32} />
+                      </button>
+                      <button className="image-modal-nav image-modal-next" onClick={goToNextImage} aria-label="Next image">
+                        <ChevronRight size={32} />
+                      </button>
+                    </>
+                  )}
+                  <img src={selectedImage} alt="Full size" className="image-modal-img" />
+                  {imageGallery.length > 1 && (
+                    <div className="image-modal-counter">
+                      {currentImageIndex + 1} / {imageGallery.length}
+                    </div>
+                  )}
                 </motion.div>
               </motion.div>
             )}
