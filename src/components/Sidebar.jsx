@@ -14,7 +14,8 @@ import {
   BellIcon,
   ArrowRightStartOnRectangleIcon,
   EnvelopeIcon,
-  ChatBubbleOvalLeftEllipsisIcon
+  ChatBubbleOvalLeftEllipsisIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
@@ -31,6 +32,7 @@ const NAV_LINKS = [
   { to: '/weather', icon: CloudIcon, label: 'Weather' },
   { to: '/marketplace', icon: ShoppingBagIcon, label: 'Marketplace' },
   { to: '/location-requests', icon: BellIcon, label: 'Requests' },
+  { to: '/install-app', icon: ArrowDownTrayIcon, label: 'Install App' },
   { to: '/profile', icon: UserIcon, label: 'Profile' }
 ]
 

@@ -287,9 +287,10 @@ function Onboarding() {
   }
 
   return (
-    <div className={`page-container ${styles.pageContainer}`}>
-      <div className={`page-content ${styles.pageContent}`}>
-        <div className="page-header">
+    <PageTransition>
+      <div className={`page-container ${styles.pageContainer}`}>
+        <div className={styles.pageContent}>
+          <div className="page-header">
           <h2>Welcome to Your PWA App!</h2>
           <p className="page-subtitle">
             Let's get you set up with your essential information
@@ -488,8 +489,9 @@ function Onboarding() {
             Complete Setup
           </Button>
         </form>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

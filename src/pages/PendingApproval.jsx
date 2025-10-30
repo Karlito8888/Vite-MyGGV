@@ -4,6 +4,7 @@ import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Button from '../components/ui/Button'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/PendingApproval.module.css'
 
 function PendingApproval() {
@@ -129,18 +130,18 @@ function PendingApproval() {
   if (isLoading) {
     return (
       <div className="page-container page-centered">
-        <div className="page-content">
+        <PageTransition>
           <div className="loader-wrapper">
             <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
           </div>
-        </div>
+        </PageTransition>
       </div>
     )
   }
 
   return (
     <div className="page-container page-centered">
-      <div className="page-content">
+      <PageTransition>
         <div className={styles.pendingApprovalContent}>
           <div className={styles.iconContainer}>
             {requestInfo?.status === 'rejected' ? '❌' : '⏳'}
@@ -201,7 +202,7 @@ function PendingApproval() {
             </ul>
           </div>
         </div>
-      </div>
+      </PageTransition>
     </div>
   )
 }

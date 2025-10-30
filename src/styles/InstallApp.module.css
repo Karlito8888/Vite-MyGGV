@@ -1,0 +1,137 @@
+/* Install App Page - Follows CSS-REFERENCE.md policy */
+
+.content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid var(--color-border);
+}
+
+.iconContainer,
+.iconSuccess {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.iconContainer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.iconSuccess {
+  background: linear-gradient(135deg, #5bc46d 0%, #459955 100%);
+}
+
+.iconContainer svg,
+.iconSuccess svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.card h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 1rem;
+}
+
+.card p {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 2rem;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  text-align: left;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.features li:last-child {
+  border-bottom: none;
+}
+
+.features svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.manualInstructions {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: var(--color-background);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.instructionText {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Dark mode support */
+:global(:root.dark) .card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.5rem;
+  }
+
+  .iconContainer,
+  .iconSuccess {
+    width: 64px;
+    height: 64px;
+  }
+
+  .iconContainer svg,
+  .iconSuccess svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .card h3 {
+    font-size: 1.5rem;
+  }
+
+  .features li {
+    font-size: 0.9rem;
+  }
+
+  .manualInstructions {
+    padding: 1rem;
+  }
+
+  .instructionText {
+    font-size: 0.9rem;
+  }
+}

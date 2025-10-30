@@ -1,8 +1,12 @@
+import PageTransition from '../components/PageTransition'
+
 function Marketplace() {
   return (
-    <div className="page-container">
-      <h2>Marketplace</h2>
-    </div>
+    <PageTransition>
+      <div className="page-container">
+        <h2>Marketplace</h2>
+      </div>
+    </PageTransition>
   )
 }
 

@@ -8,6 +8,7 @@ import { updateUserPassword } from '../utils/authHelpers'
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
+import PageTransition from '../components/PageTransition'
 import styles from '../components/Login.module.css'
 
 // Conditional logging for development only
@@ -153,8 +154,9 @@ export default function UpdatePassword() {
     // Show loading while checking session
     if (!sessionChecked) {
         return (
-            <div className={styles.loginContainer}>
-                <div className={styles.loginWrapper}>
+            <PageTransition>
+                <div className={styles.loginContainer}>
+                    <div className={styles.loginWrapper}>
                     <div className={styles.loginHeader}>
                         <div className={styles.loginLogo}>
                             <img
@@ -178,14 +180,16 @@ export default function UpdatePassword() {
                     </Card>
                 </div>
             </div>
+            </PageTransition>
         )
     }
 
     // Show error if no valid session
     if (!isValidSession) {
         return (
-            <div className={styles.loginContainer}>
-                <div className={styles.loginWrapper}>
+            <PageTransition>
+                <div className={styles.loginContainer}>
+                    <div className={styles.loginWrapper}>
                     <div className={styles.loginHeader}>
                         <div className={styles.loginLogo}>
                             <img
@@ -222,12 +226,14 @@ export default function UpdatePassword() {
                     </Card>
                 </div>
             </div>
+            </PageTransition>
         )
     }
 
     return (
-        <div className={styles.loginContainer}>
-            <div className={styles.loginWrapper}>
+        <PageTransition>
+            <div className={styles.loginContainer}>
+                <div className={styles.loginWrapper}>
                 <div className={styles.loginHeader}>
                     <div className={styles.loginLogo}>
                         <img
@@ -313,5 +319,6 @@ export default function UpdatePassword() {
                 </Card>
             </div>
         </div>
+        </PageTransition>
     )
 }

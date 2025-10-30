@@ -13,6 +13,7 @@ import Avatar from '../components/Avatar'
 import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
 import UserProfileModal from '../components/UserProfileModal'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/Chat.module.css'
 
 function Chat() {
@@ -259,19 +260,19 @@ function Chat() {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="page-content">
+        <PageTransition>
           <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
             <p>Loading chat...</p>
           </div>
-        </div>
+        </PageTransition>
       </div>
     )
   }
 
   return (
-    <div className={`page-container ${styles.chatPage}`}>
-      <div className={`page-content ${styles.chatPageContent}`}>
+    <PageTransition>
+      <div className={`page-container ${styles.chatPage}`}>
         <div className="page-header">
           <h2>💬 Live Chat</h2>
           {/* <p className="page-subtitle">Chat in real-time with the community</p> */}
@@ -466,7 +467,7 @@ function Chat() {
           onClose={() => setSelectedUserId(null)}
         />
       )}
-    </div>
+    </PageTransition>
   )
 }
 

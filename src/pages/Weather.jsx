@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { weatherService } from '../services/weatherService'
 import Clock from '../components/ui/Clock'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/Weather.module.css'
 
 function Weather() {
@@ -119,7 +120,7 @@ function Weather() {
 
   return (
     <div className="page-container">
-      <div className="page-content">
+      <PageTransition>
         <div className="page-header">
           <div className="page-header-info">
             <h2>Weather</h2>
@@ -277,7 +278,7 @@ function Weather() {
           </div>
         )}
         </div>
-      </div>
+      </PageTransition>
     </div>
   )
 }

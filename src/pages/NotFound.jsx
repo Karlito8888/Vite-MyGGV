@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router'
 import Button from '../components/ui/Button'
-import styles from '../styles/NotFound.module.css'
+import PageTransition from '../components/PageTransition'
 
 function NotFound() {
   const navigate = useNavigate()
 
   return (
     <div className="page-container">
-      <div className="page-content">
+      <PageTransition>
         <div className="page-not-found">
           <h1>404</h1>
           <p>Page not found</p>
@@ -18,7 +18,7 @@ function NotFound() {
             Go to Home
           </Button>
         </div>
-      </div>
+      </PageTransition>
     </div>
   )
 }

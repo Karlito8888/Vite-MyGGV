@@ -5,6 +5,7 @@ import { locationRequestsService } from '../services/locationRequestsService'
 import Card, { CardHeader, CardContent } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Avatar from '../components/Avatar'
+import PageTransition from '../components/PageTransition'
 import { ClimbingBoxLoader } from 'react-spinners'
 import styles from '../styles/LocationRequests.module.css'
 
@@ -131,125 +132,129 @@ function LocationRequests() {
 
   if (isLoading) {
     return (
-      <div className={styles.locationRequestsPage}>
-        <div className="container-centered">
-          <div className="loader-wrapper">
-            <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+      <PageTransition>
+        <div className={styles.locationRequestsPage}>
+          <div className="container-centered">
+            <div className="loader-wrapper">
+              <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+            </div>
           </div>
         </div>
-      </div>
+      </PageTransition>
     )
   }
 
   return (
-    <div className={styles.locationRequestsPage}>
-      <div className={styles.container}>
-        <div className={styles.requestsHeader}>
-          <h1>Location Requests</h1>
-          {pendingCount > 0 && (
-            <span className={styles.pendingBadge}>{pendingCount} pending</span>
-          )}
-        </div>
+    <PageTransition>
+      <div className={styles.locationRequestsPage}>
+        <div className={styles.container}>
+          <div className={styles.requestsHeader}>
+            <h1>Location Requests</h1>
+            {pendingCount > 0 && (
+              <span className={styles.pendingBadge}>{pendingCount} pending</span>
+            )}
+          </div>
 
-        <div className={styles.filterTabs}>
-          <button
-            className={`${styles.filterTab} ${filter === 'pending' ? styles.active : ''}`}
-            onClick={() => setFilter('pending')}
-          >
-            Pending
-            {pendingCount > 0 && <span className={styles.tabCount}>{pendingCount}</span>}
-          </button>
-          <button
-            className={`${styles.filterTab} ${filter === 'approved' ? styles.active : ''}`}
-            onClick={() => setFilter('approved')}
-          >
-            Approved
-          </button>
-          <button
-            className={`${styles.filterTab} ${filter === 'rejected' ? styles.active : ''}`}
-            onClick={() => setFilter('rejected')}
-          >
-            Rejected
-          </button>
-          <button
-            className={`${styles.filterTab} ${filter === 'all' ? styles.active : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            All
-          </button>
-        </div>
+          <div className={styles.filterTabs}>
+            <button
+              className={`${styles.filterTab} ${filter === 'pending' ? styles.active : ''}`}
+              onClick={() => setFilter('pending')}
+            >
+              Pending
+              {pendingCount > 0 && <span className={styles.tabCount}>{pendingCount}</span>}
+            </button>
+            <button
+              className={`${styles.filterTab} ${filter === 'approved' ? styles.active : ''}`}
+              onClick={() => setFilter('approved')}
+            >
+              Approved
+            </button>
+            <button
+              className={`${styles.filterTab} ${filter === 'rejected' ? styles.active : ''}`}
+              onClick={() => setFilter('rejected')}
+            >
+              Rejected
+            </button>
+            <button
+              className={`${styles.filterTab} ${filter === 'all' ? styles.active : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              All
+            </button>
+          </div>
 
-        <div className={styles.requestsList}>
-          {requests.length === 0 ? (
-            <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}>📭</div>
-              <h3>No {filter !== 'all' ? filter : ''} requests</h3>
-              <p>
-                {filter === 'pending'
-                  ? "You don't have any pending location requests at the moment."
-                  : `No ${filter} requests found.`}
-              </p>
-            </div>
-          ) : (
-            requests.map((request) => {
-              const isRequestProcessing = processingId === request.request_id
-              const isDisabled = isProcessing || isRequestProcessing
+          <div className={styles.requestsList}>
+            {requests.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>📭</div>
+                <h3>No {filter !== 'all' ? filter : ''} requests</h3>
+                <p>
+                  {filter === 'pending'
+                    ? "You don't have any pending location requests at the moment."
+                    : `No ${filter} requests found.`}
+                </p>
+              </div>
+            ) : (
+              requests.map((request) => {
+                const isRequestProcessing = processingId === request.request_id
+                const isDisabled = isProcessing || isRequestProcessing
 
-              return (
-                <Card key={request.request_id} hover className={styles.locationRequestCard}>
-                  <CardHeader>
-                    <div className={styles.requesterInfo}>
-                      <Avatar
-                        src={request.requester_avatar_url}
-                        fallback={request.requester_username?.[0] || 'U'}
-                        size="medium"
-                      />
-                      <div className={styles.requesterDetails}>
-                        <h3>{request.requester_full_name || request.requester_username}</h3>
-                        <p className="username">@{request.requester_username}</p>
+                return (
+                  <Card key={request.request_id} hover className={styles.locationRequestCard}>
+                    <CardHeader>
+                      <div className={styles.requesterInfo}>
+                        <Avatar
+                          src={request.requester_avatar_url}
+                          fallback={request.requester_username?.[0] || 'U'}
+                          size="medium"
+                        />
+                        <div className={styles.requesterDetails}>
+                          <h3>{request.requester_full_name || request.requester_username}</h3>
+                          <p className="username">@{request.requester_username}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className={styles.requestTime}>
-                      {formatDate(request.created_at)}
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className={styles.requestBody}>
-                      <div className={styles.locationInfo}>
-                        <span className={styles.locationLabel}>Requesting access to:</span>
-                        <span className={styles.locationValue}>
-                          Block {request.location_block}, Lot {request.location_lot}
-                        </span>
+                      <div className={styles.requestTime}>
+                        {formatDate(request.created_at)}
                       </div>
-                    </div>
+                    </CardHeader>
 
-                    <div className={styles.requestActions}>
-                      <Button
-                        variant="danger"
-                        onClick={() => handleReject(request.request_id)}
-                        disabled={isDisabled}
-                        loading={isRequestProcessing}
-                      >
-                        Reject
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() => handleApprove(request.request_id)}
-                        disabled={isDisabled}
-                        loading={isRequestProcessing}
-                      >
-                        Approve
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })
-          )}
+                    <CardContent>
+                      <div className={styles.requestBody}>
+                        <div className={styles.locationInfo}>
+                          <span className={styles.locationLabel}>Requesting access to:</span>
+                          <span className={styles.locationValue}>
+                            Block {request.location_block}, Lot {request.location_lot}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.requestActions}>
+                        <Button
+                          variant="danger"
+                          onClick={() => handleReject(request.request_id)}
+                          disabled={isDisabled}
+                          loading={isRequestProcessing}
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={() => handleApprove(request.request_id)}
+                          disabled={isDisabled}
+                          loading={isRequestProcessing}
+                        >
+                          Approve
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
 

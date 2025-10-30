@@ -9,6 +9,7 @@ import Card, {
 } from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import RichTextDisplay from "../components/ui/RichTextDisplay";
+import PageTransition from "../components/PageTransition";
 import { LayoutDashboard, X, ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "../styles/Profile.module.css";
 import { BeatLoader } from "react-spinners";
@@ -90,20 +91,20 @@ function Profile() {
   // Si pas de profil, afficher un message (pas de loading car géré par ProtectedRoute + UserContext)
   if (!profile) {
     return (
-      <div className="page-container">
-        <div className="page-content">
+      <PageTransition>
+        <div className="page-container">
           <div className="page-not-found">
             <h2>Profile Not Found</h2>
             <p>No profile data available. Please try refreshing the page.</p>
           </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <PageTransition>
+      <div className="page-container">
         <div className={styles.profileHeader}>
           <div className="page-header">
             <h2>My Profile</h2>
@@ -713,7 +714,7 @@ function Profile() {
           </div>
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

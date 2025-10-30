@@ -7,6 +7,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { createHeaderMessage } from '../services/messagesHeaderService'
 import { useUser } from '../contexts'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/Messages.module.css'
 
 const DURATION_OPTIONS = [
@@ -91,8 +92,8 @@ function Messages() {
   }
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <PageTransition>
+      <div className="page-container">
         <div className="page-header">
           <h2>Messages</h2>
           <p className="page-subtitle">Post a message, or check your private messages</p>
@@ -217,7 +218,7 @@ function Messages() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
 

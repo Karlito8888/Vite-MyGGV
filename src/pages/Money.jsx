@@ -6,6 +6,7 @@ import Card, { CardHeader, CardTitle, CardDescription, CardContent } from '../co
 import Button from '../components/ui/Button'
 import ReferralModal from '../components/ReferralModal'
 import ReferralCodeInput from '../components/ReferralCodeInput'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/Money.module.css'
 
 function Money() {
@@ -106,8 +107,8 @@ function Money() {
   const userCoins = profile?.coins || 0
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <PageTransition>
+      <div className="page-container">
         <div className="page-header">
           <h2>Money</h2>
           <p className="page-subtitle">Manage your coins and collect daily rewards</p>
@@ -348,7 +349,7 @@ function Money() {
         isOpen={showReferralModal}
         onClose={() => setShowReferralModal(false)}
       />
-    </div>
+    </PageTransition>
   )
 }
 

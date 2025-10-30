@@ -1,4 +1,5 @@
 import Card, { CardHeader, CardContent } from '../components/ui/Card'
+import PageTransition from '../components/PageTransition'
 import styles from '../styles/Infos.module.css'
 
 const viberNumber = import.meta.env.VITE_CONTACT_VIBER_NUMBER
@@ -8,9 +9,10 @@ const viberLink = viberNumber
 
 export default function Infos() {
   return (
-    <div className="page-container">
-      <div className="page-content">
-        <div className="page-header">
+    <PageTransition>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="page-header">
           <h2>
             <span className={styles.pageTitleIcon}>ℹ️ </span>
             Village Information
@@ -155,6 +157,7 @@ export default function Infos() {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </PageTransition>
   )
 }

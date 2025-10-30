@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUser } from "../contexts";
 import { ProfileForm, ServicesManager, BusinessInsideManager, BusinessOutsideManager } from "../components/dashboard";
+import PageTransition from "../components/PageTransition";
 import styles from "../styles/Dashboard.module.css";
 
 function Dashboard() {
@@ -10,19 +11,19 @@ function Dashboard() {
     if (!profile) {
         return (
             <div className="page-container">
-                <div className="page-content">
+                <PageTransition>
                     <div className="page-not-found">
                         <h2>Dashboard Not Available</h2>
                         <p>Please log in to access your dashboard.</p>
                     </div>
-                </div>
+                </PageTransition>
             </div>
         );
     }
 
     return (
         <div className="page-container">
-            <div className="page-content">
+            <PageTransition>
                 <div className="page-header">
                     <h2>My Dashboard</h2>
                 </div>
@@ -71,7 +72,7 @@ function Dashboard() {
                         <BusinessOutsideManager profileId={profile.id} />
                     )}
                 </div>
-            </div>
+            </PageTransition>
         </div>
     );
 }

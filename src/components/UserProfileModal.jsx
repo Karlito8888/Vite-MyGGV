@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import Avatar from './Avatar'
 import Card, { CardHeader, CardTitle, CardContent } from './ui/Card'
@@ -133,12 +134,37 @@ function UserProfileModal({ userId, onClose }) {
     setSelectedImage(imageGallery[newIndex])
   }
 
-  if (!userId) return null
-
   return createPortal(
-    <>
-      <div className={styles.userProfileModalOverlay} onClick={onClose}>
-        <div className={styles.userProfileModal} onClick={(e) => e.stopPropagation()}>
+    <AnimatePresence>
+      {userId && (
+        <>
+          <motion.div
+            className={styles.userProfileModalOverlay}
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              willChange: 'opacity',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
+          >
+            <motion.div
+              className={styles.userProfileModal}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{
+                willChange: 'opacity, transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
+            >
           <button className={styles.close} onClick={onClose} aria-label="Close">
             <X size={24} />
           </button>
@@ -615,13 +641,39 @@ function UserProfileModal({ userId, onClose }) {
               )}
             </div>
           )}
-        </div>
-      </div>
+            </motion.div>
+          </motion.div>
 
-      {/* Image Modal */}
-      {selectedImage && (
-        <div className="image-modal-overlay" onClick={closeImageModal}>
-          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+          {/* Image Modal */}
+          <AnimatePresence>
+            {selectedImage && (
+              <motion.div
+                className="image-modal-overlay"
+                onClick={closeImageModal}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  willChange: 'opacity',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden'
+                }}
+              >
+                <motion.div
+                  className="image-modal-content"
+                  onClick={(e) => e.stopPropagation()}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  style={{
+                    willChange: 'opacity, transform',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)'
+                  }}
+                >
             <button className="image-modal-close" onClick={closeImageModal} aria-label="Close">
               <X size={24} />
             </button>
@@ -641,10 +693,13 @@ function UserProfileModal({ userId, onClose }) {
                 {currentImageIndex + 1} / {imageGallery.length}
               </div>
             )}
-          </div>
-        </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
       )}
-    </>,
+    </AnimatePresence>,
     document.body
   )
 }

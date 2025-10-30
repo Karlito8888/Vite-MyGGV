@@ -22,6 +22,7 @@ const Money = lazy(() => import("./pages/Money"));
 const Weather = lazy(() => import("./pages/Weather"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const LocationRequests = lazy(() => import("./pages/LocationRequests"));
+const InstallApp = lazy(() => import("./pages/InstallApp"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const protectedRoutes = [
@@ -36,6 +37,7 @@ const protectedRoutes = [
   { path: "weather", element: Weather },
   { path: "marketplace", element: Marketplace },
   { path: "location-requests", element: LocationRequests },
+  { path: "install-app", element: InstallApp },
 ];
 
 function App() {

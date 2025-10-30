@@ -1,8 +1,12 @@
+import PageTransition from '../components/PageTransition'
+
 function Games() {
   return (
-    <div className="page-container">
-      <h2>Games</h2>
-    </div>
+    <PageTransition>
+      <div className="page-container">
+        <h2>Games</h2>
+      </div>
+    </PageTransition>
   )
 }
 

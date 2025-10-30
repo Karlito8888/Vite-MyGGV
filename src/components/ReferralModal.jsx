@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { referralService } from '../services/referralService';
 import Card, { CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card';
@@ -26,13 +27,37 @@ export default function ReferralModal({ isOpen, onClose }) {
     loadData();
   }, [isOpen]);
 
-
-
-  if (!isOpen) return null;
-
   return (
-    <div className={styles.referralModalOverlay} onClick={onClose}>
-      <Card className={styles.referralModal} onClick={(e) => e.stopPropagation()}>
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            className={styles.referralModalOverlay}
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            style={{
+              willChange: 'opacity',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
+          >
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{
+                willChange: 'opacity, transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
+            >
+              <Card className={styles.referralModal}>
         <button className={styles.referralModalClose} onClick={onClose}>×</button>
 
         <CardHeader>
@@ -94,7 +119,11 @@ export default function ReferralModal({ isOpen, onClose }) {
             </>
           )}
         </CardContent>
-      </Card>
-    </div>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

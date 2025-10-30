@@ -8,6 +8,7 @@ import { useGlobalPresence } from '../contexts/GlobalPresenceContext'
 import MapTypeToggle from '../components/MapTypeToggle'
 import RecenterButton from '../components/RecenterButton'
 import UserProfileModal from '../components/UserProfileModal'
+import PageTransition from '../components/PageTransition'
 import houseIcon from '../assets/img/house.png'
 import pinIcon from '../assets/img/pin.png'
 
@@ -260,17 +261,19 @@ function Home() {
   }
 
   return (
-    <div className="home-page">
-      <div ref={mapContainer} className="map-container" />
-      <MapTypeToggle mapType={mapType} onToggle={toggleMapType} />
-      <RecenterButton onRecenter={recenterMap} />
-      {selectedUserId && (
-        <UserProfileModal
-          userId={selectedUserId}
-          onClose={() => setSelectedUserId(null)}
-        />
-      )}
-    </div>
+    <PageTransition className="home-page-transition">
+      <div className="home-page">
+        <div ref={mapContainer} className="map-container" />
+        <MapTypeToggle mapType={mapType} onToggle={toggleMapType} />
+        <RecenterButton onRecenter={recenterMap} />
+        {selectedUserId && (
+          <UserProfileModal
+            userId={selectedUserId}
+            onClose={() => setSelectedUserId(null)}
+          />
+        )}
+      </div>
+    </PageTransition>
   )
 }
 
