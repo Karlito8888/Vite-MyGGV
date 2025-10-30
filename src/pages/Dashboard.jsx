@@ -10,23 +10,26 @@ function Dashboard() {
 
     if (!profile) {
         return (
-            <div className="page-container">
-                <PageTransition>
-                    <div className="page-not-found">
-                        <h2>Dashboard Not Available</h2>
-                        <p>Please log in to access your dashboard.</p>
+            <PageTransition>
+                <div className="page-container">
+                    <div className="page-content">
+                        <div className="page-not-found">
+                            <h2>Dashboard Not Available</h2>
+                            <p>Please log in to access your dashboard.</p>
+                        </div>
                     </div>
-                </PageTransition>
-            </div>
+                </div>
+            </PageTransition>
         );
     }
 
     return (
-        <div className="page-container">
-            <PageTransition>
-                <div className="page-header">
-                    <h2>My Dashboard</h2>
-                </div>
+        <PageTransition>
+            <div className="page-container">
+                <div className="page-content">
+                    <div className="page-header">
+                        <h2>My Dashboard</h2>
+                    </div>
 
                 <div className={styles.dashboardTabs}>
                     <button
@@ -72,8 +75,9 @@ function Dashboard() {
                         <BusinessOutsideManager profileId={profile.id} />
                     )}
                 </div>
-            </PageTransition>
-        </div>
+                </div>
+            </div>
+        </PageTransition>
     );
 }
 

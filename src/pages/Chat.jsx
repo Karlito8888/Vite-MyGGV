@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useUser } from '../contexts'
 import { toast } from 'react-toastify'
 import { PaperAirplaneIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/solid'
@@ -14,10 +14,13 @@ import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
 import UserProfileModal from '../components/UserProfileModal'
 import PageTransition from '../components/PageTransition'
+import { usePageVisibility } from '../contexts/PageVisibilityContext'
+import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from '../styles/Chat.module.css'
 
 function Chat() {
   const { user, profile } = useUser()
+  const isPageVisible = usePageVisibility()
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -42,59 +45,7 @@ function Chat() {
     scrollToBottom()
   }, [messages])
 
-  // Load existing messages
-  useEffect(() => {
-    loadMessages()
-  }, [])
-
-  // Subscribe to new messages in real-time
-  useEffect(() => {
-    if (!user) return
-
-    console.log('[REALTIME] 🔌 Subscribing to chat channel:', `chat-${channelId}`)
-    const channel = supabase
-      .channel(`chat-${channelId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat',
-          filter: `channel_id=eq.${channelId}`
-        },
-        async (payload) => {
-          // Fetch profile data
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('username, avatar_url, full_name')
-            .eq('id', payload.new.user_id)
-            .single()
-
-          const messageWithProfile = {
-            ...payload.new,
-            profiles: profileData
-          }
-
-          setMessages((current) => {
-            // Avoid duplicates
-            if (current.some(msg => msg.id === messageWithProfile.id)) {
-              return current
-            }
-            return [...current, messageWithProfile]
-          })
-        }
-      )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 Chat channel status:', status, `chat-${channelId}`)
-      })
-
-    return () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from chat channel:', `chat-${channelId}`)
-      supabase.removeChannel(channel)
-    }
-  }, [user]) // Removed channelId since it's constant 'general'
-
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     setLoading(true)
     try {
       const { data, error } = await listChannelMessages(channelId, 100)
@@ -109,7 +60,93 @@ function Chat() {
     } finally {
       setLoading(false)
     }
-  }
+  }, []) // Stable reference
+
+  // Store loadMessages in a ref to avoid recreating subscriptions
+  const loadMessagesRef = useRef(loadMessages)
+  useEffect(() => {
+    loadMessagesRef.current = loadMessages
+  }, [loadMessages])
+
+  // Load existing messages
+  useEffect(() => {
+    loadMessages()
+  }, [loadMessages])
+
+  // Fonction de souscription au chat
+  const subscribeToChatChannel = useCallback(() => {
+    if (!user) return null
+
+    console.log('[REALTIME] 🔌 Setting up chat subscription')
+
+    const channel = supabase
+      .channel(`chat-${channelId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat',
+          filter: `channel_id=eq.${channelId}`
+        },
+        async (payload) => {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('username, avatar_url, full_name')
+            .eq('id', payload.new.user_id)
+            .single()
+
+          const messageWithProfile = {
+            ...payload.new,
+            profiles: profileData
+          }
+
+          setMessages((current) => {
+            if (current.some(msg => msg.id === messageWithProfile.id)) {
+              return current
+            }
+            return [...current, messageWithProfile]
+          })
+        }
+      )
+      .subscribe((status) => {
+        console.log('[REALTIME] 📡 Chat channel status:', status)
+      })
+
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from chat')
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [user]) // Stable reference, channelId is constant
+
+  // Utiliser le hook de connexion
+  useRealtimeConnection(
+    subscribeToChatChannel,
+    [user],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 1000,
+      onReconnect: () => {
+        console.log('[REALTIME] ✅ Chat reconnected')
+        loadMessagesRef.current()
+      }
+    }
+  )
+
+  // Recharger les messages quand la page redevient visible
+  const wasPageVisibleRef = useRef(isPageVisible)
+  useEffect(() => {
+    const becameVisible = !wasPageVisibleRef.current && isPageVisible
+    wasPageVisibleRef.current = isPageVisible
+
+    if (becameVisible && user && !loading) {
+      console.log('[REALTIME] 👁️ Page visible, refreshing chat')
+      loadMessages()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPageVisible, user, loading])
 
   const handleSendMessage = async (e) => {
     e.preventDefault()
@@ -259,189 +296,195 @@ function Chat() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <PageTransition>
-          <div className={styles.loadingContainer}>
-            <div className={styles.spinner}></div>
-            <p>Loading chat...</p>
+      <PageTransition style={{ height: '100%' }}>
+        <div className={styles.chatPageContainer}>
+          <div className={styles.chatPageContent}>
+            <div className={styles.loadingContainer}>
+              <div className={styles.spinner}></div>
+              <p>Loading chat...</p>
+            </div>
           </div>
-        </PageTransition>
-      </div>
+        </div>
+      </PageTransition>
     )
   }
 
   return (
-    <PageTransition>
-      <div className={`page-container ${styles.chatPage}`}>
-        <div className="page-header">
-          <h2>💬 Live Chat</h2>
-          {/* <p className="page-subtitle">Chat in real-time with the community</p> */}
-        </div>
-
-        <div
-          className={`${styles.chatContainer} ${isDragging ? styles.dragging : ''}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          {isDragging && (
-            <div className={styles.dropOverlay}>
-              <div className={styles.dropContent}>
-                <PhotoIcon className={styles.dropIcon} />
-                <p>Drop image here to send</p>
-              </div>
+    <>
+      <PageTransition style={{ height: '100%' }}>
+        <div className={styles.chatPageContainer}>
+          <div className={styles.chatPageContent}>
+            <div className="page-header">
+              <h2>💬 Live Chat</h2>
+              {/* <p className="page-subtitle">Chat in real-time with the community</p> */}
             </div>
-          )}
 
-          <div className={styles.messagesContainer}>
-            {messages.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>No messages yet</p>
-                <p className={styles.emptySubtext}>Be the first to send a message!</p>
-              </div>
-            ) : (
-              messages.map((message) => {
-                const isOwnMessage = message.user_id === user?.id
-                const userProfile = message.user || message.profiles
-                const displayName = userProfile?.username ||
-                  userProfile?.full_name ||
-                  'User'
+            <div
+              className={`${styles.chatContainer} ${isDragging ? styles.dragging : ''}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {isDragging && (
+                <div className={styles.dropOverlay}>
+                  <div className={styles.dropContent}>
+                    <PhotoIcon className={styles.dropIcon} />
+                    <p>Drop image here to send</p>
+                  </div>
+                </div>
+              )}
 
-                return (
-                  <div
-                    key={message.id}
-                    className={`${styles.message} ${isOwnMessage ? styles.ownMessage : styles.otherMessage}`}
-                  >
-                    {!isOwnMessage && (
+              <div className={styles.messagesContainer}>
+                {messages.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <p>No messages yet</p>
+                    <p className={styles.emptySubtext}>Be the first to send a message!</p>
+                  </div>
+                ) : (
+                  messages.map((message) => {
+                    const isOwnMessage = message.user_id === user?.id
+                    const userProfile = message.user || message.profiles
+                    const displayName = userProfile?.username ||
+                      userProfile?.full_name ||
+                      'User'
+
+                    return (
                       <div
-                        className={styles.avatarWrapper}
-                        onClick={() => setSelectedUserId(message.user_id)}
+                        key={message.id}
+                        className={`${styles.message} ${isOwnMessage ? styles.ownMessage : styles.otherMessage}`}
                       >
-                        <Avatar
-                          src={userProfile?.avatar_url}
-                          userId={message.user_id}
-                          size="small"
-                          fallback={displayName.charAt(0).toUpperCase()}
-                          showPresence={true}
-                        />
-                      </div>
-                    )}
-
-                    <div className={styles.messageContent}>
-                      {!isOwnMessage && (
-                        <div className={styles.messageSender}>{displayName}</div>
-                      )}
-                      <div
-                        className={styles.messageWrapper}
-                        onTouchStart={() => isOwnMessage && handleTouchStart(message.id)}
-                        onTouchEnd={handleTouchEnd}
-                        onTouchCancel={handleTouchEnd}
-                      >
-                        <div className={styles.messageBubble}>
-                          {message.message_type === 'image' && message.attachment_url && (
-                            <div className={styles.imageMessage}>
-                              <img
-                                src={message.attachment_url}
-                                alt="Shared image"
-                                className={styles.messageImage}
-                                loading="lazy"
-                                onClick={() => setSelectedImage(message.attachment_url)}
-                              />
-                            </div>
-                          )}
-                          {message.content && message.content !== '📷 Image' && (
-                            <p>{message.content}</p>
-                          )}
-                        </div>
-                        {isOwnMessage && (
-                          <button
-                            className={`${styles.deleteButton} ${longPressedMessageId === message.id ? styles.visible : ''}`}
-                            onClick={() => setMessageToDelete(message.id)}
-                            title="Delete message"
+                        {!isOwnMessage && (
+                          <div
+                            className={styles.avatarWrapper}
+                            onClick={() => setSelectedUserId(message.user_id)}
                           >
-                            <TrashIcon className={styles.deleteIcon} />
-                          </button>
+                            <Avatar
+                              src={userProfile?.avatar_url}
+                              userId={message.user_id}
+                              size="small"
+                              fallback={displayName.charAt(0).toUpperCase()}
+                              showPresence={true}
+                            />
+                          </div>
+                        )}
+
+                        <div className={styles.messageContent}>
+                          {!isOwnMessage && (
+                            <div className={styles.messageSender}>{displayName}</div>
+                          )}
+                          <div
+                            className={styles.messageWrapper}
+                            onTouchStart={() => isOwnMessage && handleTouchStart(message.id)}
+                            onTouchEnd={handleTouchEnd}
+                            onTouchCancel={handleTouchEnd}
+                          >
+                            <div className={styles.messageBubble}>
+                              {message.message_type === 'image' && message.attachment_url && (
+                                <div className={styles.imageMessage}>
+                                  <img
+                                    src={message.attachment_url}
+                                    alt="Shared image"
+                                    className={styles.messageImage}
+                                    loading="lazy"
+                                    onClick={() => setSelectedImage(message.attachment_url)}
+                                  />
+                                </div>
+                              )}
+                              {message.content && message.content !== '📷 Image' && (
+                                <p>{message.content}</p>
+                              )}
+                            </div>
+                            {isOwnMessage && (
+                              <button
+                                className={`${styles.deleteButton} ${longPressedMessageId === message.id ? styles.visible : ''}`}
+                                onClick={() => setMessageToDelete(message.id)}
+                                title="Delete message"
+                              >
+                                <TrashIcon className={styles.deleteIcon} />
+                              </button>
+                            )}
+                          </div>
+                          <div className={styles.messageTime}>
+                            {formatTime(message.created_at)}
+                          </div>
+                        </div>
+
+                        {isOwnMessage && (
+                          <div
+                            className={styles.avatarWrapper}
+                            onClick={() => setSelectedUserId(user.id)}
+                          >
+                            <Avatar
+                              src={profile?.avatar_url}
+                              userId={user.id}
+                              size="small"
+                              fallback={(profile?.username || profile?.full_name || 'U').charAt(0).toUpperCase()}
+                              showPresence={true}
+                            />
+                          </div>
                         )}
                       </div>
-                      <div className={styles.messageTime}>
-                        {formatTime(message.created_at)}
-                      </div>
-                    </div>
+                    )
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
-                    {isOwnMessage && (
-                      <div
-                        className={styles.avatarWrapper}
-                        onClick={() => setSelectedUserId(user.id)}
-                      >
-                        <Avatar
-                          src={profile?.avatar_url}
-                          userId={user.id}
-                          size="small"
-                          fallback={(profile?.username || profile?.full_name || 'U').charAt(0).toUpperCase()}
-                          showPresence={true}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )
-              })
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              <form onSubmit={handleSendMessage} className={styles.inputContainer}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
+                <button
+                  type="button"
+                  className={styles.imageButton}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading || !user}
+                  title="Upload image"
+                >
+                  <PhotoIcon className={styles.imageIcon} />
+                </button>
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onPaste={handlePaste}
+                  placeholder="Write your message here..."
+                  className={styles.messageInput}
+                  disabled={sending || uploading || !user}
+                  maxLength={500}
+                />
+                <button
+                  type="submit"
+                  className={styles.sendButton}
+                  disabled={(!newMessage.trim() && !uploading) || sending || !user}
+                >
+                  {uploading ? (
+                    <div className={styles.uploadingSpinner}></div>
+                  ) : (
+                    <PaperAirplaneIcon className={styles.sendIcon} />
+                  )}
+                </button>
+              </form>
 
-          <form onSubmit={handleSendMessage} className={styles.inputContainer}>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              accept="image/*"
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className={styles.imageButton}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading || !user}
-              title="Upload image"
-            >
-              <PhotoIcon className={styles.imageIcon} />
-            </button>
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onPaste={handlePaste}
-              placeholder="Write your message here..."
-              className={styles.messageInput}
-              disabled={sending || uploading || !user}
-              maxLength={500}
-            />
-            <button
-              type="submit"
-              className={styles.sendButton}
-              disabled={(!newMessage.trim() && !uploading) || sending || !user}
-            >
-              {uploading ? (
-                <div className={styles.uploadingSpinner}></div>
-              ) : (
-                <PaperAirplaneIcon className={styles.sendIcon} />
+              {!user && (
+                <div className={styles.loginPrompt}>
+                  You must be logged in to send messages
+                </div>
               )}
-            </button>
-          </form>
 
-          {!user && (
-            <div className={styles.loginPrompt}>
-              You must be logged in to send messages
+              {uploading && (
+                <div className={styles.uploadingIndicator}>
+                  Uploading image...
+                </div>
+              )}
             </div>
-          )}
-
-          {uploading && (
-            <div className={styles.uploadingIndicator}>
-              Uploading image...
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      </PageTransition>
 
       {/* Image Modal */}
       {selectedImage && (
@@ -467,7 +510,7 @@ function Chat() {
           onClose={() => setSelectedUserId(null)}
         />
       )}
-    </PageTransition>
+    </>
   )
 }
 

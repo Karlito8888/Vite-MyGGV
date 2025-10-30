@@ -109,8 +109,9 @@ function Money() {
   return (
     <PageTransition>
       <div className="page-container">
-        <div className="page-header">
-          <h2>Money</h2>
+        <div className="page-content">
+          <div className="page-header">
+            <h2>Money</h2>
           <p className="page-subtitle">Manage your coins and collect daily rewards</p>
         </div>
 
@@ -342,6 +343,7 @@ function Money() {
               </div>
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
 

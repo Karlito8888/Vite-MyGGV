@@ -4,7 +4,11 @@ function Marketplace() {
   return (
     <PageTransition>
       <div className="page-container">
-        <h2>Marketplace</h2>
+        <div className="page-content">
+          <div className="page-header">
+            <h2>Marketplace</h2>
+          </div>
+        </div>
       </div>
     </PageTransition>
   )

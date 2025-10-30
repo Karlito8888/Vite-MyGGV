@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect, useContext } from 'react'
+import { createContext, useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { supabase } from '../utils/supabase'
 import { useUser } from './UserContext'
+import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 
 const GlobalPresenceContext = createContext()
 
@@ -11,10 +12,19 @@ const GlobalPresenceContext = createContext()
 export function GlobalPresenceProvider({ children }) {
   const { user } = useUser()
   const [onlineUsers, setOnlineUsers] = useState(new Set())
+  const presenceChannelRef = useRef(null)
 
+  // Store user in ref to avoid recreating subscription
+  const userRef = useRef(user)
   useEffect(() => {
-    // Create a single global presence channel
-    console.log('[REALTIME] 🔌 Subscribing to global_presence channel')
+    userRef.current = user
+  }, [user])
+
+  const subscribeToPresence = useCallback(() => {
+    if (!userRef.current) return null
+    
+    console.log('[REALTIME] 🔌 Setting up global presence subscription')
+    
     const presenceChannel = supabase.channel('global_presence')
 
     presenceChannel
@@ -22,7 +32,6 @@ export function GlobalPresenceProvider({ children }) {
         const state = presenceChannel.presenceState()
         const users = new Set()
 
-        // Collect all online user IDs
         Object.values(state).forEach((presences) => {
           presences.forEach((presence) => {
             if (presence.user_id) {
@@ -56,27 +65,49 @@ export function GlobalPresenceProvider({ children }) {
         })
       })
       .subscribe(async (status) => {
-        console.log('[REALTIME] 📡 Global presence channel status:', status)
-        if (status === 'SUBSCRIBED' && user) {
-          // Track current user's presence
-          console.log('[REALTIME] 👤 Tracking user presence:', user.id)
+        console.log('[REALTIME] 📡 Global presence status:', status)
+        if (status === 'SUBSCRIBED' && userRef.current) {
+          console.log('[REALTIME] 👤 Tracking user presence:', userRef.current.id)
           await presenceChannel.track({
-            user_id: user.id,
-            email: user.email,
+            user_id: userRef.current.id,
+            email: userRef.current.email,
             online_at: new Date().toISOString(),
           })
         }
       })
 
-    // Cleanup
-    return () => {
-      if (presenceChannel) {
-        console.log('[REALTIME] 🔌 Unsubscribing from global_presence channel')
-        presenceChannel.untrack()
-        supabase.removeChannel(presenceChannel)
+    presenceChannelRef.current = presenceChannel
+
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from global presence')
+        if (presenceChannel) {
+          presenceChannel.untrack()
+          supabase.removeChannel(presenceChannel)
+        }
       }
     }
-  }, [user])
+  }, [])
+
+  useRealtimeConnection(
+    subscribeToPresence,
+    [user?.id], // Only reconnect when user ID changes
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 2000,
+      onReconnect: async () => {
+        console.log('[REALTIME] ✅ Presence reconnected')
+        // Re-track presence
+        if (presenceChannelRef.current && userRef.current) {
+          await presenceChannelRef.current.track({
+            user_id: userRef.current.id,
+            email: userRef.current.email,
+            online_at: new Date().toISOString(),
+          })
+        }
+      }
+    }
+  )
 
   const isUserOnline = (userId) => {
     return onlineUsers.has(userId)

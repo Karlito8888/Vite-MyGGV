@@ -9,21 +9,23 @@ import { BeatLoader } from "react-spinners";
 import {
   listActiveHeaderMessages,
   subscribeToHeaderMessages,
-  unsubscribeFromHeaderMessages,
 } from "../services/messagesHeaderService";
+import { usePageVisibility } from '../contexts/PageVisibilityContext'
+import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from "./Header.module.css";
 
 function Header() {
   const { user } = useUser()
+  const isPageVisible = usePageVisibility()
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const subscriptionRef = useRef(null);
   const [subscriptionError, setSubscriptionError] = useState(null);
   const loadingStartTimeRef = useRef(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const pendingMessagesRef = useRef(null); // Queue for new messages during current cycle
+  const profileChannelRef = useRef(null);
 
   // Avatar refs
   const avatarElementRef = useRef(null);
@@ -75,15 +77,12 @@ function Header() {
         }
       }
     }
-  }, []); // Removed messages.length dependency to prevent re-subscriptions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Stable reference - never recreated
 
+  // Initial load when user logs in
   useEffect(() => {
     if (!user) {
-      // Cleanup when user logs out
-      if (subscriptionRef.current) {
-        unsubscribeFromHeaderMessages(subscriptionRef.current);
-        subscriptionRef.current = null;
-      }
       setMessages([]);
       setError(null);
       setSubscriptionError(null);
@@ -92,23 +91,58 @@ function Header() {
       return;
     }
 
-    fetchMessages(true); // Initial load
+    fetchMessages(true);
+  }, [user, fetchMessages]);
 
-    // Setup realtime subscription for messages
+  // Store fetchMessages in a ref to avoid recreating subscriptions
+  const fetchMessagesRef = useRef(fetchMessages)
+  useEffect(() => {
+    fetchMessagesRef.current = fetchMessages
+  }, [fetchMessages])
+
+  // Fonction de souscription pour les messages header
+  const subscribeToMessages = useCallback(() => {
+    if (!user) return null
+
+    console.log('[REALTIME] 🔌 Setting up header messages subscription')
+    
     const subscription = subscribeToHeaderMessages(
-      () => fetchMessages(false), // onMessageChange callback - queue updates
+      () => fetchMessagesRef.current(false),
       (status) => {
-        // onStatusChange callback
         if (status === "SUBSCRIBED") {
           setSubscriptionError(null);
         } else if (status === "CHANNEL_ERROR") {
           setSubscriptionError("Connection failed, Please refresh");
         }
       }
-    );
+    )
 
-    // Setup realtime subscription for profile changes
-    console.log('[REALTIME] 🔌 Subscribing to profile-avatar-changes channel')
+    return subscription
+  }, [user])
+
+  // Utiliser le hook de connexion Realtime pour les messages
+  useRealtimeConnection(
+    subscribeToMessages,
+    [user],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 1000,
+      onReconnect: () => {
+        console.log('[REALTIME] ✅ Header messages reconnected')
+        fetchMessagesRef.current(false)
+      },
+      onDisconnect: () => {
+        console.log('[REALTIME] ❌ Header messages disconnected')
+      }
+    }
+  )
+
+  // Fonction de souscription pour les changements de profil
+  const subscribeToProfiles = useCallback(() => {
+    if (!user) return null
+
+    console.log('[REALTIME] 🔌 Setting up profile changes subscription')
+    
     const profileChannel = supabase
       .channel('profile-avatar-changes')
       .on(
@@ -119,7 +153,6 @@ function Header() {
           table: 'profiles',
         },
         (payload) => {
-          // When a profile changes, update messages in memory
           setMessages(prevMessages =>
             prevMessages.map(msg => {
               if (msg.user?.id === payload.new.id) {
@@ -139,17 +172,41 @@ function Header() {
         }
       )
       .subscribe((status) => {
-        console.log('[REALTIME] 📡 Profile avatar changes channel status:', status)
+        console.log('[REALTIME] 📡 Profile changes channel status:', status)
       })
 
-    subscriptionRef.current = subscription;
+    profileChannelRef.current = profileChannel
 
-    return () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from header messages and profile-avatar-changes')
-      unsubscribeFromHeaderMessages(subscription);
-      supabase.removeChannel(profileChannel);
-    };
-  }, [user]); // Only depend on user, not fetchMessages
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from profile changes')
+        supabase.removeChannel(profileChannel)
+      }
+    }
+  }, [user])
+
+  // Utiliser le hook pour les profils
+  useRealtimeConnection(
+    subscribeToProfiles,
+    [user],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 1500
+    }
+  )
+
+  // Recharger les messages quand la page redevient visible
+  const wasPageVisibleRef = useRef(isPageVisible)
+  useEffect(() => {
+    const becameVisible = !wasPageVisibleRef.current && isPageVisible
+    wasPageVisibleRef.current = isPageVisible
+    
+    if (becameVisible && user && !loading) {
+      console.log('[REALTIME] 👁️ Page visible, refreshing messages')
+      fetchMessages(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPageVisible, user, loading])
 
   // Message rotation effect
   useEffect(() => {

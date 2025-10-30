@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../utils/supabase'
+import { useRealtimeConnection } from './useRealtimeConnection'
 
 /**
  * Hook pour récupérer toutes les associations profile-location avec coordonnées
@@ -10,8 +11,7 @@ export function useUserLocations() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    async function fetchUserLocations() {
+  const fetchUserLocations = useCallback(async () => {
       try {
         setLoading(true)
         
@@ -59,13 +59,23 @@ export function useUserLocations() {
       } finally {
         setLoading(false)
       }
-    }
+  }, [])
 
+  // Store fetchUserLocations in ref for subscription
+  const fetchUserLocationsRef = useRef(fetchUserLocations)
+  useEffect(() => {
+    fetchUserLocationsRef.current = fetchUserLocations
+  }, [fetchUserLocations])
+
+  // Initial load
+  useEffect(() => {
     fetchUserLocations()
+  }, [fetchUserLocations])
 
-    // S'abonner aux changements en temps réel
+  // Real-time subscription
+  const subscribeToLocationChanges = useCallback(() => {
     console.log('[REALTIME] 🔌 Subscribing to user_locations_changes channel')
-    const subscription = supabase
+    const channel = supabase
       .channel('user_locations_changes')
       .on(
         'postgres_changes',
@@ -76,18 +86,33 @@ export function useUserLocations() {
         },
         () => {
           // Recharger les données quand il y a un changement
-          fetchUserLocations()
+          fetchUserLocationsRef.current()
         }
       )
       .subscribe((status) => {
         console.log('[REALTIME] 📡 User locations changes channel status:', status)
       })
 
-    return () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from user_locations_changes channel')
-      subscription.unsubscribe()
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from user_locations_changes channel')
+        supabase.removeChannel(channel)
+      }
     }
   }, [])
+
+  useRealtimeConnection(
+    subscribeToLocationChanges,
+    [],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 1500,
+      onReconnect: () => {
+        console.log('[REALTIME] ✅ User locations reconnected')
+        fetchUserLocationsRef.current()
+      }
+    }
+  )
 
   return { locations, loading, error }
 }

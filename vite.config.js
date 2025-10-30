@@ -16,7 +16,15 @@ export default defineConfig({
         "src/assets/logos/*.png"
       ],
       workbox: {
+        // Exclure les WebSockets du cache
+        navigateFallbackDenylist: [/^\/ws/, /^\/realtime/],
+        
         runtimeCaching: [
+          // Ne pas mettre en cache les connexions Supabase Realtime
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/realtime\/.*/,
+            handler: 'NetworkOnly',
+          },
           // Cache de l'API météo Open-Meteo
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/,

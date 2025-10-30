@@ -6,20 +6,22 @@ function NotFound() {
   const navigate = useNavigate()
 
   return (
-    <div className="page-container">
-      <PageTransition>
-        <div className="page-not-found">
-          <h1>404</h1>
-          <p>Page not found</p>
-          <Button
-            onClick={() => navigate('/home')}
-            variant="primary"
-          >
-            Go to Home
-          </Button>
+    <PageTransition>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="page-not-found">
+            <h1>404</h1>
+            <p>Page not found</p>
+            <Button
+              onClick={() => navigate('/home')}
+              variant="primary"
+            >
+              Go to Home
+            </Button>
+          </div>
         </div>
-      </PageTransition>
-    </div>
+      </div>
+    </PageTransition>
   )
 }
 

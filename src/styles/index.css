@@ -86,6 +86,19 @@
   width: 100%;
 }
 
+/* Full height page content - for pages that need 100% height (e.g., Home with map) */
+.page-content.home-page-transition {
+  height: 100%;
+}
+
+/* Fixed page content - for pages with internal scrollable containers (e.g., Chat) */
+.page-content-fixed {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .page-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -187,6 +200,7 @@ body {
 .main-content {
   grid-area: main;
   height: 100%;
+  max-height: 100%;
   overflow-y: auto;
   background: linear-gradient(to bottom right,
       var(--color-background),

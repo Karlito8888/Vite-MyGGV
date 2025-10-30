@@ -93,22 +93,30 @@ function Weather() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className={styles.weatherLoading}>
-          <Cloud className="animate-pulse" size={32} />
-          <p>Loading weather data...</p>
+      <PageTransition>
+        <div className="page-container">
+          <div className="page-content">
+            <div className={styles.weatherLoading}>
+              <Cloud className="animate-pulse" size={32} />
+              <p>Loading weather data...</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </PageTransition>
     )
   }
 
   if (error && !weatherData) {
     return (
-      <div className="page-container">
-        <div className={styles.weatherError}>
-          <p>{error}</p>
+      <PageTransition>
+        <div className="page-container">
+          <div className="page-content">
+            <div className={styles.weatherError}>
+              <p>{error}</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </PageTransition>
     )
   }
 
@@ -119,19 +127,20 @@ function Weather() {
   const WeatherIcon = getWeatherIcon(weatherData.current.icon)
 
   return (
-    <div className="page-container">
-      <PageTransition>
-        <div className="page-header">
-          <div className="page-header-info">
-            <h2>Weather</h2>
-            <div className={styles.locationInfo}>
-              <span>{weatherData.location.name}</span>
+    <PageTransition>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="page-header">
+            <div className="page-header-info">
+              <h2>Weather</h2>
+              <div className={styles.locationInfo}>
+                <span>{weatherData.location.name}</span>
+              </div>
+              <Clock className={styles.weatherClock} showIcon={false} showDate={true} />
             </div>
-            <Clock className={styles.weatherClock} showIcon={false} showDate={true} />
           </div>
-        </div>
 
-        <div className={styles.weatherTabs}>
+          <div className={styles.weatherTabs}>
         <button
           className={`tab-button ${activeTab === 'current' ? 'active' : ''}`}
           onClick={() => setActiveTab('current')}
@@ -278,8 +287,9 @@ function Weather() {
           </div>
         )}
         </div>
-      </PageTransition>
-    </div>
+        </div>
+      </div>
+    </PageTransition>
   )
 }
 

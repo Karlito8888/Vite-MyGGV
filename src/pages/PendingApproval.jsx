@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
+import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Button from '../components/ui/Button'
 import PageTransition from '../components/PageTransition'
@@ -61,10 +62,14 @@ function PendingApproval() {
     }
 
     checkApprovalStatus()
+  }, [user, navigate])
 
-    // Set up real-time subscription to check for approval
+  // Real-time subscription with reconnection
+  const subscribeToApprovalStatus = useCallback(() => {
+    if (!user) return null
+
     console.log('[REALTIME] 🔌 Subscribing to approval_status channel')
-    const subscription = supabase
+    const channel = supabase
       .channel('approval_status')
       .on(
         'postgres_changes',
@@ -84,11 +89,22 @@ function PendingApproval() {
         console.log('[REALTIME] 📡 Approval status channel status:', status)
       })
 
-    return () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from approval_status channel')
-      subscription.unsubscribe()
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from approval_status channel')
+        supabase.removeChannel(channel)
+      }
     }
   }, [user, navigate])
+
+  useRealtimeConnection(
+    subscribeToApprovalStatus,
+    [user],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 2000
+    }
+  )
 
   const handleCheckStatus = async () => {
     setCheckingStatus(true)
@@ -129,20 +145,23 @@ function PendingApproval() {
 
   if (isLoading) {
     return (
-      <div className="page-container page-centered">
-        <PageTransition>
-          <div className="loader-wrapper">
-            <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+      <PageTransition>
+        <div className="page-container page-centered">
+          <div className="page-content">
+            <div className="loader-wrapper">
+              <ClimbingBoxLoader color="var(--color-primary)" size={20} loading={true} />
+            </div>
           </div>
-        </PageTransition>
-      </div>
+        </div>
+      </PageTransition>
     )
   }
 
   return (
-    <div className="page-container page-centered">
-      <PageTransition>
-        <div className={styles.pendingApprovalContent}>
+    <PageTransition>
+      <div className="page-container page-centered">
+        <div className="page-content">
+          <div className={styles.pendingApprovalContent}>
           <div className={styles.iconContainer}>
             {requestInfo?.status === 'rejected' ? '❌' : '⏳'}
           </div>
@@ -202,8 +221,9 @@ function PendingApproval() {
             </ul>
           </div>
         </div>
-      </PageTransition>
-    </div>
+        </div>
+      </div>
+    </PageTransition>
   )
 }
 

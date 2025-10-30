@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import { locationRequestsService } from '../services/locationRequestsService'
+import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import Card, { CardHeader, CardContent } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Avatar from '../components/Avatar'
@@ -44,16 +45,21 @@ function LocationRequests() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, filter])
 
-  // Real-time subscription
+  // Store fetchRequests in ref for subscription
+  const fetchRequestsRef = useRef(fetchRequests)
   useEffect(() => {
-    if (!user) return
+    fetchRequestsRef.current = fetchRequests
+  }, [fetchRequests])
 
-    const subscription = locationRequestsService.subscribeToRequests(
+  // Real-time subscription with reconnection
+  const subscribeToRequestChanges = useCallback(() => {
+    if (!user) return null
+
+    return locationRequestsService.subscribeToRequests(
       user.id,
       (payload) => {
-
         // Refresh requests when there's a change
-        fetchRequests()
+        fetchRequestsRef.current()
 
         // Show notification for new requests
         if (payload.eventType === 'INSERT') {
@@ -61,12 +67,20 @@ function LocationRequests() {
         }
       }
     )
-
-    return () => {
-      subscription.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  useRealtimeConnection(
+    subscribeToRequestChanges,
+    [user],
+    {
+      reconnectOnVisibility: true,
+      reconnectDelay: 1500,
+      onReconnect: () => {
+        console.log('[REALTIME] ✅ Location requests reconnected')
+        fetchRequestsRef.current()
+      }
+    }
+  )
 
   const handleApprove = async (requestId) => {
     setIsProcessing(true)

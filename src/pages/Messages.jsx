@@ -94,12 +94,13 @@ function Messages() {
   return (
     <PageTransition>
       <div className="page-container">
-        <div className="page-header">
-          <h2>Messages</h2>
-          <p className="page-subtitle">Post a message, or check your private messages</p>
-        </div>
+        <div className="page-content">
+          <div className="page-header">
+            <h2>Messages</h2>
+            <p className="page-subtitle">Post a message, or check your private messages</p>
+          </div>
 
-        <div className={styles.messagesGrid}>
+          <div className={styles.messagesGrid}>
           {/* Card 1: Publish header message */}
           <Card className={styles.messageCard}>
             <CardHeader>
@@ -216,6 +217,7 @@ function Messages() {
               )}
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
     </PageTransition>

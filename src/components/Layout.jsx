@@ -5,13 +5,16 @@ import Footer from './Footer'
 import Sidebar from './Sidebar'
 import { UserProvider } from '../contexts'
 import { GlobalPresenceProvider } from '../contexts/GlobalPresenceContext'
+import { PageVisibilityProvider } from '../contexts/PageVisibilityContext'
 
 function Layout() {
   return (
     <UserProvider>
-      <GlobalPresenceProvider>
-        <LayoutContent />
-      </GlobalPresenceProvider>
+      <PageVisibilityProvider>
+        <GlobalPresenceProvider>
+          <LayoutContent />
+        </GlobalPresenceProvider>
+      </PageVisibilityProvider>
     </UserProvider>
   )
 }

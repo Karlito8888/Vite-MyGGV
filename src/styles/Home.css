@@ -267,6 +267,7 @@
 
 /* Desktop enhancements (769px+) */
 @media (min-width: 769px) {
+
   .mapboxgl-popup-content,
   .maplibregl-popup-content {
     min-width: 300px;

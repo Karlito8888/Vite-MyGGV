@@ -105,8 +105,9 @@ function Profile() {
   return (
     <PageTransition>
       <div className="page-container">
-        <div className={styles.profileHeader}>
-          <div className="page-header">
+        <div className="page-content">
+          <div className={styles.profileHeader}>
+            <div className="page-header">
             <h2>My Profile</h2>
           </div>
           <Button
@@ -713,6 +714,7 @@ function Profile() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </PageTransition>
   );
