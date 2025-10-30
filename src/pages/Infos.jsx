@@ -14,7 +14,6 @@ export default function Infos() {
         <div className="page-content">
           <div className="page-header">
           <h2>
-            <span className={styles.pageTitleIcon}>ℹ️ </span>
             Village Information
           </h2>
         </div>

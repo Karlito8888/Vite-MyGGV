@@ -19,7 +19,7 @@ function LocationRequests() {
   const [processingId, setProcessingId] = useState(null)
 
   // Fetch requests
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     if (!user) return
 
     setIsLoading(true)
@@ -38,12 +38,11 @@ function LocationRequests() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user, filter])
 
   useEffect(() => {
     fetchRequests()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, filter])
+  }, [fetchRequests])
 
   // Store fetchRequests in ref for subscription
   const fetchRequestsRef = useRef(fetchRequests)

@@ -10,7 +10,7 @@ import {
   listActiveHeaderMessages,
   subscribeToHeaderMessages,
 } from "../services/messagesHeaderService";
-import { usePageVisibility } from '../contexts/PageVisibilityContext'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from "./Header.module.css";
 

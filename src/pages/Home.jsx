@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import '../styles/Home.css'
@@ -25,6 +25,11 @@ function Home() {
   const { locations, loading: locationsLoading } = useUserLocations()
   const { initialViewState, blocksGeoJSON, mapStyle, DEFAULT_COORDS } = useMapConfig(null, mapType)
   const { isUserOnline } = useGlobalPresence()
+
+  // Créer une clé stable basée sur les IDs des locations pour éviter les re-renders inutiles
+  const locationsKey = useMemo(() => {
+    return locations.map(l => l.profileId).sort().join(',')
+  }, [locations])
 
   // Créer/détruire la carte seulement quand mapType ou mapStyle change
   useEffect(() => {
@@ -237,7 +242,8 @@ function Home() {
             .addTo(map.current)
         })
     }
-  }, [locations, locationsLoading, user, isUserOnline, mapLoaded])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationsKey, locationsLoading, user?.id, mapLoaded])
 
 
 

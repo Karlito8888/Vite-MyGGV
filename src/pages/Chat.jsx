@@ -14,7 +14,7 @@ import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
 import UserProfileModal from '../components/UserProfileModal'
 import PageTransition from '../components/PageTransition'
-import { usePageVisibility } from '../contexts/PageVisibilityContext'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
 import styles from '../styles/Chat.module.css'
 
@@ -315,7 +315,7 @@ function Chat() {
         <div className={styles.chatPageContainer}>
           <div className={styles.chatPageContent}>
             <div className="page-header">
-              <h2>💬 Live Chat</h2>
+              <h2>Live Chat</h2>
               {/* <p className="page-subtitle">Chat in real-time with the community</p> */}
             </div>
 

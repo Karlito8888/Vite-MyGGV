@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-
-const PageVisibilityContext = createContext(true)
+import { useState, useEffect } from 'react'
+import { PageVisibilityContext } from './PageVisibilityContextValue'
 
 /**
  * Provider pour partager l'état de visibilité de la page
@@ -33,14 +32,3 @@ export function PageVisibilityProvider({ children }) {
   )
 }
 
-/**
- * Hook pour accéder à l'état de visibilité de la page
- * @returns {boolean} true si la page est visible, false sinon
- */
-export function usePageVisibility() {
-  const context = useContext(PageVisibilityContext)
-  if (context === undefined) {
-    throw new Error('usePageVisibility must be used within a PageVisibilityProvider')
-  }
-  return context
-}

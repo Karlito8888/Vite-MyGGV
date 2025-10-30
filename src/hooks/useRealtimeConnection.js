@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
-import { usePageVisibility } from '../contexts/PageVisibilityContext'
+import { usePageVisibility } from './usePageVisibility'
 
 /**
  * Hook pour gérer une connexion Realtime Supabase avec reconnexion automatique

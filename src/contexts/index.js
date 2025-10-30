@@ -2,4 +2,4 @@
 export { UserContext, UserProvider, useUser } from "./UserContext";
 
 // Page visibility context
-export { PageVisibilityProvider, usePageVisibility } from "./PageVisibilityContext";
+export { PageVisibilityProvider } from "./PageVisibilityContext";
