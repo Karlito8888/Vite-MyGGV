@@ -9,8 +9,15 @@ import { supabase } from '../utils/supabase'
  */
 export function PageVisibilityProvider({ children }) {
   const [isVisible, setIsVisible] = useState(!document.hidden)
-  const lastVisibleTimeRef = useRef(Date.now())
+  const lastVisibleTimeRef = useRef(null)
   const authRecoveryTimeoutRef = useRef(null)
+
+  // Initialiser lastVisibleTimeRef dans un effet pour éviter l'appel impur pendant le render
+  useEffect(() => {
+    if (lastVisibleTimeRef.current === null) {
+      lastVisibleTimeRef.current = Date.now()
+    }
+  }, [])
 
   useEffect(() => {
     const handleVisibilityChange = async () => {

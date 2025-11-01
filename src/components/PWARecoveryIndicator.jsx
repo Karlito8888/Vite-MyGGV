@@ -7,7 +7,7 @@ import styles from './PWARecoveryIndicator.module.css'
  * après un changement d'onglet
  */
 export function PWARecoveryIndicator() {
-  const { isRecovering, forceRecovery, getRecoveryStats } = usePWATabRecovery()
+  const { isRecovering, getRecoveryStats } = usePWATabRecovery()
 
   // Ne rien afficher si pas en cours de récupération
   if (!isRecovering) {
