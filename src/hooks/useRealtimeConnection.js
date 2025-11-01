@@ -38,7 +38,7 @@ export function useRealtimeConnection(
   const subscriptionRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
   const [isConnected, setIsConnected] = useState(false)
-  const wasVisibleRef = useRef(isVisible)
+  const wasVisibleRef = useRef(false) // Start as false to detect first visibility change
   const lastHiddenTimeRef = useRef(null) // Timestamp quand la page devient cachée
   const [connectionState, setConnectionState] = useState('disconnected') // 'disconnected', 'connecting', 'connected', 'frozen'
   
@@ -127,6 +127,8 @@ export function useRealtimeConnection(
     // Détecter les transitions
     const becameHidden = !isVisible && wasVisibleRef.current
     const becameVisible = isVisible && !wasVisibleRef.current
+    
+    console.log('[REALTIME] 🔍 Visibility check - isVisible:', isVisible, 'wasVisibleRef:', wasVisibleRef.current, 'becameHidden:', becameHidden, 'becameVisible:', becameVisible)
     
     // Page vient de devenir cachée
     if (becameHidden) {

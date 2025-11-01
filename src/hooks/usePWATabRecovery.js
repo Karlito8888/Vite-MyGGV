@@ -11,7 +11,7 @@ import { supabase } from '../utils/supabase'
 export function usePWATabRecovery() {
   const isVisible = usePageVisibility()
   const { isConnected, forceReconnectAll } = useGlobalRealtimeManager()
-  const lastVisibilityRef = useRef(isVisible)
+  const lastVisibilityRef = useRef(false) // Start as false to detect first visibility change
   const lastVisibleTimeRef = useRef(Date.now())
   const reconnectTimeoutRef = useRef(null)
   const visibilityChangeCountRef = useRef(0)
@@ -92,12 +92,22 @@ export function usePWATabRecovery() {
 
   // Gérer la récupération lors du retour sur l'onglet
   const handleTabRecovery = useCallback(async () => {
-    if (!isVisible) return
+    console.log('[PWA-RECOVERY] 🔍 handleTabRecovery called - isVisible:', isVisible, 'lastVisibilityRef:', lastVisibilityRef.current)
+    
+    if (!isVisible) {
+      console.log('[PWA-RECOVERY] ⏸️ Page not visible, skipping recovery')
+      return
+    }
 
     const wasHidden = !lastVisibilityRef.current
+    console.log('[PWA-RECOVERY] 🔍 wasHidden:', wasHidden, '(calculated from !lastVisibilityRef.current)')
+    
     lastVisibilityRef.current = isVisible
 
-    if (!wasHidden) return // N'agit que si on passe de caché à visible
+    if (!wasHidden) {
+      console.log('[PWA-RECOVERY] ⏸️ Page was not hidden (no transition), skipping recovery')
+      return // N'agit que si on passe de caché à visible
+    }
 
     visibilityChangeCountRef.current += 1
     const changeCount = visibilityChangeCountRef.current
