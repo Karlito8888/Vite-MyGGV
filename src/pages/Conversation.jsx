@@ -12,7 +12,7 @@ import {
   deletePrivateMessage
 } from '../services/privateMessagesService'
 import { supabase } from '../utils/supabase'
-import { usePrivateMessages } from '../hooks/useSupabaseRealtime'
+import { subscribeToPrivateMessages } from '../services/privateMessagesService'
 import PageTransition from '../components/PageTransition'
 import Avatar from '../components/Avatar'
 import ImageModal from '../components/ImageModal'
@@ -217,44 +217,64 @@ function Conversation() {
 
 
 
-  // Subscribe to real-time messages using global system
-  usePrivateMessages(async (payload) => {
-    // Only process messages for this conversation
-    if (payload.new?.sender_id === otherUserId && payload.new?.receiver_id === profile?.id) {
-      console.log('[CONVERSATION] 📨 New message in conversation:', payload.new.id)
-      
-      // Fetch sender profile
-      const { data: senderProfile } = await supabase
-        .from('profiles')
-        .select('id, username, avatar_url, full_name')
-        .eq('id', payload.new.sender_id)
-        .single()
+  // Subscribe to real-time messages using centralized service
+  useEffect(() => {
+    let subscription = null
 
-      // Fetch receiver profile (current user)
-      const { data: receiverProfile } = await supabase
-        .from('profiles')
-        .select('id, username, avatar_url, full_name')
-        .eq('id', payload.new.receiver_id)
-        .single()
+    const setupSubscription = async () => {
+      if (!profile?.id) return
 
-      const messageWithProfiles = {
-        ...payload.new,
-        sender: senderProfile,
-        receiver: receiverProfile
+      try {
+        subscription = await subscribeToPrivateMessages(profile.id, async (payload) => {
+          // Only process messages for this conversation
+          if (payload?.sender_id === otherUserId && payload?.receiver_id === profile.id) {
+            console.log('[CONVERSATION] 📨 New message in conversation:', payload.id)
+            
+            // Fetch sender profile
+            const { data: senderProfile } = await supabase
+              .from('profiles')
+              .select('id, username, avatar_url, full_name')
+              .eq('id', payload.sender_id)
+              .single()
+
+            // Fetch receiver profile (current user)
+            const { data: receiverProfile } = await supabase
+              .from('profiles')
+              .select('id, username, avatar_url, full_name')
+              .eq('id', payload.receiver_id)
+              .single()
+
+            const messageWithProfiles = {
+              ...payload,
+              sender: senderProfile,
+              receiver: receiverProfile
+            }
+
+            setMessages((current) => {
+              // Avoid duplicates
+              if (current.some(msg => msg.id === messageWithProfiles.id)) {
+                return current
+              }
+              return [...current, messageWithProfiles]
+            })
+
+            scrollToBottom()
+
+            // Mark as read
+            markConversationAsRead(otherUserId)
+          }
+        })
+      } catch (error) {
+        console.error('[CONVERSATION] ❌ Failed to subscribe to private messages:', error)
       }
+    }
 
-      setMessages((current) => {
-        // Avoid duplicates
-        if (current.some(msg => msg.id === messageWithProfiles.id)) {
-          return current
-        }
-        return [...current, messageWithProfiles]
-      })
+    setupSubscription()
 
-      scrollToBottom()
-
-      // Mark as read
-      markConversationAsRead(otherUserId)
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
     }
   }, [profile?.id, otherUserId])
 

@@ -7,6 +7,7 @@ import Avatar from './Avatar'
 import Card, { CardHeader, CardTitle, CardContent } from './ui/Card'
 import RichTextDisplay from './ui/RichTextDisplay'
 import { useUser } from '../contexts'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 import styles from './UserProfileModal.module.css'
 import { supabase } from '../utils/supabase'
 import viberLogo from '../assets/logos/viber.png'
@@ -19,6 +20,7 @@ import instagramLogo from '../assets/logos/instagram.png'
 function UserProfileModal({ userId, onClose }) {
   const navigate = useNavigate()
   const { user } = useUser()
+  const isVisible = usePageVisibility()
   const [profile, setProfile] = useState(null)
   const [locationAssociations, setLocationAssociations] = useState([])
   const [userService, setUserService] = useState(null)
@@ -112,7 +114,7 @@ function UserProfileModal({ userId, onClose }) {
     }
 
     fetchUserData()
-  }, [userId])
+  }, [userId, isVisible])
 
   const openImageModal = (imageUrl, allImages) => {
     setSelectedImage(imageUrl)

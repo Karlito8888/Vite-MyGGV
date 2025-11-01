@@ -1,5 +1,6 @@
 import { supabase, executeQuery } from './baseService'
 import { getAuthenticatedUserId } from '../utils/authHelpers'
+import { realtimeManager } from './realtimeManager'
 
 /**
  * Chat Service (Public Channel Messages)
@@ -204,93 +205,133 @@ export async function deleteMessage(id) {
 }
 
 /**
- * Subscribe to real-time messages in a channel
+ * Subscribe to real-time messages in a channel using centralized manager
  * Listens to INSERT, UPDATE, and DELETE events
  * @param {string} channelId - Channel identifier
  * @param {Object} callbacks - Callback functions for different events
  * @param {Function} callbacks.onInsert - Callback for new messages
  * @param {Function} [callbacks.onUpdate] - Callback for updated messages
  * @param {Function} [callbacks.onDelete] - Callback for deleted messages
- * @returns {Promise<Object>} Channel object with unsubscribe method
+ * @returns {Promise<Object>} Subscription object with unsubscribe method
  */
 export async function subscribeToChannel(channelId, callbacks) {
   const { onInsert, onUpdate, onDelete } = callbacks
+  const channelName = realtimeManager.getStandardChannelName('chat', channelId)
 
-  console.log('[REALTIME] 🔌 Subscribing to chat channel (service):', `chat:${channelId}`)
-  const channel = supabase.channel(`chat:${channelId}`)
+  console.log('[REALTIME] 🔌 Subscribing to chat channel (service):', channelName)
 
-  // Listen to INSERT events
-  if (onInsert) {
-    channel.on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'chat',
-        filter: `channel_id=eq.${channelId}`
-      },
-      async (payload) => {
-        // Fetch profile data for the new message
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('username, avatar_url, full_name')
-          .eq('id', payload.new.user_id)
-          .single()
+  const setupChatChannel = (channel) => {
+    // Listen to INSERT events
+    if (onInsert) {
+      channel.on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat',
+          filter: `channel_id=eq.${channelId}`
+        },
+        async (payload) => {
+          // Fetch profile data for new message
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('username, avatar_url, full_name')
+            .eq('id', payload.new.user_id)
+            .single()
 
-        onInsert({
-          ...payload.new,
-          profiles: profileData
-        })
-      }
-    )
-  }
-
-  // Listen to UPDATE events
-  if (onUpdate) {
-    channel.on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'chat',
-        filter: `channel_id=eq.${channelId}`
-      },
-      (payload) => onUpdate(payload.new)
-    )
-  }
-
-  // Listen to DELETE events
-  if (onDelete) {
-    channel.on(
-      'postgres_changes',
-      {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'chat',
-        filter: `channel_id=eq.${channelId}`
-      },
-      (payload) => onDelete(payload.old)
-    )
-  }
-
-  // Subscribe to the channel
-  channel.subscribe((status) => {
-    console.log('[REALTIME] 📡 Chat channel (service) status:', status, `chat:${channelId}`)
-  })
-
-  return {
-    channel,
-    unsubscribe: async () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from chat channel (service):', `chat:${channelId}`)
-      await supabase.removeChannel(channel)
+          onInsert({
+            ...payload.new,
+            profiles: profileData
+          })
+        }
+      )
     }
+
+    // Listen to UPDATE events
+    if (onUpdate) {
+      channel.on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat',
+          filter: `channel_id=eq.${channelId}`
+        },
+        (payload) => onUpdate(payload.new)
+      )
+    }
+
+    // Listen to DELETE events
+    if (onDelete) {
+      channel.on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'chat',
+          filter: `channel_id=eq.${channelId}`
+        },
+        (payload) => onDelete(payload.old)
+      )
+    }
+  }
+
+  try {
+    const channel = await realtimeManager.subscribeStandard(
+      'chat',
+      setupChatChannel,
+      [channelId],
+      channelId
+    )
+
+    return {
+      channel,
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from chat channel (service):', channelName)
+        realtimeManager.unsubscribe(channelName, [channelId])
+      }
+    }
+  } catch (error) {
+    console.error('[CHAT-SERVICE] ❌ Failed to subscribe to channel:', error)
+    throw error
   }
 }
 
 /**
- * Get the count of messages in a channel
+ * Subscribe to real-time updates for a specific chat channel
+ * 
+ * This function uses the centralized realtimeManager to prevent duplicate
+ * subscriptions and provide automatic retry logic.
+ * 
  * @param {string} channelId - Channel identifier
- * @returns {Promise<{data: number|null, error: Error|null}>}
+ * @param {Object} callbacks - Callback functions for different events
+ * @param {Function} callbacks.onInsert - Callback for new messages (required)
+ * @param {Function} [callbacks.onUpdate] - Callback for updated messages
+ * @param {Function} [callbacks.onDelete] - Callback for deleted messages
+ * @returns {Promise<Object>} Subscription object with unsubscribe method
+ * 
+ * Usage Example:
+ * ```javascript
+ * const subscription = await subscribeToChannel('general', {
+ *   onInsert: (payload) => {
+ *     console.log('New message:', payload.new)
+ *     // Update UI with new message
+ *   },
+ *   onUpdate: (payload) => {
+ *     console.log('Message updated:', payload.new)
+ *     // Update UI with edited message
+ *   }
+ * })
+ * 
+ * // Cleanup on unmount
+ * useEffect(() => {
+ *   return () => {
+ *     if (subscription) {
+ *       subscription.unsubscribe()
+ *     }
+ *   }
+ * }, [])
+ * ```
  */
 export async function getChannelMessageCount(channelId) {
   const { count, error } = await supabase

@@ -1,5 +1,6 @@
 import { supabase, executeQuery } from './baseService'
 import { getAuthenticatedUserId } from '../utils/authHelpers'
+import { realtimeManager } from './realtimeManager'
 
 export const locationRequestsService = {
   /**
@@ -181,17 +182,51 @@ export const locationRequestsService = {
     }
   },
 
-  /**
-   * Subscribe to real-time changes on location_association_requests
-   * @param {string} ownerId - The owner's user ID
-   * @param {Function} callback - Callback function to handle changes
-   * @returns {Object} Subscription object with unsubscribe method
-   */
-  subscribeToRequests(ownerId, callback) {
+   /**
+    * Subscribe to real-time updates for location requests using centralized manager
+    * 
+    * This function subscribes to all changes on location_association_requests table
+    * where the current user is the approver (owner). Uses centralized realtimeManager
+    * for duplicate prevention and automatic retry logic.
+    * 
+    * @param {string} ownerId - The owner's user ID
+    * @param {Function} callback - Callback function to handle changes
+    * @returns {Promise<Object>} Subscription object with unsubscribe method
+    * 
+    * Usage Example:
+    * ```javascript
+    * const subscription = await locationRequestsService.subscribeToRequests(
+    *   currentUserId,
+    *   (payload) => {
+    *     console.log('Location request changed:', payload)
+    *     // Handle different event types
+    *     if (payload.eventType === 'INSERT') {
+    *       // New request received
+    *       showNotification('New location request received')
+    *     } else if (payload.eventType === 'UPDATE') {
+    *       // Request status changed
+    *       refreshRequestsList()
+    *     }
+    *   }
+    * )
+    * 
+    * // Cleanup on unmount
+    * useEffect(() => {
+    *   return () => {
+    *     if (subscription) {
+    *       subscription.unsubscribe()
+    *     }
+    *   }
+    * }, [currentUserId])
+    * ```
+    */
+  async subscribeToRequests(ownerId, callback) {
+    const channelName = realtimeManager.getStandardChannelName('locationRequests')
+
     console.log('[REALTIME] 🔌 Subscribing to location_requests_changes channel for owner:', ownerId)
-    const subscription = supabase
-      .channel('location_requests_changes')
-      .on(
+
+    const setupLocationRequestsChannel = (channel) => {
+      channel.on(
         'postgres_changes',
         {
           event: '*',
@@ -200,19 +235,27 @@ export const locationRequestsService = {
           filter: `approver_id=eq.${ownerId}`
         },
         (payload) => {
-
           callback(payload)
         }
       )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 Location requests changes channel status:', status, 'owner:', ownerId)
-      })
-
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from location_requests_changes channel for owner:', ownerId)
-        subscription.unsubscribe()
-      }
     }
-  }
+
+    try {
+      await realtimeManager.subscribeStandard(
+        'locationRequests',
+        setupLocationRequestsChannel,
+        [ownerId]
+      )
+
+      return {
+        unsubscribe: () => {
+          console.log('[REALTIME] 🔌 Unsubscribing from location_requests_changes channel for owner:', ownerId)
+          realtimeManager.unsubscribe(channelName, [ownerId])
+        }
+      }
+    } catch (error) {
+      console.error('[LOCATION-REQUESTS-SERVICE] ❌ Failed to subscribe to location requests:', error)
+      throw error
+    }
+   }
 }

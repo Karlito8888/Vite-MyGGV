@@ -1,5 +1,6 @@
 import { supabase, executeQuery } from './baseService'
 import { getAuthenticatedUserId } from '../utils/authHelpers'
+import { realtimeManager } from './realtimeManager'
 
 /**
  * Private Messages Service
@@ -272,16 +273,44 @@ export async function sendPrivateImageMessage({ receiver_id, image, message = ''
 }
 
 /**
- * Subscribe to real-time private messages for a user
+ * Subscribe to real-time private messages for a user using centralized manager
+ * 
+ * This function subscribes to new private messages where the current user
+ * is the receiver. Uses centralized realtimeManager for duplicate prevention
+ * and automatic retry logic.
+ * 
  * @param {string} userId - User UUID
  * @param {Function} onMessage - Callback function for new messages
- * @returns {Object} Subscription object with unsubscribe method
+ * @returns {Promise<Object>} Subscription object with unsubscribe method
+ * 
+ * Usage Example:
+ * ```javascript
+ * const subscription = await subscribeToPrivateMessages(
+ *   currentUserId,
+ *   (newMessage) => {
+ *     console.log('New private message:', newMessage)
+ *     // Update UI with new message
+ *     setMessages(prev => [...prev, newMessage])
+ *   }
+ * )
+ * 
+ * // Cleanup on unmount
+ * useEffect(() => {
+ *   return () => {
+ *     if (subscription) {
+ *       subscription.unsubscribe()
+ *     }
+ *   }
+ * }, [currentUserId])
+ * ```
  */
-export function subscribeToPrivateMessages(userId, onMessage) {
-  console.log('[REALTIME] 🔌 Subscribing to private_messages channel:', `private_messages:${userId}`)
-  const subscription = supabase
-    .channel(`private_messages:${userId}`)
-    .on(
+export async function subscribeToPrivateMessages(userId, onMessage) {
+  const channelName = realtimeManager.getStandardChannelName('privateMessages', userId)
+
+  console.log('[REALTIME] 🔌 Subscribing to private_messages channel:', channelName)
+
+  const setupPrivateMessagesChannel = (channel) => {
+    channel.on(
       'postgres_changes',
       {
         event: 'INSERT',
@@ -291,14 +320,24 @@ export function subscribeToPrivateMessages(userId, onMessage) {
       },
       (payload) => onMessage(payload.new)
     )
-    .subscribe((status) => {
-      console.log('[REALTIME] 📡 Private messages channel status:', status, `private_messages:${userId}`)
-    })
+  }
 
-  return {
-    unsubscribe: () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from private_messages channel:', `private_messages:${userId}`)
-      subscription.unsubscribe()
+  try {
+    await realtimeManager.subscribeStandard(
+      'privateMessages',
+      setupPrivateMessagesChannel,
+      [userId],
+      userId
+    )
+
+    return {
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from private_messages channel:', channelName)
+        realtimeManager.unsubscribe(channelName, [userId])
+      }
     }
+  } catch (error) {
+    console.error('[PRIVATE-MESSAGES-SERVICE] ❌ Failed to subscribe to private messages:', error)
+    throw error
   }
 }

@@ -4,17 +4,18 @@ import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
 import UserProfileModal from "./UserProfileModal";
 import { useUser } from '../contexts'
-import { supabase } from '../utils/supabase'
+import { usePageVisibility } from '../hooks/usePageVisibility'
+
 import { BeatLoader } from "react-spinners";
 import {
   listActiveHeaderMessages,
-  subscribeToHeaderMessages,
 } from "../services/messagesHeaderService";
-import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
+import { subscribeToHeaderMessages } from '../services/messagesHeaderService'
 import styles from "./Header.module.css";
 
 function Header() {
   const { user } = useUser()
+  const isVisible = usePageVisibility()
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,7 +24,7 @@ function Header() {
   const loadingStartTimeRef = useRef(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const pendingMessagesRef = useRef(null); // Queue for new messages during current cycle
-  const profileChannelRef = useRef(null);
+
 
   // Avatar refs
   const avatarElementRef = useRef(null);
@@ -90,7 +91,7 @@ function Header() {
     }
 
     fetchMessages(true);
-  }, [user, fetchMessages]);
+  }, [user, fetchMessages, isVisible]);
 
   // Store fetchMessages in a ref to avoid recreating subscriptions
   const fetchMessagesRef = useRef(fetchMessages)
@@ -98,102 +99,38 @@ function Header() {
     fetchMessagesRef.current = fetchMessages
   }, [fetchMessages])
 
-  // Fonction de souscription pour les messages header
-  const subscribeToMessages = useCallback(() => {
-    if (!user) return null
 
-    console.log('[REALTIME] 🔌 Setting up header messages subscription')
-    
-    const subscription = subscribeToHeaderMessages(
-      () => fetchMessagesRef.current(false),
-      (status) => {
-        if (status === "SUBSCRIBED") {
-          setSubscriptionError(null);
-        } else if (status === "CHANNEL_ERROR") {
-          setSubscriptionError("Connection failed, Please refresh");
-        }
-      }
-    )
 
-    return subscription
-  }, [user])
+  // Real-time subscription for header messages
+  useEffect(() => {
+    if (!user) return
 
-  // Utiliser le hook de connexion Realtime pour les messages
-  useRealtimeConnection(
-    subscribeToMessages,
-    [user],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 1000,
-      onReconnect: () => {
-        console.log('[REALTIME] ✅ Header messages reconnected')
-        fetchMessagesRef.current(false)
-      },
-      onDisconnect: () => {
-        console.log('[REALTIME] ❌ Header messages disconnected')
+    let subscription = null
+
+    const setupSubscription = async () => {
+      try {
+        subscription = await subscribeToHeaderMessages(async (payload) => {
+          console.log('[HEADER] 📨 New header message:', payload.new)
+          fetchMessagesRef.current(false)
+        })
+      } catch (error) {
+        console.error('[HEADER] ❌ Failed to subscribe to header messages:', error)
       }
     }
-  )
 
-  // Fonction de souscription pour les changements de profil
-  const subscribeToProfiles = useCallback(() => {
-    if (!user) return null
+    setupSubscription()
 
-    console.log('[REALTIME] 🔌 Setting up profile changes subscription')
-    
-    const profileChannel = supabase
-      .channel('profile-avatar-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-        },
-        (payload) => {
-          setMessages(prevMessages =>
-            prevMessages.map(msg => {
-              if (msg.user?.id === payload.new.id) {
-                return {
-                  ...msg,
-                  user: {
-                    ...msg.user,
-                    avatar_url: payload.new.avatar_url,
-                    username: payload.new.username,
-                    full_name: payload.new.full_name
-                  }
-                }
-              }
-              return msg
-            })
-          )
-        }
-      )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 Profile changes channel status:', status)
-      })
-
-    profileChannelRef.current = profileChannel
-
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from profile changes')
-        supabase.removeChannel(profileChannel)
+    return () => {
+      if (subscription && subscription.unsubscribe) {
+        subscription.unsubscribe()
       }
     }
   }, [user])
 
-  // Utiliser le hook pour les profils
-  useRealtimeConnection(
-    subscribeToProfiles,
-    [user],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 1500
-    }
-  )
 
-  // Le rechargement lors du retour de visibilité est géré par useRealtimeConnection via onReconnect
+
+  // Profile changes are now handled automatically through message updates
+  // No separate subscription needed
 
   // Message rotation effect
   useEffect(() => {

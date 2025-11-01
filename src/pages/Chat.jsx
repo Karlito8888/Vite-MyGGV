@@ -1,15 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
-import { useUser } from '../contexts'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { TrashIcon, PhotoIcon } from '@heroicons/react/24/outline'
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-toastify'
-import { PaperAirplaneIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/solid'
-import {
-  listChannelMessages,
-  sendMessage,
-  sendImageMessage,
-  deleteMessage
-} from '../services/chatService'
+import { useUser } from '../contexts/UserContext'
+import { usePageVisibility } from '../hooks/usePageVisibility'
+import { listChannelMessages, sendMessage, subscribeToChannel, sendImageMessage, deleteMessage } from '../services/chatService'
 import { supabase } from '../utils/supabase'
-import { usePublicChat } from '../hooks/useSupabaseRealtime'
 import Avatar from '../components/Avatar'
 import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
@@ -19,7 +15,16 @@ import styles from '../styles/Chat.module.css'
 
 function Chat() {
   const { user, profile } = useUser()
-  const [messages, setMessages] = useState([])
+  const isVisible = usePageVisibility()
+  const [messages, setMessages] = useState(() => {
+    // Try to restore messages from localStorage
+    try {
+      const saved = localStorage.getItem('chat-messages-general')
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -41,57 +46,90 @@ function Chat() {
     scrollToBottom()
   }, [messages])
 
-  // Load existing messages - simple, no callback needed
+  // Load existing messages - only load if not already loaded
+  const loadMessages = useCallback(async () => {
+    // Don't reload if we already have messages
+    if (messages.length > 0) {
+      console.log('[CHAT] 📋 Messages already loaded, skipping reload')
+      return
+    }
+
+    console.log('[CHAT] 📥 Loading messages...')
+    setLoading(true)
+    try {
+      const { data, error } = await listChannelMessages(channelId, 100)
+
+      if (error) {
+        console.error('[CHAT] ❌ Error loading messages:', error)
+        throw error
+      }
+
+      console.log('[CHAT] ✅ Messages loaded:', data?.length || 0)
+      // Reverse to show oldest first
+      setMessages(data ? data.reverse() : [])
+    } catch (error) {
+      console.error('[CHAT] ❌ Failed to load messages:', error)
+      toast.error('Error loading messages')
+    } finally {
+      console.log('[CHAT] 🏁 Loading complete')
+      setLoading(false)
+    }
+  }, [channelId, messages.length])
+
   useEffect(() => {
-    const loadMessages = async () => {
-      console.log('[CHAT] 📥 Loading messages...')
-      setLoading(true)
+    loadMessages()
+  }, [loadMessages])
+
+  // Subscribe to real-time chat messages using centralized service
+  useEffect(() => {
+    let subscription = null
+
+    const setupSubscription = async () => {
       try {
-        const { data, error } = await listChannelMessages(channelId, 100)
+        subscription = await subscribeToChannel(channelId, {
+          onInsert: async (payload) => {
+            // Only process messages for the current channel
+            if (payload?.channel_id === channelId) {
+              console.log('[CHAT] 📨 New chat message:', payload.id)
+              
+              const { data: profileData } = await supabase
+                .from('profiles')
+                .select('username, avatar_url, full_name')
+                .eq('id', payload.user_id)
+                .single()
 
-        if (error) {
-          console.error('[CHAT] ❌ Error loading messages:', error)
-          throw error
-        }
+              const messageWithProfile = {
+                ...payload,
+                profiles: profileData
+              }
 
-        console.log('[CHAT] ✅ Messages loaded:', data?.length || 0)
-        // Reverse to show oldest first
-        setMessages(data ? data.reverse() : [])
+              setMessages((current) => {
+                if (current.some(msg => msg.id === messageWithProfile.id)) {
+                  return current
+                }
+                const newMessages = [...current, messageWithProfile]
+                // Save to localStorage for persistence
+                try {
+                  localStorage.setItem('chat-messages-general', JSON.stringify(newMessages))
+                } catch (error) {
+                  console.warn('[CHAT] ⚠️ Failed to save messages to localStorage:', error)
+                }
+                return newMessages
+              })
+            }
+          }
+        })
       } catch (error) {
-        console.error('[CHAT] ❌ Failed to load messages:', error)
-        toast.error('Error loading messages')
-      } finally {
-        console.log('[CHAT] 🏁 Loading complete')
-        setLoading(false)
+        console.error('[CHAT] ❌ Failed to subscribe to chat:', error)
       }
     }
 
-    loadMessages()
-  }, [])
+    setupSubscription()
 
-  // Subscribe to real-time chat messages using global system
-  usePublicChat(async (payload) => {
-    // Only process messages for the general channel
-    if (payload.new?.channel_id === channelId) {
-      console.log('[CHAT] 📨 New chat message:', payload.new.id)
-      
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('username, avatar_url, full_name')
-        .eq('id', payload.new.user_id)
-        .single()
-
-      const messageWithProfile = {
-        ...payload.new,
-        profiles: profileData
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
       }
-
-      setMessages((current) => {
-        if (current.some(msg => msg.id === messageWithProfile.id)) {
-          return current
-        }
-        return [...current, messageWithProfile]
-      })
     }
   }, [channelId])
 

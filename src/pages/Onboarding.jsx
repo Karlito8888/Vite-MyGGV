@@ -9,6 +9,7 @@ import { onboardingService } from "../services/onboardingService";
 
 import { onboardingSchema } from "../schemas/onboardingSchema";
 import { useUser } from "../contexts";
+import { usePageVisibility } from "../hooks/usePageVisibility";
 import AvatarUploader from "../components/ui/AvatarUploader";
 import Button from "../components/ui/Button";
 import Picker from "react-mobile-picker";
@@ -17,6 +18,7 @@ import styles from "../styles/Onboarding.module.css";
 function Onboarding() {
   const navigate = useNavigate();
   const { user } = useUser();
+  const isVisible = usePageVisibility();
   const [isLoading, setIsLoading] = useState(true);
   const [availableBlocks, setAvailableBlocks] = useState([]);
   const [availableLots, setAvailableLots] = useState([]);
@@ -84,7 +86,7 @@ function Onboarding() {
     };
 
     fetchBlocks();
-  }, []);
+  }, [isVisible]);
 
   // Fetch lots when block changes
   useEffect(() => {

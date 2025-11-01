@@ -1,8 +1,10 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { realtimeManager } from '../services/realtimeManager'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
-import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
+import { usePageVisibility } from '../hooks/usePageVisibility'
+
 import { ClimbingBoxLoader } from 'react-spinners'
 import Button from '../components/ui/Button'
 import PageTransition from '../components/PageTransition'
@@ -11,6 +13,7 @@ import styles from '../styles/PendingApproval.module.css'
 function PendingApproval() {
   const navigate = useNavigate()
   const { user } = useUser()
+  const isVisible = usePageVisibility()
   const [requestInfo, setRequestInfo] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [checkingStatus, setCheckingStatus] = useState(false)
@@ -62,49 +65,40 @@ function PendingApproval() {
     }
 
     checkApprovalStatus()
+  }, [user, navigate, isVisible])
+
+  // Real-time subscription for approval status using centralized manager
+  useEffect(() => {
+    if (!user) return
+
+    const channelName = 'approval_status'
+    
+    // Utiliser le gestionnaire centralisé - il gérera automatiquement les doublons
+    realtimeManager.subscribe(
+      channelName,
+      (channel) => {
+        channel
+          .on('postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'profiles',
+              filter: `id=eq.${user.id}`
+            },
+            (payload) => {
+              if (payload.new.onboarding_completed) {
+                navigate('/home', { replace: true })
+              }
+            }
+          )
+      },
+      [user.id] // Dépendance pour la clé unique
+    ).catch((error) => {
+      console.error('[APPROVAL] ❌ Failed to subscribe:', error)
+    })
+
+    // Pas de cleanup manuel - le gestionnaire centralisé s'en occupe
   }, [user, navigate])
-
-  // Real-time subscription with reconnection
-  const subscribeToApprovalStatus = useCallback(() => {
-    if (!user) return null
-
-    console.log('[REALTIME] 🔌 Subscribing to approval_status channel')
-    const channel = supabase
-      .channel('approval_status')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${user.id}`
-        },
-        (payload) => {
-          if (payload.new.onboarding_completed) {
-            navigate('/home', { replace: true })
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 Approval status channel status:', status)
-      })
-
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from approval_status channel')
-        supabase.removeChannel(channel)
-      }
-    }
-  }, [user, navigate])
-
-  useRealtimeConnection(
-    subscribeToApprovalStatus,
-    [user],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 2000
-    }
-  )
 
   const handleCheckStatus = async () => {
     setCheckingStatus(true)

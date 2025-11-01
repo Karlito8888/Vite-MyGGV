@@ -3,6 +3,7 @@ import { supabase } from '../utils/supabase'
 import { getCurrentUserWithClaims } from '../utils/authHelpers'
 import { getCurrentUserProfile } from '../services/profilesService'
 import { getProfileAssociations } from '../services/profileLocationAssociationsService'
+import { realtimeManager } from '../services/realtimeManager'
 
 /* eslint-disable react-refresh/only-export-components */
 export const UserContext = createContext()
@@ -108,6 +109,8 @@ export function UserProvider({ children }) {
           setUser(null)
           setProfile(null)
           setLocationAssociations([])
+          // Nettoyer toutes les subscriptions Realtime
+          realtimeManager.cleanup()
           // Optionnel : nettoyer le localStorage/sessionStorage
           localStorage.removeItem('user-preferences')
           break

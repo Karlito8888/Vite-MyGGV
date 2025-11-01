@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(claude mcp add:*)",
+      "WebSearch",
+      "WebFetch(domain:supabase.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

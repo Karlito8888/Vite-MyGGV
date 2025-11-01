@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import { locationRequestsService } from '../services/locationRequestsService'
-import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
+import { realtimeManager } from '../services/realtimeManager'
+
 import Card, { CardHeader, CardContent } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Avatar from '../components/Avatar'
@@ -50,36 +51,42 @@ function LocationRequests() {
     fetchRequestsRef.current = fetchRequests
   }, [fetchRequests])
 
-  // Real-time subscription with reconnection
-  const subscribeToRequestChanges = useCallback(() => {
-    if (!user) return null
+  // Real-time subscription for request changes using centralized manager
+  useEffect(() => {
+    if (!user) return
 
-    return locationRequestsService.subscribeToRequests(
-      user.id,
-      (payload) => {
-        // Refresh requests when there's a change
-        fetchRequestsRef.current()
+    const channelName = 'location_requests_changes'
+    
+    // Utiliser le gestionnaire centralisé - il gérera automatiquement les doublons
+    realtimeManager.subscribe(
+      channelName,
+      (channel) => {
+        channel
+          .on('postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'location_association_requests',
+              filter: `approver_id=eq.${user.id}`
+            },
+            (payload) => {
+              // Refresh requests when there's a change
+              fetchRequestsRef.current()
 
-        // Show notification for new requests
-        if (payload.eventType === 'INSERT') {
-          toast.info('📬 New location request received!')
-        }
-      }
-    )
+              // Show notification for new requests
+              if (payload.eventType === 'INSERT') {
+                toast.info('📬 New location request received!')
+              }
+            }
+          )
+      },
+      [user.id] // Dépendance pour la clé unique
+    ).catch((error) => {
+      console.error('[LOCATION-REQUESTS] ❌ Failed to subscribe:', error)
+    })
+
+    // Pas de cleanup manuel - le gestionnaire centralisé s'en occupe
   }, [user])
-
-  useRealtimeConnection(
-    subscribeToRequestChanges,
-    [user],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 1500,
-      onReconnect: () => {
-        console.log('[REALTIME] ✅ Location requests reconnected')
-        fetchRequestsRef.current()
-      }
-    }
-  )
 
   const handleApprove = async (requestId) => {
     setIsProcessing(true)

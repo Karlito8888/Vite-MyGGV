@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 import {
     getUserConversations,
     deleteConversation
 } from '../services/privateMessagesService'
-import { usePrivateMessages } from '../hooks/useSupabaseRealtime'
+import { subscribeToPrivateMessages } from '../services/privateMessagesService'
 import PageTransition from '../components/PageTransition'
 import Card, { CardContent } from '../components/ui/Card'
 import Avatar from '../components/Avatar'
@@ -18,6 +19,7 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 function PrivateMessages() {
     const navigate = useNavigate()
     const { profile } = useUser()
+    const isVisible = usePageVisibility()
     const [conversations, setConversations] = useState([])
     const [loading, setLoading] = useState(true)
     const [conversationToDelete, setConversationToDelete] = useState(null)
@@ -74,16 +76,36 @@ function PrivateMessages() {
         }
 
         loadConversations()
-    }, [profile?.id])
+    }, [profile?.id, isVisible])
 
-    // Subscribe to real-time messages using global system
-    usePrivateMessages(async (payload) => {
-        // Only refresh if the message involves the current user
-        if (payload.new?.receiver_id === profile?.id || payload.new?.sender_id === profile?.id) {
-            console.log('[PRIVATE-MESSAGES] 📨 New message received, refreshing conversations')
-            const { data } = await getUserConversations(profile.id)
-            if (data) {
-                setConversations(data)
+    // Subscribe to real-time messages using centralized service
+    useEffect(() => {
+        let subscription = null
+
+        const setupSubscription = async () => {
+            if (!profile?.id) return
+
+            try {
+                subscription = await subscribeToPrivateMessages(profile.id, async (payload) => {
+                    // Only refresh if message involves the current user
+                    if (payload?.receiver_id === profile.id || payload?.sender_id === profile.id) {
+                        console.log('[PRIVATE-MESSAGES] 📨 New message received, refreshing conversations')
+                        const { data } = await getUserConversations(profile.id)
+                        if (data) {
+                            setConversations(data)
+                        }
+                    }
+                })
+            } catch (error) {
+                console.error('[PRIVATE-MESSAGES] ❌ Failed to subscribe to private messages:', error)
+            }
+        }
+
+        setupSubscription()
+
+        return () => {
+            if (subscription) {
+                subscription.unsubscribe()
             }
         }
     }, [profile?.id])

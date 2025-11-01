@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { realtimeManager } from '../services/realtimeManager'
 import { supabase } from '../utils/supabase'
-import { useRealtimeConnection } from './useRealtimeConnection'
+import { usePageVisibility } from '../hooks/usePageVisibility'
+
 
 /**
  * Hook pour récupérer toutes les associations profile-location avec coordonnées
  * Optimisé avec une seule requête jointe
  */
 export function useUserLocations() {
+  const isVisible = usePageVisibility()
   const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -70,49 +73,38 @@ export function useUserLocations() {
   // Initial load
   useEffect(() => {
     fetchUserLocations()
-  }, [fetchUserLocations])
+  }, [fetchUserLocations, isVisible])
 
-  // Real-time subscription
-  const subscribeToLocationChanges = useCallback(() => {
-    console.log('[REALTIME] 🔌 Subscribing to user_locations_changes channel')
-    const channel = supabase
-      .channel('user_locations_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profile_location_associations'
-        },
-        () => {
-          // Recharger les données quand il y a un changement
-          fetchUserLocationsRef.current()
-        }
-      )
-      .subscribe((status) => {
-        console.log('[REALTIME] 📡 User locations changes channel status:', status)
-      })
 
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from user_locations_changes channel')
-        supabase.removeChannel(channel)
+
+  // Real-time subscription for location changes using centralized manager
+  useEffect(() => {
+    const channelName = 'user_locations_changes'
+    
+    // Utiliser le gestionnaire centralisé - il gérera automatiquement les doublons
+    realtimeManager.subscribe(
+      channelName,
+      (channel) => {
+        channel
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'profile_location_associations'
+            },
+            () => {
+              // Recharger les données quand il y a un changement
+              fetchUserLocationsRef.current()
+            }
+          )
       }
-    }
+    ).catch((error) => {
+      console.error('[USER-LOCATIONS] ❌ Failed to subscribe:', error)
+    })
+
+    // Pas de cleanup manuel - le gestionnaire centralisé s'en occupe
   }, [])
-
-  useRealtimeConnection(
-    subscribeToLocationChanges,
-    [],
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 1500,
-      onReconnect: () => {
-        console.log('[REALTIME] ✅ User locations reconnected')
-        fetchUserLocationsRef.current()
-      }
-    }
-  )
 
   return { locations, loading, error }
 }

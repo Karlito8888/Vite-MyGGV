@@ -1,4 +1,5 @@
 import { supabase, executeQuery } from './baseService'
+import { realtimeManager } from './realtimeManager'
 
 /**
  * Messages Header Service (Pinned/Featured Messages)
@@ -148,43 +149,86 @@ export async function extendHeaderMessageExpiration(id, daysToAdd) {
 }
 
 /**
- * Subscribe to real-time updates for header messages
+ * Subscribe to real-time updates for header messages using centralized manager
+ * 
+ * This function subscribes to all changes on the messages_header table and
+ * triggers a refresh callback when any message is inserted, updated, or deleted.
+ * Uses centralized realtimeManager for duplicate prevention and retry logic.
+ * 
  * @param {Function} onMessageChange - Callback function when messages change
  * @param {Function} onStatusChange - Callback function for subscription status
- * @returns {Object} Subscription object with cleanup function
+ * @returns {Promise<Object>} Subscription object with cleanup function
+ * 
+ * Usage Example:
+ * ```javascript
+ * const subscription = await subscribeToHeaderMessages(
+ *   () => {
+ *     console.log('Header messages changed, refreshing...')
+ *     // Refetch messages and update UI
+ *     fetchMessages()
+ *   },
+ *   (status) => {
+ *     console.log('Subscription status:', status)
+ *   }
+ * )
+ * 
+ * // Cleanup on unmount
+ * useEffect(() => {
+ *   return () => {
+ *     if (subscription) {
+ *       subscription.unsubscribe()
+ *     }
+ *   }
+ * }, [])
+ * ```
  */
-export function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
+export async function subscribeToHeaderMessages(onMessageChange, onStatusChange) {
   console.log('[REALTIME] 🔌 Subscribing to header-messages channel')
-  const channel = supabase
-    .channel("header-messages")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "messages_header",
-      },
-      (_payload) => {
-        // Trigger message refresh on any change
-        if (onMessageChange) {
-          onMessageChange();
-        }
-      }
-    )
-    .subscribe((status) => {
-      console.log('[REALTIME] 📡 Header messages channel status:', status)
-      if (onStatusChange) {
-        onStatusChange(status);
-      }
-    });
 
-  return {
-    channel,
-    unsubscribe: () => {
-      console.log('[REALTIME] 🔌 Unsubscribing from header-messages channel')
-      supabase.removeChannel(channel);
+  const setupHeaderMessagesChannel = (channel) => {
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "messages_header",
+        },
+        (_payload) => {
+          // Trigger message refresh on any change
+          if (onMessageChange) {
+            onMessageChange();
+          }
+        }
+      )
+  }
+
+  try {
+    const channel = await realtimeManager.subscribeStandard(
+      'headerMessages',
+      setupHeaderMessagesChannel,
+      []
+    )
+
+    // Note: Status callback is handled by the manager, but we keep it for compatibility
+    if (onStatusChange) {
+      onStatusChange('SUBSCRIBED')
     }
-  };
+
+    return {
+      channel,
+      unsubscribe: () => {
+        console.log('[REALTIME] 🔌 Unsubscribing from header-messages channel')
+        realtimeManager.unsubscribe('headerMessages', [])
+      }
+    }
+  } catch (error) {
+    console.error('[MESSAGES-HEADER-SERVICE] ❌ Failed to subscribe to header messages:', error)
+    if (onStatusChange) {
+      onStatusChange('CHANNEL_ERROR')
+    }
+    throw error
+  }
 }
 
 /**

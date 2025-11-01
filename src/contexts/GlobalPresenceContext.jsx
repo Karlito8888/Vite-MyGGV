@@ -1,7 +1,7 @@
-import { createContext, useState, useEffect, useContext, useCallback, useRef } from 'react'
-import { supabase } from '../utils/supabase'
+import { createContext, useState, useEffect, useContext, useRef } from 'react'
 import { useUser } from './UserContext'
-import { useRealtimeConnection } from '../hooks/useRealtimeConnection'
+import { realtimeManager } from '../services/realtimeManager'
+
 
 const GlobalPresenceContext = createContext()
 
@@ -20,94 +20,77 @@ export function GlobalPresenceProvider({ children }) {
     userRef.current = user
   }, [user])
 
-  const subscribeToPresence = useCallback(() => {
-    if (!userRef.current) return null
+
+
+  // Real-time presence subscription using centralized manager
+  useEffect(() => {
+    if (!userRef.current) return
+
+    const channelName = 'global_presence'
+    const userId = userRef.current.id
     
-    console.log('[REALTIME] 🔌 Setting up global presence subscription')
-    
-    const presenceChannel = supabase.channel('global_presence')
+    // Utiliser le gestionnaire centralisé - il gérera automatiquement les doublons
+    const setupPresenceChannel = (channel) => {
+      channel
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState()
+          const users = new Set()
 
-    presenceChannel
-      .on('presence', { event: 'sync' }, () => {
-        const state = presenceChannel.presenceState()
-        const users = new Set()
+          Object.values(state).forEach((presences) => {
+            presences.forEach((presence) => {
+              if (presence.user_id) {
+                users.add(presence.user_id)
+              }
+            })
+          })
 
-        Object.values(state).forEach((presences) => {
-          presences.forEach((presence) => {
-            if (presence.user_id) {
-              users.add(presence.user_id)
-            }
+          setOnlineUsers(users)
+        })
+        .on('presence', { event: 'join' }, ({ newPresences }) => {
+          setOnlineUsers((prev) => {
+            const updated = new Set(prev)
+            newPresences.forEach((presence) => {
+              if (presence.user_id) {
+                updated.add(presence.user_id)
+              }
+            })
+            return updated
           })
         })
+        .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+          setOnlineUsers((prev) => {
+            const updated = new Set(prev)
+            leftPresences.forEach((presence) => {
+              if (presence.user_id) {
+                updated.delete(presence.user_id)
+              }
+            })
+            return updated
+          })
+        })
+    }
 
-        setOnlineUsers(users)
-      })
-      .on('presence', { event: 'join' }, ({ newPresences }) => {
-        setOnlineUsers((prev) => {
-          const updated = new Set(prev)
-          newPresences.forEach((presence) => {
-            if (presence.user_id) {
-              updated.add(presence.user_id)
-            }
-          })
-          return updated
-        })
-      })
-      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-        setOnlineUsers((prev) => {
-          const updated = new Set(prev)
-          leftPresences.forEach((presence) => {
-            if (presence.user_id) {
-              updated.delete(presence.user_id)
-            }
-          })
-          return updated
-        })
-      })
-      .subscribe(async (status) => {
-        console.log('[REALTIME] 📡 Global presence status:', status)
-        if (status === 'SUBSCRIBED' && userRef.current) {
+    // S'abonner (le gestionnaire évitera les doublons automatiquement)
+    realtimeManager.subscribe(channelName, setupPresenceChannel, [userId])
+      .then(async (channel) => {
+        presenceChannelRef.current = channel
+        
+        // Tracker l'utilisateur une fois le canal abonné
+        if (userRef.current) {
           console.log('[REALTIME] 👤 Tracking user presence:', userRef.current.id)
-          await presenceChannel.track({
+          await channel.track({
             user_id: userRef.current.id,
             email: userRef.current.email,
             online_at: new Date().toISOString(),
           })
         }
       })
+      .catch((error) => {
+        console.error('[GLOBAL-PRESENCE] ❌ Failed to subscribe:', error)
+      })
 
-    presenceChannelRef.current = presenceChannel
-
-    return {
-      unsubscribe: () => {
-        console.log('[REALTIME] 🔌 Unsubscribing from global presence')
-        if (presenceChannel) {
-          presenceChannel.untrack()
-          supabase.removeChannel(presenceChannel)
-        }
-      }
-    }
-  }, [])
-
-  useRealtimeConnection(
-    subscribeToPresence,
-    [user?.id], // Only reconnect when user ID changes
-    {
-      reconnectOnVisibility: true,
-      reconnectDelay: 2000,
-      onReconnect: async () => {
-        console.log('[REALTIME] ✅ Presence reconnected')
-        // Re-track presence
-        if (presenceChannelRef.current && userRef.current) {
-          await presenceChannelRef.current.track({
-            user_id: userRef.current.id,
-            email: userRef.current.email,
-            online_at: new Date().toISOString(),
-          })
-        }
-      }
-    }
-  )
+    // Pas de cleanup manuel - le gestionnaire centralisé s'en occupe
+  }, [user?.id])
 
   const isUserOnline = (userId) => {
     return onlineUsers.has(userId)
