@@ -18,18 +18,16 @@ export const referralService = {
 
   // Validate and apply referral code
   async validateReferralCode(referralCode) {
-    // Get current session to ensure we have a valid token
-    const { data: { session } } = await supabase.auth.getSession();
+    // Get current claims to ensure we have a valid token (recommandé par Supabase)
+    const { data: claims, error: claimsError } = await supabase.auth.getClaims();
 
-    if (!session) {
+    if (claimsError || !claims) {
       throw new Error('You must be logged in to use a referral code');
     }
 
+    // Le client Supabase gère automatiquement l'access token, pas besoin de le passer manuellement
     const { data, error } = await supabase.functions.invoke('validate-referral', {
-      body: { referralCode },
-      headers: {
-        Authorization: `Bearer ${session.access_token}`
-      }
+      body: { referralCode }
     });
 
     if (error) throw error;

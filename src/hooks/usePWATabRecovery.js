@@ -37,7 +37,8 @@ export function usePWATabRecovery() {
         setTimeout(() => reject(new Error('Health check timeout')), 5000)
       )
       
-      const healthCheckPromise = supabase.auth.getSession()
+      // Utiliser getClaims() au lieu de getSession() (recommandé par Supabase)
+      const healthCheckPromise = supabase.auth.getClaims()
       
       const result = await Promise.race([healthCheckPromise, timeoutPromise])
       

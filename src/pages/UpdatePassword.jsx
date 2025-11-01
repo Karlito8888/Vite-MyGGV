@@ -91,10 +91,11 @@ export default function UpdatePassword() {
         // Also check current session on mount
         const checkCurrentSession = async () => {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession()
-                log('UpdatePassword: Current session check:', { hasSession: !!session, error })
+                // Utiliser getClaims() au lieu de getSession() (recommandé par Supabase)
+                const { data, error } = await supabase.auth.getClaims()
+                log('UpdatePassword: Current session check:', { hasClaims: !!data, error })
 
-                if (session && !error) {
+                if (data && !error) {
                     setIsValidSession(true)
                 } else {
                     setIsValidSession(false)

@@ -43,17 +43,17 @@ export function PageVisibilityProvider({ children }) {
           
           authRecoveryTimeoutRef.current = setTimeout(async () => {
             try {
-              // Vérifier la session actuelle
-              const { data: { session }, error } = await supabase.auth.getSession()
+              // Vérifier les claims JWT actuels (recommandé par Supabase)
+              const { data, error } = await supabase.auth.getClaims()
               
               if (error) {
-                console.error('[VISIBILITY] ❌ Error checking session:', error)
+                console.error('[VISIBILITY] ❌ Error checking claims:', error)
                 return
               }
 
-              if (session) {
+              if (data && data.exp) {
                 // Vérifier si le token est proche de l'expiration (moins de 5 minutes)
-                const expiresAt = session.expires_at * 1000 // Convertir en millisecondes
+                const expiresAt = data.exp * 1000 // Convertir en millisecondes
                 const timeUntilExpiry = expiresAt - Date.now()
                 
                 if (timeUntilExpiry < 300000) { // Moins de 5 minutes

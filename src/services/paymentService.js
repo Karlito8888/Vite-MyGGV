@@ -20,13 +20,13 @@ export async function createGCashPayment(packageId, userId) {
       throw new Error('Invalid package')
     }
 
-    // Récupérer le token d'authentification
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    // Vérifier l'authentification avec getClaims() (recommandé par Supabase)
+    const { data: claims, error: claimsError } = await supabase.auth.getClaims()
+    if (claimsError || !claims) {
       throw new Error('Not authenticated')
     }
 
-    // Appeler la Edge Function Supabase avec le token
+    // Appeler la Edge Function Supabase (le client gère automatiquement l'access token)
     const { data, error } = await supabase.functions.invoke('create-gcash-payment', {
       body: {
         package_id: packageId,
@@ -34,9 +34,6 @@ export async function createGCashPayment(packageId, userId) {
         coins: coinPackage.coins,
         amount: coinPackage.price,
         return_url: `${window.location.origin}/money?payment=success`
-      },
-      headers: {
-        Authorization: `Bearer ${session.access_token}`
       }
     })
 
