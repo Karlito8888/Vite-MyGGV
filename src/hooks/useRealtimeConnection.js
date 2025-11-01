@@ -122,24 +122,20 @@ export function useRealtimeConnection(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
-  // Enregistrer le timestamp quand la page devient cachée
+  // Gérer les changements de visibilité et la reconnexion
   useEffect(() => {
-    if (!isVisible && wasVisibleRef.current) {
-      // Page vient de devenir cachée
+    // Détecter les transitions
+    const becameHidden = !isVisible && wasVisibleRef.current
+    const becameVisible = isVisible && !wasVisibleRef.current
+    
+    // Page vient de devenir cachée
+    if (becameHidden) {
       lastHiddenTimeRef.current = Date.now()
       console.log('[REALTIME] 🌙 Page hidden at', new Date().toLocaleTimeString())
     }
-    wasVisibleRef.current = isVisible
-  }, [isVisible])
-
-  // Reconnexion lors du retour sur l'onglet avec vérification de santé
-  useEffect(() => {
-    if (!reconnectOnVisibility) return
-
-    // Détecter le passage de caché à visible
-    const becameVisible = !wasVisibleRef.current && isVisible
-
-    if (becameVisible && isConnected) {
+    
+    // Page vient de devenir visible - gérer la reconnexion
+    if (becameVisible && reconnectOnVisibility && isConnected) {
       console.log('[REALTIME] 👁️ Page became visible, checking connection health...')
       
       // Calculer le VRAI temps passé caché
@@ -171,6 +167,9 @@ export function useRealtimeConnection(
       // Réinitialiser le timestamp
       lastHiddenTimeRef.current = null
     }
+    
+    // Mettre à jour la référence APRÈS avoir vérifié les transitions
+    wasVisibleRef.current = isVisible
 
     return () => {
       if (reconnectTimeoutRef.current) {
@@ -178,7 +177,7 @@ export function useRealtimeConnection(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVisible, isConnected])
+  }, [isVisible, isConnected, reconnectOnVisibility, reconnectDelay])
 
   return {
     isConnected,
