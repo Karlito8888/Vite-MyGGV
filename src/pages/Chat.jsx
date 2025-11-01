@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { TrashIcon, PhotoIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts/UserContext'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 import { listChannelMessages, sendMessage, subscribeToChannel, sendImageMessage, deleteMessage } from '../services/chatService'
 import { supabase } from '../utils/supabase'
 import Avatar from '../components/Avatar'
@@ -15,7 +14,6 @@ import styles from '../styles/Chat.module.css'
 
 function Chat() {
   const { user, profile } = useUser()
-  const isVisible = usePageVisibility()
   const [messages, setMessages] = useState(() => {
     // Try to restore messages from localStorage
     try {
@@ -46,39 +44,44 @@ function Chat() {
     scrollToBottom()
   }, [messages])
 
-  // Load existing messages - only load if not already loaded
-  const loadMessages = useCallback(async () => {
-    // Don't reload if we already have messages
-    if (messages.length > 0) {
-      console.log('[CHAT] 📋 Messages already loaded, skipping reload')
-      return
-    }
-
-    console.log('[CHAT] 📥 Loading messages...')
-    setLoading(true)
-    try {
-      const { data, error } = await listChannelMessages(channelId, 100)
-
-      if (error) {
-        console.error('[CHAT] ❌ Error loading messages:', error)
-        throw error
-      }
-
-      console.log('[CHAT] ✅ Messages loaded:', data?.length || 0)
-      // Reverse to show oldest first
-      setMessages(data ? data.reverse() : [])
-    } catch (error) {
-      console.error('[CHAT] ❌ Failed to load messages:', error)
-      toast.error('Error loading messages')
-    } finally {
-      console.log('[CHAT] 🏁 Loading complete')
-      setLoading(false)
-    }
-  }, [channelId, messages.length])
-
+  // Load existing messages - only once on mount
   useEffect(() => {
+    let isMounted = true
+
+    const loadMessages = async () => {
+      console.log('[CHAT] 📥 Loading messages...')
+      setLoading(true)
+      try {
+        const { data, error } = await listChannelMessages(channelId, 100)
+
+        if (!isMounted) return
+
+        if (error) {
+          console.error('[CHAT] ❌ Error loading messages:', error)
+          throw error
+        }
+
+        console.log('[CHAT] ✅ Messages loaded:', data?.length || 0)
+        // Reverse to show oldest first
+        setMessages(data ? data.reverse() : [])
+      } catch (error) {
+        if (!isMounted) return
+        console.error('[CHAT] ❌ Failed to load messages:', error)
+        toast.error('Error loading messages')
+      } finally {
+        if (isMounted) {
+          console.log('[CHAT] 🏁 Loading complete')
+          setLoading(false)
+        }
+      }
+    }
+
     loadMessages()
-  }, [loadMessages])
+
+    return () => {
+      isMounted = false
+    }
+  }, [channelId])
 
   // Subscribe to real-time chat messages using centralized service
   useEffect(() => {

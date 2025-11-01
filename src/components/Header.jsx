@@ -4,7 +4,6 @@ import ggvLogo from "../assets/img/ggv.png";
 import Avatar from "./Avatar";
 import UserProfileModal from "./UserProfileModal";
 import { useUser } from '../contexts'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 
 import { BeatLoader } from "react-spinners";
 import {
@@ -15,7 +14,6 @@ import styles from "./Header.module.css";
 
 function Header() {
   const { user } = useUser()
-  const isVisible = usePageVisibility()
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -91,7 +89,7 @@ function Header() {
     }
 
     fetchMessages(true);
-  }, [user, fetchMessages, isVisible]);
+  }, [user, fetchMessages]);
 
   // Store fetchMessages in a ref to avoid recreating subscriptions
   const fetchMessagesRef = useRef(fetchMessages)

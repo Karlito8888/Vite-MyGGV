@@ -14,13 +14,11 @@ import {
   Sunset
 } from 'lucide-react'
 import { weatherService } from '../services/weatherService'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 import Clock from '../components/ui/Clock'
 import PageTransition from '../components/PageTransition'
 import styles from '../styles/Weather.module.css'
 
 function Weather() {
-  const isVisible = usePageVisibility()
   const [weatherData, setWeatherData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -60,7 +58,7 @@ function Weather() {
     // Refresh data every 30 minutes
     const interval = setInterval(loadWeatherData, 30 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [isVisible])
+  }, [])
 
   const getWeatherIcon = (iconName) => {
     const icons = {

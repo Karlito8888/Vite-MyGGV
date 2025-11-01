@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { realtimeManager } from '../services/realtimeManager'
 import { supabase } from '../utils/supabase'
 import { useUser } from '../contexts'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 
 import { ClimbingBoxLoader } from 'react-spinners'
 import Button from '../components/ui/Button'
@@ -13,7 +12,6 @@ import styles from '../styles/PendingApproval.module.css'
 function PendingApproval() {
   const navigate = useNavigate()
   const { user } = useUser()
-  const isVisible = usePageVisibility()
   const [requestInfo, setRequestInfo] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [checkingStatus, setCheckingStatus] = useState(false)
@@ -65,7 +63,7 @@ function PendingApproval() {
     }
 
     checkApprovalStatus()
-  }, [user, navigate, isVisible])
+  }, [user, navigate])
 
   // Real-time subscription for approval status using centralized manager
   useEffect(() => {

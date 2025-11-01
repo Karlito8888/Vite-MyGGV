@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 import {
     getUserConversations,
     deleteConversation
@@ -19,7 +18,6 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 function PrivateMessages() {
     const navigate = useNavigate()
     const { profile } = useUser()
-    const isVisible = usePageVisibility()
     const [conversations, setConversations] = useState([])
     const [loading, setLoading] = useState(true)
     const [conversationToDelete, setConversationToDelete] = useState(null)
@@ -76,7 +74,7 @@ function PrivateMessages() {
         }
 
         loadConversations()
-    }, [profile?.id, isVisible])
+    }, [profile?.id])
 
     // Subscribe to real-time messages using centralized service
     useEffect(() => {

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { realtimeManager } from '../services/realtimeManager'
 import { supabase } from '../utils/supabase'
-import { usePageVisibility } from '../hooks/usePageVisibility'
 
 
 /**
@@ -9,7 +8,6 @@ import { usePageVisibility } from '../hooks/usePageVisibility'
  * Optimisé avec une seule requête jointe
  */
 export function useUserLocations() {
-  const isVisible = usePageVisibility()
   const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -70,10 +68,10 @@ export function useUserLocations() {
     fetchUserLocationsRef.current = fetchUserLocations
   }, [fetchUserLocations])
 
-  // Initial load
+  // Initial load - only once on mount
   useEffect(() => {
     fetchUserLocations()
-  }, [fetchUserLocations, isVisible])
+  }, [fetchUserLocations])
 
 
 
