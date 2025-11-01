@@ -150,12 +150,16 @@ export function usePWATabRecovery() {
           }
         }
         
-        // 2. Reconnecter les canaux Realtime si nécessaire
-        if (connectedCount < totalCount || timeHidden > 30000) {
-          console.log('[PWA-RECOVERY] 🔌 Reconnecting Realtime channels...')
+        // 2. TOUJOURS reconnecter les canaux Realtime si l'onglet était caché > 30s
+        // Les WebSockets sont souvent gelés par le navigateur après cette durée
+        if (timeHidden > 30000) {
+          console.log('[PWA-RECOVERY] 🔌 Tab was hidden > 30s, forcing Realtime reconnection...')
+          forceReconnectAll()
+        } else if (connectedCount < totalCount) {
+          console.log('[PWA-RECOVERY] 🔌 Some connections down, reconnecting...')
           forceReconnectAll()
         } else {
-          console.log('[PWA-RECOVERY] ✅ All connections healthy, no reconnection needed')
+          console.log('[PWA-RECOVERY] ✅ Short absence and all connections up, no reconnection needed')
         }
         
         console.log('[PWA-RECOVERY] ✅ Recovery completed')

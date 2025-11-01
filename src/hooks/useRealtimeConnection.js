@@ -38,7 +38,7 @@ export function useRealtimeConnection(
   const isVisible = usePageVisibility()
   const subscriptionRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
-  const isConnectedRef = useRef(false)
+  const [isConnected, setIsConnected] = useState(false)
   const wasVisibleRef = useRef(isVisible)
   const lastActivityRef = useRef(Date.now())
   const [connectionState, setConnectionState] = useState('disconnected') // 'disconnected', 'connecting', 'connected', 'frozen'
@@ -59,6 +59,7 @@ export function useRealtimeConnection(
     if (subscriptionRef.current) {
       console.log('[REALTIME] 🧹 Cleaning up subscription')
       setConnectionState('disconnected')
+      setIsConnected(false)
       try {
         if (typeof subscriptionRef.current.unsubscribe === 'function') {
           subscriptionRef.current.unsubscribe()
@@ -69,7 +70,6 @@ export function useRealtimeConnection(
         console.error('[REALTIME] ❌ Error during cleanup:', error)
       }
       subscriptionRef.current = null
-      isConnectedRef.current = false
       
       if (onDisconnectRef.current) {
         onDisconnectRef.current()
@@ -91,10 +91,11 @@ export function useRealtimeConnection(
 
     console.log('[REALTIME] 🔌 Creating new subscription')
     setConnectionState('connecting')
+    setIsConnected(false)
     try {
       const subscription = subscribeFunctionRef.current()
       subscriptionRef.current = subscription
-      isConnectedRef.current = true
+      setIsConnected(true)
       lastActivityRef.current = Date.now()
       setConnectionState('connected')
 
@@ -103,7 +104,7 @@ export function useRealtimeConnection(
       }
     } catch (error) {
       console.error('[REALTIME] ❌ Error creating subscription:', error)
-      isConnectedRef.current = false
+      setIsConnected(false)
       setConnectionState('frozen')
     }
   }, [])
@@ -143,28 +144,33 @@ export function useRealtimeConnection(
 
     // Détecter le passage de caché à visible
     const becameVisible = !wasVisibleRef.current && isVisible
+    const wasHidden = wasVisibleRef.current === false
     wasVisibleRef.current = isVisible
 
-    if (becameVisible && isConnectedRef.current) {
+    if (becameVisible && isConnected && wasHidden) {
       console.log('[REALTIME] 👁️ Page became visible, checking connection health...')
       
-      // Vérifier la santé de la connexion
-      const isHealthy = checkConnectionHealth()
+      // Calculer le temps passé caché
+      const timeSinceLastActivity = Date.now() - lastActivityRef.current
+      const wasHiddenLongTime = timeSinceLastActivity > 30000 // Plus de 30 secondes
       
-      if (!isHealthy) {
-        console.log('[REALTIME] 🏥 Connection unhealthy, forcing reconnection')
+      // TOUJOURS reconnecter si l'onglet était caché longtemps
+      // Les connexions WebSocket sont souvent gelées par le navigateur après 30s
+      if (wasHiddenLongTime) {
+        console.log('[REALTIME] 🏥 Tab was hidden for', Math.round(timeSinceLastActivity / 1000), 'seconds, forcing reconnection')
+        
         // Ajouter un délai aléatoire (0-200ms) pour étaler les reconnexions
         const staggerDelay = Math.random() * 200
         const totalDelay = reconnectDelay + staggerDelay
         
         reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('[REALTIME] 🔄 Reconnecting after visibility change')
+          console.log('[REALTIME] 🔄 Reconnecting after long inactivity')
           // Nettoyer d'abord la connexion existante avant de reconnecter
           cleanup()
           connect()
         }, totalDelay)
       } else {
-        console.log('[REALTIME] ✅ Connection appears healthy, no reconnection needed')
+        console.log('[REALTIME] ✅ Short absence (', Math.round(timeSinceLastActivity / 1000), 's), keeping connection')
         // Mettre à jour l'activité pour indiquer que la connexion est vérifiée
         lastActivityRef.current = Date.now()
       }
@@ -176,11 +182,11 @@ export function useRealtimeConnection(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVisible, checkConnectionHealth])
+  }, [isVisible])
 
   // Mettre à jour l'activité périodiquement pour détecter les connexions actives
   useEffect(() => {
-    if (!isConnectedRef.current || !isVisible) return
+    if (!isConnected || !isVisible) return
 
     const activityInterval = setInterval(() => {
       // Mettre à jour l'activité si la connexion est toujours active
@@ -190,10 +196,10 @@ export function useRealtimeConnection(
     }, 10000) // Vérifier toutes les 10 secondes
 
     return () => clearInterval(activityInterval)
-  }, [isVisible])
+  }, [isVisible, isConnected])
 
   return {
-    isConnected: isConnectedRef.current,
+    isConnected,
     reconnect: connect,
     disconnect: cleanup,
     connectionState,
