@@ -50,6 +50,19 @@ function MyComponent() {
 ### Hooks de préchargement
 - **usePreloadIcons()** : Précharge les icônes communes de l'app
 
+### Hooks PWA et Tab Recovery
+- **usePageVisibility()** : Détecte la visibilité de la page (tab switch)
+- **usePWATabRecovery()** : Récupération automatique après changement d'onglet
+- **useRealtimeConnection()** : Gestion d'une connexion Realtime avec auto-reconnexion
+- **useGlobalRealtimeManager()** : Gestion globale de toutes les connexions Realtime
+
+### Hooks de carte
+- **useMapConfig()** : Configuration de la carte MapLibre
+- **useUserLocations()** : Gestion des localisations utilisateur
+
+### Hooks PWA
+- **usePWAInstall()** : Gestion de l'installation de la PWA
+
 ## Types de hooks
 
 ### 1. Hooks de contexte (re-exportés)

@@ -4,9 +4,9 @@ import { toast } from 'react-toastify'
 import { useUser } from '../contexts'
 import {
     getUserConversations,
-    subscribeToPrivateMessages,
     deleteConversation
 } from '../services/privateMessagesService'
+import { usePrivateMessages } from '../hooks/useSupabaseRealtime'
 import PageTransition from '../components/PageTransition'
 import Card, { CardContent } from '../components/ui/Card'
 import Avatar from '../components/Avatar'
@@ -76,19 +76,16 @@ function PrivateMessages() {
         loadConversations()
     }, [profile?.id])
 
-    // Subscribe to real-time messages
-    useEffect(() => {
-        if (!profile?.id) return
-
-        const subscription = subscribeToPrivateMessages(profile.id, async () => {
-            // Refresh conversations list when new message arrives
+    // Subscribe to real-time messages using global system
+    usePrivateMessages(async (payload) => {
+        // Only refresh if the message involves the current user
+        if (payload.new?.receiver_id === profile?.id || payload.new?.sender_id === profile?.id) {
+            console.log('[PRIVATE-MESSAGES] 📨 New message received, refreshing conversations')
             const { data } = await getUserConversations(profile.id)
             if (data) {
                 setConversations(data)
             }
-        })
-
-        return () => subscription.unsubscribe()
+        }
     }, [profile?.id])
 
     // Redirect if not logged in

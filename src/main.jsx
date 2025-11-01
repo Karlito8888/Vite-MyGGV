@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import { PageVisibilityProvider } from './contexts/PageVisibilityContext.jsx'
 import './styles/index.css'
 
 const rootElement = document.getElementById('root')
@@ -12,8 +13,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <ErrorBoundary>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <PageVisibilityProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </PageVisibilityProvider>
   </ErrorBoundary>
 )

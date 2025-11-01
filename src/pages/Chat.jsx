@@ -9,6 +9,7 @@ import {
   deleteMessage
 } from '../services/chatService'
 import { supabase } from '../utils/supabase'
+import { usePublicChat } from '../hooks/useSupabaseRealtime'
 import Avatar from '../components/Avatar'
 import ImageModal from '../components/ImageModal'
 import ConfirmModal from '../components/ConfirmModal'
@@ -68,46 +69,31 @@ function Chat() {
     loadMessages()
   }, [])
 
-  // Setup realtime subscription - simple and direct
-  useEffect(() => {
-    if (!user) return
+  // Subscribe to real-time chat messages using global system
+  usePublicChat(async (payload) => {
+    // Only process messages for the general channel
+    if (payload.new?.channel_id === channelId) {
+      console.log('[CHAT] 📨 New chat message:', payload.new.id)
+      
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('username, avatar_url, full_name')
+        .eq('id', payload.new.user_id)
+        .single()
 
-    const channel = supabase
-      .channel(`chat-${channelId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat',
-          filter: `channel_id=eq.${channelId}`
-        },
-        async (payload) => {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('username, avatar_url, full_name')
-            .eq('id', payload.new.user_id)
-            .single()
+      const messageWithProfile = {
+        ...payload.new,
+        profiles: profileData
+      }
 
-          const messageWithProfile = {
-            ...payload.new,
-            profiles: profileData
-          }
-
-          setMessages((current) => {
-            if (current.some(msg => msg.id === messageWithProfile.id)) {
-              return current
-            }
-            return [...current, messageWithProfile]
-          })
+      setMessages((current) => {
+        if (current.some(msg => msg.id === messageWithProfile.id)) {
+          return current
         }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
+        return [...current, messageWithProfile]
+      })
     }
-  }, [user])
+  }, [channelId])
 
   const handleSendMessage = async (e) => {
     e.preventDefault()

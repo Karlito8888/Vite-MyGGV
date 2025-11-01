@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Layout from "./components/Layout";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { GlobalRealtimeManager } from "./components/GlobalRealtimeManager";
+import PWARecoveryIndicator from "./components/PWARecoveryIndicator";
 
 // Lazy loading des pages
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -47,6 +49,8 @@ const protectedRoutes = [
 function App() {
   return (
     <>
+      <GlobalRealtimeManager />
+      <PWARecoveryIndicator />
       <Suspense
         fallback={
           <div

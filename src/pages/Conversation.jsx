@@ -12,6 +12,7 @@ import {
   deletePrivateMessage
 } from '../services/privateMessagesService'
 import { supabase } from '../utils/supabase'
+import { usePrivateMessages } from '../hooks/useSupabaseRealtime'
 import PageTransition from '../components/PageTransition'
 import Avatar from '../components/Avatar'
 import ImageModal from '../components/ImageModal'
@@ -216,62 +217,44 @@ function Conversation() {
 
 
 
-  // Subscribe to real-time messages - direct subscription like Chat.jsx
-  useEffect(() => {
-    if (!profile?.id || !otherUserId) return
+  // Subscribe to real-time messages using global system
+  usePrivateMessages(async (payload) => {
+    // Only process messages for this conversation
+    if (payload.new?.sender_id === otherUserId && payload.new?.receiver_id === profile?.id) {
+      console.log('[CONVERSATION] 📨 New message in conversation:', payload.new.id)
+      
+      // Fetch sender profile
+      const { data: senderProfile } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, full_name')
+        .eq('id', payload.new.sender_id)
+        .single()
 
-    const channel = supabase
-      .channel(`private-conversation-${profile.id}-${otherUserId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'private_messages',
-          filter: `receiver_id=eq.${profile.id}`
-        },
-        async (payload) => {
-          // Only add if it's from the current conversation
-          if (payload.new.sender_id === otherUserId) {
-            // Fetch sender profile
-            const { data: senderProfile } = await supabase
-              .from('profiles')
-              .select('id, username, avatar_url, full_name')
-              .eq('id', payload.new.sender_id)
-              .single()
+      // Fetch receiver profile (current user)
+      const { data: receiverProfile } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, full_name')
+        .eq('id', payload.new.receiver_id)
+        .single()
 
-            // Fetch receiver profile (current user)
-            const { data: receiverProfile } = await supabase
-              .from('profiles')
-              .select('id, username, avatar_url, full_name')
-              .eq('id', payload.new.receiver_id)
-              .single()
+      const messageWithProfiles = {
+        ...payload.new,
+        sender: senderProfile,
+        receiver: receiverProfile
+      }
 
-            const messageWithProfiles = {
-              ...payload.new,
-              sender: senderProfile,
-              receiver: receiverProfile
-            }
-
-            setMessages((current) => {
-              // Avoid duplicates
-              if (current.some(msg => msg.id === messageWithProfiles.id)) {
-                return current
-              }
-              return [...current, messageWithProfiles]
-            })
-
-            scrollToBottom()
-
-            // Mark as read
-            markConversationAsRead(otherUserId)
-          }
+      setMessages((current) => {
+        // Avoid duplicates
+        if (current.some(msg => msg.id === messageWithProfiles.id)) {
+          return current
         }
-      )
-      .subscribe()
+        return [...current, messageWithProfiles]
+      })
 
-    return () => {
-      supabase.removeChannel(channel)
+      scrollToBottom()
+
+      // Mark as read
+      markConversationAsRead(otherUserId)
     }
   }, [profile?.id, otherUserId])
 
